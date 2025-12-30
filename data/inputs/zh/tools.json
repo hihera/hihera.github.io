@@ -1,0 +1,17 @@
+[
+  { "name": "ChatGPT", "desc": "OpenAI 出品的里程碑式 LLM，日常问答、代码辅助、创意写作首选。", "tags": ["AI", "LLM"], "link": "https://chat.openai.com/" },
+  { "name": "Claude", "desc": "Anthropic 出品，擅长长文本分析、代码编写，语言风格更自然。", "tags": ["AI", "LLM"], "link": "https://claude.ai/" },
+  { "name": "Perplexity", "desc": "结合了搜索与 AI 的问答引擎，查找准确信息和引用来源的神器。", "tags": ["AI", "Search"], "link": "https://www.perplexity.ai/" },
+  { "name": "Midjourney", "desc": "目前最强大的 AI 绘画工具，适合创意灵感与高质量图像生成。", "tags": ["AI", "Image"], "link": "https://www.midjourney.com/" },
+  { "name": "Notion", "desc": "All-in-one 笔记与知识库工具，构建第二大脑的核心系统。", "tags": ["PKM", "Notes"], "link": "https://www.notion.so/" },
+  { "name": "Obsidian", "desc": "本地化、双向链接的知识管理工具，适合深度笔记与卡片盒笔记法。", "tags": ["PKM", "Local"], "link": "https://obsidian.md/" },
+  { "name": "Readwise", "desc": "稍后阅读与高亮汇聚工具，将碎片化阅读整合到你的笔记系统中。", "tags": ["Reading", "PKM"], "link": "https://readwise.io/" },
+  { "name": "Product Hunt", "desc": "全球最好的新产品发现社区，每天了解最新的科技产品与创意。", "tags": ["Discovery", "Tech"], "link": "https://www.producthunt.com/" },
+  { "name": "Hacker News", "desc": "Y Combinator 旗下的科技新闻聚合，高质量的极客讨论社区。", "tags": ["News", "Tech"], "link": "https://news.ycombinator.com/" },
+  { "name": "arXiv", "desc": "康奈尔大学运营的学术预印本数据库，追踪 AI 与计算机科学最新论文。", "tags": ["Research", "Paper"], "link": "https://arxiv.org/" },
+  { "name": "Papers with Code", "desc": "将论文与代码实现结合，机器学习研究者的必备资源库。", "tags": ["ML", "Code"], "link": "https://paperswithcode.com/" },
+  { "name": "Medium", "desc": "优质的长文章阅读平台，涵盖技术、设计、文化等深度内容。", "tags": ["Reading", "Blog"], "link": "https://medium.com/" },
+  { "name": "Substack", "desc": "独立创作者的 Newsletter 平台，订阅你喜欢的专家深度见解。", "tags": ["Newsletter"], "link": "https://substack.com/" },
+  { "name": "GitHub Trending", "desc": "查看 GitHub 上最热门的开源项目，紧跟技术圈的开发潮流。", "tags": ["Code", "OSS"], "link": "https://github.com/trending" }
+]
+

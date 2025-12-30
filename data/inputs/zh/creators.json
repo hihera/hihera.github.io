@@ -1,0 +1,63 @@
+{
+  "ai_tech": [
+    { "name": "Andrej Karpathy", "desc": "OpenAI 创始成员，前 Tesla AI 总监。LLM 入门必看神作，讲解硬核且清晰。", "tags": ["AI", "Code", "LLM"], "link": "https://www.youtube.com/@AndrejKarpathy" },
+    { "name": "跟李沐学AI", "desc": "亚马逊首席科学家，中文世界最好的深度学习课程，逐行读论文。", "tags": ["Deep Learning", "Course"], "link": "https://www.youtube.com/@mu_li" },
+    { "name": "Hung-yi Lee (李宏毅)", "desc": "台大教授，幽默风趣的机器学习宝可梦大师，适合入门到进阶。", "tags": ["ML", "Tutorial", "CN"], "link": "https://www.youtube.com/@HungyiLeeNTU" },
+    { "name": "Jason Liu", "desc": "专注于 AI 工程化与 RAG (检索增强生成) 实战，内容非常硬核且前沿。", "tags": ["RAG", "Engineering"], "link": "https://www.youtube.com/@jxnlco" },
+    { "name": "AI Foundations", "desc": "介绍各种 AI 基础工具、概念科普与实际应用演示。", "tags": ["Tools", "Basics"], "link": "https://www.youtube.com/@AI-Foundations" },
+    { "name": "The AI Daily Brief", "desc": "每日 AI 新闻简报，快速跟进即时行业动态。", "tags": ["News", "Daily"], "link": "https://www.youtube.com/@AIDailyBrief" },
+    { "name": "回到Axton", "desc": "AI 自动化工作流与最新 AI 工具评测，实战性强，注重效率提升。", "tags": ["Workflow", "Tools"], "link": "https://www.youtube.com/@AxtonLiu" },
+    { "name": "Kai博士", "desc": "MIT 资源经济学博士，用数据模型硬核分析社会经济问题与科技趋势。", "tags": ["Data", "Economics"], "link": "https://www.youtube.com/@Kai_PhD" },
+    { "name": "Two Minute Papers", "desc": "两分钟解读最新 AI 论文与图形学黑科技，视觉演示效果震撼。", "tags": ["Research", "Visuals"], "link": "https://www.youtube.com/@TwoMinutePapers" },
+    { "name": "啾啾鞋", "desc": "台湾知名科普 YouTuber，擅长用冷幽默讲解科学冷知识和逻辑思维。", "tags": ["Science", "Logic"], "link": "https://www.youtube.com/@chuchushoe" }
+  ],
+  "business": [
+    { "name": "Lenny's Podcast", "desc": "产品经理圣经。全球顶级 PM 与增长专家的深度访谈，干货极多。", "tags": ["Product", "Growth", "SaaS"], "link": "https://www.youtube.com/@LennysPodcast" },
+    { "name": "硅谷101", "desc": "深度访谈硅谷一线科技与创投人物，高质量中文科技播客。", "tags": ["VC", "Tech", "Interview"], "link": "https://www.youtube.com/@valley101podcast" },
+    { "name": "商业就是这样", "desc": "第一财经/晚点 LatePost 出品，用商业的视角观察生活中的习以为常。", "tags": ["Biz Logic", "Analysis"], "link": "https://www.xiaoyuzhoufm.com/podcast/601f6004cc0f3792c222e5a4" },
+    { "name": "疯投圈", "desc": "投资人视角的创投行业内幕与商业模式分析，深刻犀利。", "tags": ["Venture", "Insight"], "link": "https://www.fengtouquan.com/" },
+    { "name": "海外独角兽", "desc": "深度解析全球前沿科技公司与 AI 趋势，研究报告级别的播客。", "tags": ["Analysis", "Global"], "link": "https://www.xiaoyuzhoufm.com/podcast/61dc055928d1576757d59014" },
+    { "name": "创业内幕", "desc": "GGV 纪源资本出品，访谈一线创业者和投资人。", "tags": ["Startup", "GGV"], "link": "https://www.xiaoyuzhoufm.com/podcast/5e280fab418a84a0461fa348" },
+    { "name": "The MAD Podcast", "desc": "Matt Turck 主理，专注大数据、机器学习与 AI 领域的创投访谈。", "tags": ["Data", "AI", "VC"], "link": "https://www.youtube.com/@DataDrivenNYC" },
+    { "name": "Jeff Su", "desc": "职场生产力工具（Excel, LinkedIn, Gmail）与求职黑客技巧，非常实用。", "tags": ["Productivity", "Career"], "link": "https://www.youtube.com/@JeffSu" },
+    { "name": "Kevin Stratvert", "desc": "前微软员工，提供保姆级的 Microsoft/Windows 软件操作教程。", "tags": ["Tutorial", "Office"], "link": "https://www.youtube.com/@KevinStratvert" },
+    { "name": "Ali Abdaal", "desc": "全球顶流生产力博主，分享高效生活、阅读与被动收入。", "tags": ["Life Hack", "Creator"], "link": "https://www.youtube.com/@aliabdaal" },
+    { "name": "Dan Koe", "desc": "探讨创作者经济、心流与深度工作的哲学思考，视觉风格独特。", "tags": ["Creator", "Mind"], "link": "https://www.youtube.com/@DanKoe" },
+    { "name": "Greg Isenberg", "desc": "专注于社区驱动型商业（Community Based Business）构建指南。", "tags": ["Community", "Niche"], "link": "https://www.youtube.com/@GregIsenberg" },
+    { "name": "Linda Raynier", "desc": "职业规划、面试技巧与职场自信建设，适合求职者。", "tags": ["Career", "Interview"], "link": "https://www.youtube.com/@LindaRaynier" },
+    { "name": "小Lin说", "desc": "用极其通俗有趣的画风讲解复杂的宏观经济和金融危机，非常下饭。", "tags": ["Macro Eco", "Finance"], "link": "https://www.youtube.com/@XiaolinTalks" },
+    { "name": "Tina Huang", "desc": "数据科学家职业路径与学习方法分享，适合想转行 Data 的人。", "tags": ["Data Sci", "Study"], "link": "https://www.youtube.com/@TinaHuang1" }
+  ],
+  "english": [
+    { "name": "Luke's ENGLISH Podcast", "desc": "强烈推荐。由英国老师 Luke 主持，幽默、地道、深度，沉浸式听力。", "tags": ["British", "Fun", "Podcast"], "link": "https://www.youtube.com/@LukesEnglishPodcast" },
+    { "name": "All Ears English", "desc": "主打美式英语，Connection NOT Perfection，氛围轻松活泼。", "tags": ["American", "Culture"], "link": "https://www.youtube.com/@AllEarsEnglishPodcast" },
+    { "name": "Think Fast, Talk Smart", "desc": "斯坦福商学院出品，专注于职场沟通技巧、演讲与表达，非常硬核。", "tags": ["Comm", "Stanford"], "link": "https://www.youtube.com/playlist?list=PL6caGRBUYZCmgDGM2RK6mxKB9jG_ccmm3" },
+    { "name": "English with Lucy", "desc": "画面精美，专注于优雅精致的英式发音与词汇教学。", "tags": ["British", "Pronunciation"], "link": "https://www.youtube.com/@EnglishwithLucy" },
+    { "name": "Rachel's English", "desc": "发音圣经。专注于美式英语发音口型、连读技巧，极为专业。", "tags": ["Pronunciation", "Mouth"], "link": "https://www.youtube.com/@rachelsenglish" },
+    { "name": "英语兔", "desc": "B站/YouTube 知名博主，从语言学底层逻辑解析发音与语法，极其通透。", "tags": ["Logic", "Grammar", "CN"], "link": "https://www.youtube.com/@YingYuTu" },
+    { "name": "BBC Learning English", "desc": "经典的 6 Minute English 出处，适合利用碎片时间磨耳朵。", "tags": ["Daily", "Short"], "link": "https://www.youtube.com/@bbclearningenglish" },
+    { "name": "Speak English with ESLPod", "desc": "慢速英语，老牌经典，适合中级学习者磨耳朵。", "tags": ["Listening", "Slow"], "link": "https://www.youtube.com/@eslpod" },
+    { "name": "English with Cambridge", "desc": "剑桥英语官方频道，内容权威，涵盖考试与日常表达。", "tags": ["Academic", "Exam"], "link": "https://www.youtube.com/@CambridgeEnglishTV" },
+    { "name": "Learn English With TV Series", "desc": "通过流行美剧、电影片段学英语，寓教于乐。", "tags": ["Fun", "TV"], "link": "https://www.youtube.com/@LearnEnglishWithTVSeries" },
+    { "name": "mmmEnglish", "desc": "澳洲口音，实用日常表达与语法，讲解清晰。", "tags": ["Aussie", "Daily"], "link": "https://www.youtube.com/@mmmEnglish" },
+    { "name": "IELTS Liz", "desc": "雅思备考权威技巧分享，适合考生。", "tags": ["IELTS", "Exam"], "link": "https://www.youtube.com/@iaborat" }
+  ],
+  "culture": [
+    { "name": "Lex Fridman", "desc": "硬核访谈。对话全球顶尖科学家、思想家，每期时长极长但深度极深。", "tags": ["Deep Dive", "Philosophy"], "link": "https://www.youtube.com/@lexfridman" },
+    { "name": "Naval / The Almanack", "desc": "硅谷哲学家 Naval Ravikant 的财富与幸福智慧（推荐阅读《纳瓦尔宝典》）。", "tags": ["Wisdom", "Wealth"], "link": "https://www.youtube.com/@naval" },
+    { "name": "This American Life", "desc": "美国国民级播客，叙事新闻的巅峰，讲述真实动人的美国故事。", "tags": ["Story", "Journalism"], "link": "https://www.youtube.com/@this-american-life" },
+    { "name": "纵横四海", "desc": "携隐 Melody 主理，通过读书与思考探索人生认知边界，内容极具力量感。", "tags": ["Cognition", "Books"], "link": "https://www.xiaoyuzhoufm.com/podcast/624bc68846c48316e6378e9f" },
+    { "name": "文化有限", "desc": "三位主播共同推荐好书，氛围像老友聊天，轻松中有深度。", "tags": ["Books", "Relax"], "link": "https://www.xiaoyuzhoufm.com/podcast/5e280fb5418a84a0461fc1f4" },
+    { "name": "东腔西调", "desc": "探讨文化与社会议题，视角独特，提供意想不到的切入点。", "tags": ["Society", "Culture"], "link": "https://www.xiaoyuzhoufm.com/podcast/5e5b7e8d418a84a046b088b4" },
+    { "name": "Modern Love", "desc": "纽约时报出品，由明星朗读读者的真实爱情故事，温暖治愈。", "tags": ["Love", "Emotion"], "link": "https://www.nytimes.com/column/modern-love-podcast" },
+    { "name": "TED / TED-Ed", "desc": "传播有价值的思想，涵盖各个领域，TED-Ed 为动画版。", "tags": ["Ideas", "Animation"], "link": "https://www.youtube.com/@TED" },
+    { "name": "Life Kit", "desc": "NPR 出品的生活指南，提供实用的生活建议（如理财、健康）。", "tags": ["Guide", "NPR"], "link": "https://www.npr.org/lifekit" },
+    { "name": "老高與小茉", "desc": "顶流传说。讲述都市传说、宇宙奥秘，不仅是科普更是睡前故事会。", "tags": ["Mystery", "Story"], "link": "https://www.youtube.com/@MrandMrsGao" },
+    { "name": "脑洞乌托邦", "desc": "著名谜案与未解之谜解说频道，小乌的讲述风格非常有沉浸感。", "tags": ["Crime", "Mystery"], "link": "https://www.youtube.com/@NDWTB" },
+    { "name": "Better Leaf 好葉", "desc": "个人成长与心理学动画频道，每天一点正能量。", "tags": ["Psych", "Growth"], "link": "https://www.youtube.com/@BetterLeaf" },
+    { "name": "StoryCorps", "desc": "记录普通人的真实对话与故事，往往感人至深。", "tags": ["Humanity", "Real"], "link": "https://www.youtube.com/@storycorps" },
+    { "name": "岩中花述", "desc": "时尚与文化类播客，探讨女性成长与生活方式。", "tags": ["Female", "Style"], "link": "https://www.xiaoyuzhoufm.com/podcast/637f2d3e09880624867c2691" },
+    { "name": "天真不天真", "desc": "杨天真的频道，分享职场自信、人际关系与通透的人生态度。", "tags": ["Life View", "Work"], "link": "https://www.youtube.com/@YangTianzhenOfficial" }
+  ]
+}
+

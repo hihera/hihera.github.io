@@ -1,0 +1,33 @@
+[
+  {
+    "year": "2024",
+    "items": [
+      {
+        "id": "a-01",
+        "title": "崇礼168越野赛完赛记录",
+        "type": "Race",
+        "link": "#",
+        "date": "2024-07-15"
+      },
+      {
+        "id": "a-02",
+        "title": "AI Agent 落地实践分享 PPT",
+        "type": "Talk",
+        "link": "assets/files/agent-talk.pdf",
+        "date": "2024-06-20"
+      }
+    ]
+  },
+  {
+    "year": "2023",
+    "items": [
+      {
+        "id": "a-03",
+        "title": "年度阅读书单 Top 10",
+        "type": "Reading",
+        "link": "#",
+        "date": "2023-12-31"
+      }
+    ]
+  }
+]

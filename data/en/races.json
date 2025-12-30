@@ -1,0 +1,115 @@
+{
+  "races": [
+    {
+      "id": "race-01",
+      "title": "Chongli 168 Ultra Trail",
+      "category": "50KM Ultra",
+      "date": "2024-07",
+      "result": "Finisher",
+      "image_placeholder": "assets/races/chongli168-start.jpg",
+      "images": ["assets/races/chongli168-start.jpg", "assets/races/chongli168-trail.jpg", "assets/races/chongli168-finish.jpg", "assets/races/chongli168-map.png"],
+      "desc": "Hearing the wind on the ridge at 2000m altitude. Trail running is not just a physical challenge, but a conversation with oneself.",
+      "tags": ["Hardcore", "MGC", "Flow"]
+    },
+    {
+      "id": "race-02",
+      "title": "Asia Desert Challenge",
+      "category": "70KM Desert",
+      "date": "2023-10",
+      "result": "Gold Medal",
+      "image_placeholder": "assets/races/yasha-start.jpg",
+      "images": ["assets/races/yasha-start.jpg", "assets/races/yasha-camp.jpg", "assets/races/yasha-team.jpg", "assets/races/yasha-dune.jpg"],
+      "desc": "Three days and two nights in Tengger Desert. Fighting alongside teammates, feeling the power of team under dunes and stars.",
+      "tags": ["Team", "Desert", "Willpower"]
+    },
+    {
+      "id": "race-03",
+      "title": "Moganshan Trail Run",
+      "category": "30KM Trail",
+      "date": "2023-04",
+      "result": "Finisher",
+      "image_placeholder": "assets/races/moganshan-bamboo.jpg",
+      "images": ["assets/races/moganshan-bamboo.jpg", "assets/races/moganshan-trail.jpg", "assets/races/moganshan-runner.jpg"],
+      "desc": "Running through bamboo seas and muddy trails. Every step is uncertain, but every step counts. Just like building products.",
+      "tags": ["Bamboo Sea", "Technical", "Team Building"]
+    },
+    {
+      "id": "race-04",
+      "title": "Wutaishan Hiking",
+      "category": "40KM Trail",
+      "date": "2023-06",
+      "result": "Finisher",
+      "image_placeholder": "assets/races/wutaishan-mountain.jpg",
+      "images": ["assets/races/wutaishan-mountain.jpg", "assets/races/wutaishan-temple.jpg", "assets/races/wutaishan-trail.jpg"],
+      "desc": "At the Buddhist holy mountain Wutaishan, feeling the power of faith and nature. Every step filled with sacredness.",
+      "tags": ["Sacred", "Mountain", "Spiritual"]
+    },
+    {
+      "id": "race-05",
+      "title": "Siguniang Mountain",
+      "category": "5276m Altitude",
+      "date": "2023-09",
+      "result": "Finisher",
+      "image_placeholder": "assets/races/siguniang-mountain.jpg",
+      "images": ["assets/races/siguniang-mountain.jpg", "assets/races/siguniang-trail.jpg", "assets/races/siguniang-camp.jpg", "assets/races/siguniang-runner.jpg"],
+      "desc": "Running at the foot of Siguniang Mountain, feeling the majesty of snow peaks and the charm of the plateau.",
+      "tags": ["Snow Peak", "Plateau", "Majestic"]
+    },
+    {
+      "id": "race-06",
+      "title": "Sailing Challenge",
+      "category": "Sailing",
+      "date": "2024-05",
+      "result": "Participant",
+      "image_placeholder": "assets/races/sailing-boat.jpg",
+      "images": ["assets/races/sailing-boat.jpg", "assets/races/sailing-race.jpg", "assets/races/sailing-sunset.jpg"],
+      "desc": "Sailing on the sea, feeling the breeze and waves, experiencing intimate contact with the ocean.",
+      "tags": ["Ocean", "Sailing", "Adventure"]
+    },
+    {
+      "id": "race-08",
+      "title": "Spotlight Event",
+      "category": "Event",
+      "date": "2024-03",
+      "result": "Participant",
+      "image_placeholder": "assets/races/spotlight-event.jpg",
+      "images": ["assets/races/spotlight-event.jpg", "assets/races/spotlight-team.jpg", "assets/races/spotlight-speaker.jpg", "assets/races/spotlight-audience.jpg"],
+      "desc": "Joining the Spotlight event, exchanging ideas with elites from various industries, sharing experiences and thoughts.",
+      "tags": ["Networking", "Learning", "Social"]
+    },
+    {
+      "id": "race-09",
+      "title": "Creative Running Art",
+      "category": "Fun Run",
+      "date": "2024-02",
+      "result": "Creativity Award",
+      "image_placeholder": "assets/races/running-2024.jpg",
+      "images": ["assets/races/running-2024.jpg", "assets/races/running-map.jpg", "assets/races/running-rose.jpg", "assets/races/running-tiger.jpg"],
+      "desc": "Drawing creative text and patterns with running tracks, perfectly combining sports and art.",
+      "tags": ["Creative", "Art", "Fun"]
+    },
+    {
+      "id": "race-10",
+      "title": "Great Wall Trail Run",
+      "category": "25KM Trail",
+      "date": "2023-11",
+      "result": "Finisher",
+      "image_placeholder": "assets/races/greatwall-running.jpg",
+      "images": ["assets/races/greatwall-running.jpg", "assets/races/greatwall-view.jpg", "assets/races/greatwall-group.jpg"],
+      "desc": "Running on the Great Wall, feeling the weight of history and the majesty of nature. A unique trail running experience.",
+      "tags": ["Great Wall", "History", "Majestic"]
+    },
+    {
+      "id": "race-11",
+      "title": "Xiong'an Marathon",
+      "category": "42.195 KM",
+      "date": "2024-04",
+      "result": "Finisher",
+      "image_placeholder": "assets/races/xiongan-start.jpg",
+      "images": ["assets/races/xiongan-start.jpg", "assets/races/xiongan-runner.jpg"],
+      "desc": "Participating in Xiong'an Marathon, feeling the vitality and charm of this future city.",
+      "tags": ["Marathon", "City", "Future"]
+    }
+  ]
+}
+

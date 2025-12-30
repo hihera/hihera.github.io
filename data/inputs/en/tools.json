@@ -1,0 +1,17 @@
+[
+  { "name": "ChatGPT", "desc": "OpenAI's landmark LLM. First choice for Q&A, coding assistance, creative writing.", "tags": ["AI", "LLM"], "link": "https://chat.openai.com/" },
+  { "name": "Claude", "desc": "By Anthropic. Excels at long-text analysis, coding. More natural language style.", "tags": ["AI", "LLM"], "link": "https://claude.ai/" },
+  { "name": "Perplexity", "desc": "AI-powered search engine. The best tool for finding accurate info with citations.", "tags": ["AI", "Search"], "link": "https://www.perplexity.ai/" },
+  { "name": "Midjourney", "desc": "Currently the most powerful AI art tool. Great for creative inspiration.", "tags": ["AI", "Image"], "link": "https://www.midjourney.com/" },
+  { "name": "Notion", "desc": "All-in-one notes and knowledge base. Core system for building your second brain.", "tags": ["PKM", "Notes"], "link": "https://www.notion.so/" },
+  { "name": "Obsidian", "desc": "Local-first, bi-directional linking knowledge management. Perfect for Zettelkasten.", "tags": ["PKM", "Local"], "link": "https://obsidian.md/" },
+  { "name": "Readwise", "desc": "Read-later and highlight aggregation. Integrating fragmented reading into your notes.", "tags": ["Reading", "PKM"], "link": "https://readwise.io/" },
+  { "name": "Product Hunt", "desc": "Best product discovery community. Daily new tech products and ideas.", "tags": ["Discovery", "Tech"], "link": "https://www.producthunt.com/" },
+  { "name": "Hacker News", "desc": "Y Combinator's tech news aggregator. High-quality geek discussion community.", "tags": ["News", "Tech"], "link": "https://news.ycombinator.com/" },
+  { "name": "arXiv", "desc": "Cornell University's academic preprint database. Track latest AI and CS papers.", "tags": ["Research", "Paper"], "link": "https://arxiv.org/" },
+  { "name": "Papers with Code", "desc": "Combining papers with code implementations. Essential for ML researchers.", "tags": ["ML", "Code"], "link": "https://paperswithcode.com/" },
+  { "name": "Medium", "desc": "Quality long-form reading platform. Deep content on tech, design, culture.", "tags": ["Reading", "Blog"], "link": "https://medium.com/" },
+  { "name": "Substack", "desc": "Independent creator newsletter platform. Subscribe to expert insights.", "tags": ["Newsletter"], "link": "https://substack.com/" },
+  { "name": "GitHub Trending", "desc": "View hottest open source projects. Stay current with dev trends.", "tags": ["Code", "OSS"], "link": "https://github.com/trending" }
+]
+

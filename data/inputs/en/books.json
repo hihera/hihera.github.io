@@ -1,0 +1,13 @@
+[
+  { "name": "The Almanack of Naval Ravikant", "desc": "Naval's wisdom on wealth and happiness. Every word is gold.", "tags": ["Wisdom", "Wealth", "Life"], "link": "#" },
+  { "name": "Poor Charlie's Almanack", "desc": "Charlie Munger's speeches and essays. Emphasizes multi-disciplinary mental models.", "tags": ["Investing", "Mental Models"], "link": "#" },
+  { "name": "Atomic Habits", "desc": "Practical guide to habit change. Small changes compound into huge results.", "tags": ["Growth", "Habits"], "link": "#" },
+  { "name": "Thinking, Fast and Slow", "desc": "Nobel laureate reveals two thinking systems. Essential for better decision-making.", "tags": ["Psychology", "Cognition"], "link": "#" },
+  { "name": "Hackers & Painters", "desc": "Paul Graham's essays on tech, startups, and the nature of wealth.", "tags": ["Tech", "Startup", "Essay"], "link": "#" },
+  { "name": "Zero to One", "desc": "Peter Thiel on startups and the future. Monopoly and innovation insights.", "tags": ["Startup", "Business"], "link": "#" },
+  { "name": "Principles", "desc": "Ray Dalio's life and work principles. A systematic algorithm for life.", "tags": ["Management", "Life"], "link": "#" },
+  { "name": "Antifragile", "desc": "How to benefit from uncertainty. Building adaptive and evolutionary capabilities.", "tags": ["Philosophy", "Risk"], "link": "#" },
+  { "name": "The Inevitable", "desc": "Kevin Kelly's predictions for the next 30 years of tech trends.", "tags": ["Future", "Tech"], "link": "#" },
+  { "name": "Deep Work", "desc": "How to stay focused in a fragmented era. Creating core value through deep work.", "tags": ["Productivity", "Focus"], "link": "#" }
+]
+

@@ -1,0 +1,63 @@
+{
+  "ai_tech": [
+    { "name": "Andrej Karpathy", "desc": "OpenAI co-founder, ex-Tesla AI Director. Must-watch LLM masterclass, clear and hardcore.", "tags": ["AI", "Code", "LLM"], "link": "https://www.youtube.com/@AndrejKarpathy" },
+    { "name": "Mu Li (d2l.ai)", "desc": "Amazon Chief Scientist. Best deep learning course, line-by-line paper reading.", "tags": ["Deep Learning", "Course"], "link": "https://www.youtube.com/@mu_li" },
+    { "name": "Hung-yi Lee", "desc": "NTU Professor. The humorous ML 'Pokemon Master', great for beginners to advanced.", "tags": ["ML", "Tutorial", "CN"], "link": "https://www.youtube.com/@HungyiLeeNTU" },
+    { "name": "Jason Liu", "desc": "Focused on AI engineering and RAG implementation. Very hardcore and cutting-edge.", "tags": ["RAG", "Engineering"], "link": "https://www.youtube.com/@jxnlco" },
+    { "name": "AI Foundations", "desc": "Introduction to AI tools, concepts, and practical application demos.", "tags": ["Tools", "Basics"], "link": "https://www.youtube.com/@AI-Foundations" },
+    { "name": "The AI Daily Brief", "desc": "Daily AI news briefing. Stay updated with industry trends.", "tags": ["News", "Daily"], "link": "https://www.youtube.com/@AIDailyBrief" },
+    { "name": "Back to Axton", "desc": "AI automation workflows and latest AI tool reviews. Practical and efficiency-focused.", "tags": ["Workflow", "Tools"], "link": "https://www.youtube.com/@AxtonLiu" },
+    { "name": "Dr. Kai", "desc": "MIT Resource Economics PhD. Hardcore data-driven analysis of socioeconomic issues.", "tags": ["Data", "Economics"], "link": "https://www.youtube.com/@Kai_PhD" },
+    { "name": "Two Minute Papers", "desc": "Two-minute breakdowns of latest AI papers and graphics tech. Stunning visual demos.", "tags": ["Research", "Visuals"], "link": "https://www.youtube.com/@TwoMinutePapers" },
+    { "name": "ChuChuShoe", "desc": "Famous Taiwanese science YouTuber. Cold humor explaining science and logic.", "tags": ["Science", "Logic"], "link": "https://www.youtube.com/@chuchushoe" }
+  ],
+  "business": [
+    { "name": "Lenny's Podcast", "desc": "The PM Bible. In-depth interviews with top PMs and growth experts.", "tags": ["Product", "Growth", "SaaS"], "link": "https://www.youtube.com/@LennysPodcast" },
+    { "name": "Silicon Valley 101", "desc": "Deep interviews with Silicon Valley tech and VC insiders. High-quality Chinese tech podcast.", "tags": ["VC", "Tech", "Interview"], "link": "https://www.youtube.com/@valley101podcast" },
+    { "name": "Business is This Way", "desc": "From Yicai/LatePost. Observing everyday life through a business lens.", "tags": ["Biz Logic", "Analysis"], "link": "https://www.xiaoyuzhoufm.com/podcast/601f6004cc0f3792c222e5a4" },
+    { "name": "Crazy VC Circle", "desc": "VC perspective on startup industry secrets and business model analysis.", "tags": ["Venture", "Insight"], "link": "https://www.fengtouquan.com/" },
+    { "name": "Overseas Unicorn", "desc": "In-depth analysis of global cutting-edge tech companies and AI trends.", "tags": ["Analysis", "Global"], "link": "https://www.xiaoyuzhoufm.com/podcast/61dc055928d1576757d59014" },
+    { "name": "Startup Insider", "desc": "By GGV Capital. Interviews with frontline founders and investors.", "tags": ["Startup", "GGV"], "link": "https://www.xiaoyuzhoufm.com/podcast/5e280fab418a84a0461fa348" },
+    { "name": "The MAD Podcast", "desc": "By Matt Turck. Focus on big data, ML, and AI venture interviews.", "tags": ["Data", "AI", "VC"], "link": "https://www.youtube.com/@DataDrivenNYC" },
+    { "name": "Jeff Su", "desc": "Productivity tools (Excel, LinkedIn, Gmail) and career hacks. Very practical.", "tags": ["Productivity", "Career"], "link": "https://www.youtube.com/@JeffSu" },
+    { "name": "Kevin Stratvert", "desc": "Ex-Microsoft employee. Step-by-step Microsoft/Windows software tutorials.", "tags": ["Tutorial", "Office"], "link": "https://www.youtube.com/@KevinStratvert" },
+    { "name": "Ali Abdaal", "desc": "Top global productivity YouTuber. Efficient living, reading, and passive income.", "tags": ["Life Hack", "Creator"], "link": "https://www.youtube.com/@aliabdaal" },
+    { "name": "Dan Koe", "desc": "Exploring creator economy, flow state, and deep work philosophy.", "tags": ["Creator", "Mind"], "link": "https://www.youtube.com/@DanKoe" },
+    { "name": "Greg Isenberg", "desc": "Guide to building Community-Based Businesses.", "tags": ["Community", "Niche"], "link": "https://www.youtube.com/@GregIsenberg" },
+    { "name": "Linda Raynier", "desc": "Career planning, interview skills, and workplace confidence. Great for job seekers.", "tags": ["Career", "Interview"], "link": "https://www.youtube.com/@LindaRaynier" },
+    { "name": "Xiaolin Talks", "desc": "Complex macroeconomics and financial crises explained in a fun, engaging way.", "tags": ["Macro Eco", "Finance"], "link": "https://www.youtube.com/@XiaolinTalks" },
+    { "name": "Tina Huang", "desc": "Data scientist career path and study methods. Great for career changers.", "tags": ["Data Sci", "Study"], "link": "https://www.youtube.com/@TinaHuang1" }
+  ],
+  "english": [
+    { "name": "Luke's ENGLISH Podcast", "desc": "Highly recommended. British teacher Luke hosts with humor, authenticity, and depth.", "tags": ["British", "Fun", "Podcast"], "link": "https://www.youtube.com/@LukesEnglishPodcast" },
+    { "name": "All Ears English", "desc": "American English focus. Connection NOT Perfection. Relaxed and lively atmosphere.", "tags": ["American", "Culture"], "link": "https://www.youtube.com/@AllEarsEnglishPodcast" },
+    { "name": "Think Fast, Talk Smart", "desc": "Stanford Business School production. Workplace communication skills and public speaking.", "tags": ["Comm", "Stanford"], "link": "https://www.youtube.com/playlist?list=PL6caGRBUYZCmgDGM2RK6mxKB9jG_ccmm3" },
+    { "name": "English with Lucy", "desc": "Beautiful visuals. Focus on elegant British pronunciation and vocabulary.", "tags": ["British", "Pronunciation"], "link": "https://www.youtube.com/@EnglishwithLucy" },
+    { "name": "Rachel's English", "desc": "Pronunciation bible. Focus on American English mouth positions and linking sounds.", "tags": ["Pronunciation", "Mouth"], "link": "https://www.youtube.com/@rachelsenglish" },
+    { "name": "English Rabbit", "desc": "Famous Bilibili/YouTube creator. Explains pronunciation and grammar from linguistic fundamentals.", "tags": ["Logic", "Grammar", "CN"], "link": "https://www.youtube.com/@YingYuTu" },
+    { "name": "BBC Learning English", "desc": "Home of classic 6 Minute English. Perfect for using spare time to train your ears.", "tags": ["Daily", "Short"], "link": "https://www.youtube.com/@bbclearningenglish" },
+    { "name": "Speak English with ESLPod", "desc": "Slow-paced English. Classic and time-tested, great for intermediate learners.", "tags": ["Listening", "Slow"], "link": "https://www.youtube.com/@eslpod" },
+    { "name": "English with Cambridge", "desc": "Official Cambridge English channel. Authoritative content covering exams and daily expressions.", "tags": ["Academic", "Exam"], "link": "https://www.youtube.com/@CambridgeEnglishTV" },
+    { "name": "Learn English With TV Series", "desc": "Learn English through popular TV shows and movie clips. Entertaining and educational.", "tags": ["Fun", "TV"], "link": "https://www.youtube.com/@LearnEnglishWithTVSeries" },
+    { "name": "mmmEnglish", "desc": "Australian accent. Practical daily expressions and grammar, clear explanations.", "tags": ["Aussie", "Daily"], "link": "https://www.youtube.com/@mmmEnglish" },
+    { "name": "IELTS Liz", "desc": "Authoritative IELTS prep tips. Perfect for test-takers.", "tags": ["IELTS", "Exam"], "link": "https://www.youtube.com/@iaborat" }
+  ],
+  "culture": [
+    { "name": "Lex Fridman", "desc": "Hardcore interviews. Conversations with world's top scientists and thinkers. Long but deep.", "tags": ["Deep Dive", "Philosophy"], "link": "https://www.youtube.com/@lexfridman" },
+    { "name": "Naval / The Almanack", "desc": "Silicon Valley philosopher Naval Ravikant's wisdom on wealth and happiness.", "tags": ["Wisdom", "Wealth"], "link": "https://www.youtube.com/@naval" },
+    { "name": "This American Life", "desc": "National-level American podcast. The pinnacle of narrative journalism.", "tags": ["Story", "Journalism"], "link": "https://www.youtube.com/@this-american-life" },
+    { "name": "Cross Four Seas", "desc": "Hosted by Melody. Exploring cognitive boundaries through reading and thinking.", "tags": ["Cognition", "Books"], "link": "https://www.xiaoyuzhoufm.com/podcast/624bc68846c48316e6378e9f" },
+    { "name": "Culture Limited", "desc": "Three hosts recommending great books. Like chatting with old friends.", "tags": ["Books", "Relax"], "link": "https://www.xiaoyuzhoufm.com/podcast/5e280fb5418a84a0461fc1f4" },
+    { "name": "East West Tune", "desc": "Exploring culture and society topics with unique perspectives.", "tags": ["Society", "Culture"], "link": "https://www.xiaoyuzhoufm.com/podcast/5e5b7e8d418a84a046b088b4" },
+    { "name": "Modern Love", "desc": "By NY Times. Stars reading real readers' love stories. Warm and healing.", "tags": ["Love", "Emotion"], "link": "https://www.nytimes.com/column/modern-love-podcast" },
+    { "name": "TED / TED-Ed", "desc": "Spreading ideas worth spreading. TED-Ed is the animated version.", "tags": ["Ideas", "Animation"], "link": "https://www.youtube.com/@TED" },
+    { "name": "Life Kit", "desc": "NPR's life guide. Practical advice on finance, health, and more.", "tags": ["Guide", "NPR"], "link": "https://www.npr.org/lifekit" },
+    { "name": "Mr. & Mrs. Gao", "desc": "Top legend. Urban legends and cosmic mysteries. More than science, it's bedtime stories.", "tags": ["Mystery", "Story"], "link": "https://www.youtube.com/@MrandMrsGao" },
+    { "name": "Brainstorm Utopia", "desc": "Famous mystery and unsolved case channel. Immersive storytelling style.", "tags": ["Crime", "Mystery"], "link": "https://www.youtube.com/@NDWTB" },
+    { "name": "Better Leaf", "desc": "Personal growth and psychology animation channel. Daily positive energy.", "tags": ["Psych", "Growth"], "link": "https://www.youtube.com/@BetterLeaf" },
+    { "name": "StoryCorps", "desc": "Recording real conversations and stories of ordinary people. Often deeply moving.", "tags": ["Humanity", "Real"], "link": "https://www.youtube.com/@storycorps" },
+    { "name": "Rock Flower Talk", "desc": "Fashion and culture podcast exploring women's growth and lifestyle.", "tags": ["Female", "Style"], "link": "https://www.xiaoyuzhoufm.com/podcast/637f2d3e09880624867c2691" },
+    { "name": "Naive or Not", "desc": "Yang Tianzhen's channel. Workplace confidence, relationships, and life philosophy.", "tags": ["Life View", "Work"], "link": "https://www.youtube.com/@YangTianzhenOfficial" }
+  ]
+}
+

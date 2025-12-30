@@ -1,0 +1,68 @@
+{
+  "list": [
+    {
+      "id": "proj-01",
+      "title": "Winter Olympics: AI Curling",
+      "role": "National Project",
+      "image": "assets/projects/olympics-curling.jpg",
+      "image_text": "OLYMPICS",
+      "desc": "Built the world's first AI visual tracking system for the 2022 Winter Olympics. 3.3cm positioning accuracy - the pursuit of perfection.",
+      "tech": ["Tech", "AR Live", "Edge Computing"]
+    },
+    {
+      "id": "proj-02",
+      "title": "HK Jockey Club: Digital Transformation",
+      "role": "Flagship Case",
+      "image": "assets/projects/hkjc-smart-retail.png",
+      "image_text": "HKJC",
+      "desc": "Digitized 101 stores across Hong Kong with 600+ cameras. Helping a century-old institution understand every customer's journey.",
+      "tech": ["Digital Transformation", "SaaS", "ReID"]
+    },
+    {
+      "id": "proj-03",
+      "title": "USEN Japan: Smart Retail",
+      "role": "Global Delivery",
+      "image": "assets/projects/usen-retail.jpg",
+      "image_text": "USEN",
+      "desc": "Exporting AI capabilities to Japanese retail: personalized in-store music recommendations. Efficiency is a universal language.",
+      "tech": ["AIoT", "International", "Retail"]
+    },
+    {
+      "id": "proj-04",
+      "title": "Chenghuang Smart Medical",
+      "role": "Startup Project",
+      "image": "assets/projects/healthcare-agent.png",
+      "image_text": "HEALTH",
+      "desc": "Using Multi-Agent architecture to connect medical and elderly care services. Giving caregivers expert knowledge, giving seniors dignity.",
+      "tech": ["LLM", "Agent", "Python"]
+    },
+    {
+      "id": "proj-05",
+      "title": "COMAC: Smart Factory",
+      "role": "High-end Manufacturing",
+      "image": "assets/projects/comac-factory.jpg",
+      "image_text": "COMAC",
+      "desc": "Building edge-cloud collaborative digital twin platform in aircraft manufacturing workshops. ±50cm precision positioning for national aviation.",
+      "tech": ["Digital Twin", "Edge Computing", "Industrial IoT"]
+    },
+    {
+      "id": "proj-06",
+      "title": "Gaosi Education: Smart Class",
+      "role": "AI + Education",
+      "image": "assets/projects/gaosi-education.jpg",
+      "image_text": "GAOSI",
+      "desc": "Using computer vision to quantify teaching process. Making data the teacher's eyes to see every student's growth.",
+      "tech": ["Computer Vision", "Education SaaS", "AIoT"]
+    },
+    {
+      "id": "proj-07",
+      "title": "HK Sun Hung Kai: Smart Mall",
+      "role": "Commercial Real Estate",
+      "image": "assets/projects/shkp-smart-mall.png",
+      "image_text": "SHKP",
+      "desc": "Deploying AI Box edge devices for real-time perception and analysis in shopping malls. Data-driven business decisions.",
+      "tech": ["Edge-Cloud Architecture", "AI Box", "Smart Retail"]
+    }
+  ]
+}
+

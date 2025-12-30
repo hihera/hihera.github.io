@@ -1,0 +1,13 @@
+[
+  { "name": "纳瓦尔宝典", "desc": "硅谷知名投资人 Naval 关于财富与幸福的智慧语录，字字珠玑。", "tags": ["Wisdom", "Wealth", "Life"], "link": "#" },
+  { "name": "穷查理宝典", "desc": "巴菲特合伙人查理·芒格的演讲与文章汇编，强调多元思维模型。", "tags": ["Investing", "Mental Models"], "link": "#" },
+  { "name": "原子习惯", "desc": "改变习惯的实操指南，教你通过细微的改变获得巨大的复利效应。", "tags": ["Growth", "Habits"], "link": "#" },
+  { "name": "思考，快与慢", "desc": "诺奖得主揭示人类大脑的两套思维系统，提升决策质量的必读经典。", "tags": ["Psychology", "Cognition"], "link": "#" },
+  { "name": "黑客与画家", "desc": "硅谷创业教父 Paul Graham 的文集，探讨技术、创业与财富的本质。", "tags": ["Tech", "Startup", "Essay"], "link": "#" },
+  { "name": "从 0 到 1", "desc": "PayPal 创始人关于创业与未来的深刻洞见，强调垄断与创新的重要性。", "tags": ["Startup", "Business"], "link": "#" },
+  { "name": "原则", "desc": "桥水基金创始人瑞·达利欧的生活与工作原则，系统化的人生算法。", "tags": ["Management", "Life"], "link": "#" },
+  { "name": "反脆弱", "desc": "讨论如何在不确定性中获益，建立强大的适应与进化能力。", "tags": ["Philosophy", "Risk"], "link": "#" },
+  { "name": "必然", "desc": "凯文·凯利对未来 30 年科技趋势的预言，理解科技发展的底层逻辑。", "tags": ["Future", "Tech"], "link": "#" },
+  { "name": "深度工作", "desc": "在碎片化时代如何保持专注，通过深度工作创造核心价值。", "tags": ["Productivity", "Focus"], "link": "#" }
+]
+

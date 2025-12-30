@@ -1,0 +1,1507 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hera's Digital Space</title>
+    
+    <!-- 1. 引入 Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
+    
+    <!-- 2. 引入 React 相关库 -->
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <!-- 3. 引入 Marked.js 用于解析 Markdown -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <!-- 4. 引入 js-yaml 用于解析 Front Matter -->
+    <script src="https://cdn.jsdelivr.net/npm/js-yaml/dist/js-yaml.min.js"></script>
+
+    <style>
+        /* 隐藏滚动条 */
+        .hide-scrollbar::-webkit-scrollbar { display: none; }
+        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        /* 自定义滚动条 */
+        .custom-scrollbar::-webkit-scrollbar { height: 12px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: #f0f0f0; border-top: 2px solid black; border-bottom: 2px solid black; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: black; border: 2px solid black; }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #a3e635; }
+
+        /* 动画定义 */
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        @keyframes scrollLeft { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+        @keyframes glitch { 
+            0% { transform: translate(0) } 
+            20% { transform: translate(-2px, 2px) } 
+            40% { transform: translate(-2px, -2px) } 
+            60% { transform: translate(2px, 2px) } 
+            80% { transform: translate(2px, -2px) } 
+            100% { transform: translate(0) } 
+        }
+
+        .animate-fade-in-up { animation: fadeInUp 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards; opacity: 0; }
+        .glitch-hover:hover { animation: glitch 0.3s cubic-bezier(.25, .46, .45, .94) both infinite; }
+        .animate-marquee { animation: scrollLeft 20s linear infinite; }
+
+        /* 关键词高亮 (荧光笔效果) */
+        .highlight-text {
+            background: linear-gradient(120deg, #a3e635 0%, #a3e635 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 40%;
+            background-position: 0 88%;
+            transition: background-size 0.25s ease-in;
+            padding: 0 2px;
+            font-weight: 900;
+            color: black;
+        }
+        .highlight-text:hover { background-size: 100% 100%; }
+
+        .gallery-track { display: flex; width: max-content; animation: scrollLeft 60s linear infinite; }
+        .gallery-container:hover .gallery-track { animation-play-state: paused; }
+
+        /* Markdown 文章内容样式增强 */
+        .prose hr {
+            border: none;
+            border-top: 2px dashed #d1d5db;
+            margin: 2rem 0;
+        }
+        .prose table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1.5rem 0;
+            font-size: 0.95rem;
+        }
+        .prose table th {
+            background: #f3f4f6;
+            font-weight: 700;
+            text-align: left;
+        }
+        .prose table td, .prose table th {
+            border: 1px solid #e5e7eb;
+            padding: 0.75rem 1rem;
+        }
+        .prose table tr:hover {
+            background: #f9fafb;
+        }
+        .prose blockquote {
+            border-left: 4px solid #a3e635;
+            background: #f9fafb;
+            padding: 1rem 1.25rem;
+            margin: 1.5rem 0;
+            font-style: normal;
+        }
+        .prose blockquote p {
+            margin: 0;
+        }
+        .prose ul, .prose ol {
+            padding-left: 1.5rem;
+            margin: 1rem 0;
+        }
+        .prose li {
+            margin: 0.5rem 0;
+        }
+        .prose h2 {
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 0.5rem;
+        }
+        .prose img {
+            border-radius: 8px;
+            margin: 1.5rem 0;
+        }
+        .prose code:not(pre code) {
+            background: #f3f4f6;
+            padding: 0.2rem 0.4rem;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+        .prose pre {
+            background: #1f2937;
+            border-radius: 8px;
+            padding: 1rem;
+            overflow-x: auto;
+        }
+        .prose pre code {
+            background: transparent;
+            padding: 0;
+        }
+    </style>
+</head>
+<body class="bg-[#f0f0f0] font-sans text-black selection:bg-[#a3e635]">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useRef, createElement } = React;
+
+        // ==========================================
+        // 🛠️ 静态图标库 (SVG Hardcoded)
+        // 彻底解决图标库加载报错问题
+        // ==========================================
+        const ICONS = {
+            arrowLeft: <path d="M19 12H5M12 19l-7-7 7-7" />,
+            arrowRight: <path d="M5 12h14M12 5l7 7-7 7" />,
+            x: <g><path d="M18 6 6 18"/><path d="m6 6 12 12"/></g>,
+            star: <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>,
+            play: <polygon points="5 3 19 12 5 21 5 3"/>,
+            languages: <g><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></g>,
+            sparkles: <g><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275-1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/><path d="M5 3v4"/><path d="M9 3v4"/><path d="M3 9h4"/><path d="M3 5h4"/></g>,
+            zap: <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>,
+            calendar: <g><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></g>,
+            tag: <g><path d="M12 2H2v10l9.29 9.29c.94.94 2.48.94 3.42 0l6.58-6.58c.94-.94.94-2.48 0-3.42L12 2Z"/><path d="M7 7h.01"/></g>,
+            quote: <g><path d="M3 21c3 0 7-1 7-8V5c0-1.25-.756-2.017-2-2H4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/><path d="M15 21c3 0 7-1 7-8V5c0-1.25-.757-2.017-2-2h-4c-1.25 0-2 .75-2 1.972V11c0 1.25.75 2 2 2 1 0 1 0 1 1v1c0 1-1 2-2 2s-1 .008-1 1.031V20c0 1 0 1 1 1z"/></g>,
+            footprints: <g><path d="M4 16v-2.38C4 11.5 2.97 10.5 3 8c.03-2.72 1.49-6 4.5-6C9.37 2 11 3.8 11 8c0 1.25-.76 2.08-1.5 2.75-.75.67-1.96.84-2.03 1.9-.07 1.04.54 3.05 1.53 4.35"/><path d="M20 20v-2.38c0-2.12 1.03-3.12 1-5.62-.03-2.72-1.49-6-4.5-6C14.63 6 13 7.8 13 12c0 1.25.76 2.08 1.5 2.75.75.67 1.96.84 2.03 1.9.07 1.04-.54 3.05-1.53 4.35"/></g>,
+            wifiOff: <g><line x1="2" y1="2" x2="22" y2="22"/><path d="M8.5 16.5a5 5 0 0 1 7 0"/><path d="M2 8.82a15 15 0 0 1 4.17-2.68"/><path d="M10.66 5c1.3-1.01 3.35-1.09 4.69-.17a19.79 19.79 0 0 1 1.21 1.05"/><path d="M16.85 8.5c1.3 1.01 3.35 1.09 4.69.17"/><path d="M5 12.859a10 10 0 0 1 5.17-2.69"/><path d="M12 20h.01"/></g>,
+            flaskConical: <g><path d="M10 2v7.527a2 2 0 0 1-.211.896L4.72 20.55a1 1 0 0 0 .9 1.45h12.76a1 1 0 0 0 .9-1.45l-5.069-10.127A2 2 0 0 1 14 9.527V2"/><line x1="8.5" y1="2" x2="15.5" y2="2"/><line x1="8.5" y1="14" x2="15.5" y2="14"/></g>,
+            penTool: <g><path d="m12 19 7-7 3 3-7 7-3-3z"/><path d="m18 13-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="m2 2 7.586 7.586"/><circle cx="11" cy="11" r="2"/></g>,
+            brainCircuit: <path d="M12 4.5a2.5 2.5 0 0 0-4.96.44 2.5 2.5 0 0 0-2.96 3.08 3 3 0 0 0 .34 5.58 2.5 2.5 0 0 0 1.32 4.24 2.5 2.5 0 0 0 1.98 3 2.5 2.5 0 0 0 4.28 0 2.5 2.5 0 0 0 1.98-3 2.5 2.5 0 0 0 1.32-4.24 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-2.96-3.08A2.5 2.5 0 0 0 12 4.5Z M12 2v4 M12 18v4 M5 12h14"/>,
+            brain: <g><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/><path d="M14.5 2A2.5 2.5 0 0 0 12 4.5v15a2.5 2.5 0 0 0 4.96.44 2.5 2.5 0 0 0 2.96-3.08 3 3 0 0 0 .34-5.58 2.5 2.5 0 0 0-1.32-4.24 2.5 2.5 0 0 0-1.98-3A2.5 2.5 0 0 0 14.5 2Z"/></g>,
+            cat: <path d="M12 5c.67 0 1.35.09 2 .26 1.78-2 3.5-2.5 6-2.5-1.5 3-1.5 5.5.5 8 1.24 1.86 2 4.06 2 6.5 0 5.25-4.25 9.5-9.5 9.5S3.5 22.25 3.5 17c0-2.44.76-4.64 2-6.5 2-2.5 2-5 .5-8 2.5 0 4.22.5 6 2.5.65-.17 1.33-.26 2-.26Z"/>,
+            award: <g><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></g>,
+            mountain: <path d="m8 3 4 8 5-5 5 15H2L8 3z"/>,
+            mapPin: <g><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></g>,
+            linkedin: <g><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect width="4" height="12" x="2" y="9"/><circle cx="4" cy="4" r="2"/></g>,
+            twitter: <path d="M22 4s-.7 2.1-2 3.4c1.6 10-9.4 17.3-12.7 12.5S1.2 2.9 8.3 1.7c.8.3 1.6.5 2.6.5z"/>,
+            github: <g><path d="M15 22v-4a4.8 4.8 0 0 0-1-3.5c3 0 6-2 6-5.5.08-1.25-.27-2.48-1-3.5.28-1.15.28-2.35 0-3.5 0 0-1 0-3 1.5-2.64-.5-5.36-.5-8 0C6 2 5 2 5 2c-.3 1.15-.3 2.35 0 3.5A5.403 5.403 0 0 0 4 9c0 3.5 3 5.5 6 5.5-.39.49-.68 1.05-.85 1.65-.17.6-.22 1.23-.15 1.85v4"/><path d="M9 18c-4.51 2-5-2-7-2"/></g>,
+            mail: <g><rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/></g>,
+            qrCode: <g><rect width="5" height="5" x="3" y="3" rx="1"/><rect width="5" height="5" x="16" y="3" rx="1"/><rect width="5" height="5" x="3" y="16" rx="1"/><path d="M21 16h-3a2 2 0 0 0-2 2v3"/><path d="M21 21v.01"/><path d="M12 7v3a2 2 0 0 1-2 2H7"/><path d="M3 12h.01"/><path d="M12 3h.01"/><path d="M12 16v.01"/><path d="M16 12h1"/><path d="M21 12v.01"/><path d="M12 21v-1"/></g>,
+            externalLink: <g><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></g>,
+        };
+
+        const Icon = ({ name, color = "currentColor", size = 24, className, ...props }) => {
+            const content = ICONS[name];
+            if (!content) return null;
+            return (
+                <svg 
+                    xmlns="http://www.w3.org/2000/svg" 
+                    width={size} 
+                    height={size} 
+                    viewBox="0 0 24 24" 
+                    fill="none" 
+                    stroke={color} 
+                    strokeWidth="2" 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    className={className} 
+                    {...props}
+                >
+                    {content}
+                </svg>
+            );
+        };
+
+        // --- Content Configuration ---
+        // 初始加载时使用默认内容，后续通过 fetch 更新
+        const DEFAULT_CONTENT = {
+            zh: {
+                nav: { journey: "我的旅程", run: "离线模式", work: "项目实验室", blog: "深度思考", inputs: "第二大脑", contact: "联系" },
+                hero: {
+                    role: "AI Explorer & Trail Runner",
+                    slogan_main: "技术要有温度",
+                    slogan_sub: "生活要有野趣",
+                    quote: "连接技术、场景与商业的理性乐观主义者。",
+                    intro_parts: [
+                        { text: "Hi，我是 Hera。我不只是定义需求的", highlight: false },
+                        { text: "产品人", highlight: true },
+                        { text: "，更是一个对世界充满好奇的", highlight: false },
+                        { text: "探索者", highlight: true },
+                        { text: "。我热衷于将", highlight: false },
+                        { text: "AI 算法", highlight: true },
+                        { text: "转化为解决实际问题的工具，也痴迷于在百公里越野中通过身体的极限去感知世界。", highlight: false },
+                    ],
+                    btn_work: "进入实验室", btn_blog: "读取想法", sticker_1: "AI 热爱者", sticker_2: "生产力狂热者", sticker_3: "好奇猫咪"
+                },
+                resume: { title: "成长轨迹", subtitle: "13年 • 探索 • 破局 • 生长", jobs: [
+                    { role: "联合创始人 / CPO", company: "乘黄智医", period: "2023 - NOW", desc: "这不仅仅是一次创业，更是一场关于“尊严”的实验。我们尝试用 AI Agent 串联起破碎的医养环节，让技术真正服务于生命。", tags: ["创业", "食品研发(LLM)", "大健康","医养结合"] },
+                    { role: "AI 业务负责人", company: "SenseTime 商汤", period: "2017 - 2023", desc: "在 AI 的黄金时代，我亲历了从 0 到 1 的疯狂。从冬奥会的冰壶赛场到香港的繁华商场，我见证了 CV 技术如何改变物理世界。", tags: ["计算机视觉", "智慧城市","智慧商业","智慧教育","智慧体育", "从0到1"] },
+                    { role: "数据产品经理", company: "iClick 爱点击", period: "2015 - 2017", desc: "在大数据最火热的年代，通过海量数据挖掘商业价值，服务了雅诗兰黛等 2000+ 品牌。懂数据，才更懂人性。", tags: ["大数据", "程序化广告","数据分析","推荐算法"] },
+                    { role: "研发工程师", company: "神州泰岳", period: "2012 - 2015", desc: "代码是我理解数字世界的母语。这段经历让我明白，一切宏大的商业构想，最终都要落实到每一行代码的健壮性上。", tags: ["硬核技术", "工程思维","数据库"] }
+                ]},
+                run: { title: "离线模式", subtitle: "OFFLINE_MODE_ACTIVATED", stats: [{ label: "全马 PB", value: "3:30" }, { label: "最远距离", value: "50KM+" }, { label: "完赛场次", value: "20+" }],
+                    races: [
+                        { id: "race-01", title: "崇礼168 超级越野赛", category: "50KM Ultra", date: "2024-07", result: "Finisher", image_placeholder: "MOUNTAIN_RIDGE", images: ["MOUNTAIN_RIDGE", "RACE_START", "FINISH_LINE"], desc: "在海拔2000米的山脊线上，听见风的呼啸。越野跑不仅是体力的较量，更是与内心的独处。", tags: ["硬核", "MGC", "心流"] },
+                        { id: "race-02", title: "亚太商学院沙漠挑战赛", category: "亚沙赛", date: "2023-10", result: "Gold Medal", image_placeholder: "DESERT_SAND", images: ["DESERT_SAND", "TEAM_PHOTO", "NIGHT_CAMP"], desc: "腾格里沙漠的三天两夜。与团队并肩作战，在沙丘与星空之间，感受团队的力量。", tags: ["团队", "沙漠", "意志"] },
+                        { id: "race-03", title: "莫干山越野跑", category: "30KM Trail", date: "2023-04", result: "Finisher", image_placeholder: "BAMBOO_FOREST", images: ["BAMBOO_FOREST", "MUDDY_TRAIL"], desc: "穿梭于竹海泥泞之间。每一步都不确定，但每一步都算数。像极了做产品的过程。", tags: ["竹海", "技术路段"] }
+                    ]
+                },
+                projects: { title: "项目实验室", subtitle: "PROJECT_LAB_BETA", quote: "技术只有落地到场景，并形成商业闭环，才具有真正的生命力。",
+                    list: [
+                        { id: "proj-01", title: "科技冬奥：冰壶感知", role: "国家级课题", image_text: "OLYMPICS", desc: "为2022冬奥打造全球首个AI视觉追踪系统。3.3cm的定位误差背后，是对极致的偏执。", tech: ["黑科技", "AR直播", "边缘计算"] },
+                        { id: "proj-02", title: "香港赛马会：数字重塑", role: "标杆案例", image_text: "HKJC", desc: "在全港101家门店，用600+摄像头编织了一张感知的网。帮助百年机构读懂每一位顾客的足迹。", tech: ["数字化转型", "SaaS", "ReID"] },
+                        { id: "proj-03", title: "日本 USEN：智慧零售", role: "出海交付", image_text: "USEN", desc: "将 AI 能力输出到日本零售场景。技术没有国界，对效率的追求是通用的语言。", tech: ["AIoT", "国际化", "零售"] },
+                        { id: "proj-04", title: "乘黄智医 AI Agent", role: "创业项目", image_text: "HEALTH", desc: "用 Multi-Agent 架构串联医养服务。让护工拥有专家的知识，让老人拥有有尊严的晚年。", tech: ["LLM", "Agent", "Python"] }
+                    ]
+                },
+                blog: { title: "Hera's Insights", subtitle: "深度思考 • 技术沉淀 • 价值输出",
+                    posts: [] // 博客文章将通过 fetch 动态加载
+                },
+                inputs: { inputs: "第二大脑", subtitle: "You are what you consume",
+                    vault_title: "知识输入流",
+                    vault_desc: "精选收录AI技术、商业创投、语言学习及人文思想领域的优质资源，打造个人专属的、持续的高质量知识输入体系。",
+                    sources_label: "收录源",
+                    channels: "博主/视频",
+                    channels_sub: "Bloggers & Podcasts",
+                    books_title: "书籍推荐",
+                    books_sub: "Deep Reading",
+                    tools_title: "工具/网站",
+                    tools_sub: "Websites & Apps",
+                    hot_picks: "热门精选",
+                    view_all: "查看全部",
+                    ai_tech: [
+                        { name: "Andrej Karpathy", desc: "OpenAI 创始成员，前 Tesla AI 总监。LLM 入门必看神作，讲解硬核且清晰。", tags: ["AI", "Code", "LLM"], link: "https://www.youtube.com/@AndrejKarpathy" },
+                        { name: "跟李沐学AI", desc: "亚马逊首席科学家，中文世界最好的深度学习课程，逐行读论文。", tags: ["Deep Learning", "Course"], link: "https://www.youtube.com/@mu_li" },
+                        { name: "Hung-yi Lee (李宏毅)", desc: "台大教授，幽默风趣的机器学习宝可梦大师，适合入门到进阶。", tags: ["ML", "Tutorial", "CN"], link: "https://www.youtube.com/@HungyiLeeNTU" },
+                        { name: "Jason Liu", desc: "专注于 AI 工程化与 RAG (检索增强生成) 实战，内容非常硬核且前沿。", tags: ["RAG", "Engineering"], link: "https://www.youtube.com/@jxnlco" },
+                        { name: "AI Foundations", desc: "介绍各种 AI 基础工具、概念科普与实际应用演示。", tags: ["Tools", "Basics"], link: "https://www.youtube.com/@AI-Foundations" },
+                        { name: "The AI Daily Brief", desc: "每日 AI 新闻简报，快速跟进即时行业动态。", tags: ["News", "Daily"], link: "https://www.youtube.com/@AIDailyBrief" },
+                        { name: "回到Axton", desc: "AI 自动化工作流与最新 AI 工具评测，实战性强，注重效率提升。", tags: ["Workflow", "Tools"], link: "https://www.youtube.com/@AxtonLiu" },
+                        { name: "Kai博士", desc: "MIT 资源经济学博士，用数据模型硬核分析社会经济问题与科技趋势。", tags: ["Data", "Economics"], link: "https://www.youtube.com/@Kai_PhD" },
+                        { name: "Two Minute Papers", desc: "两分钟解读最新 AI 论文与图形学黑科技，视觉演示效果震撼。", tags: ["Research", "Visuals"], link: "https://www.youtube.com/@TwoMinutePapers" },
+                        { name: "啾啾鞋", desc: "台湾知名科普 YouTuber，擅长用冷幽默讲解科学冷知识和逻辑思维。", tags: ["Science", "Logic"], link: "https://www.youtube.com/@chuchushoe" }
+                    ],
+                    business: [
+                        { name: "Lenny's Podcast", desc: "产品经理圣经。全球顶级 PM 与增长专家的深度访谈，干货极多。", tags: ["Product", "Growth", "SaaS"], link: "https://www.youtube.com/@LennysPodcast" },
+                        { name: "硅谷101", desc: "深度访谈硅谷一线科技与创投人物，高质量中文科技播客。", tags: ["VC", "Tech", "Interview"], link: "https://www.youtube.com/@valley101podcast" },
+                        { name: "商业就是这样", desc: "第一财经/晚点 LatePost 出品，用商业的视角观察生活中的习以为常。", tags: ["Biz Logic", "Analysis"], link: "https://www.xiaoyuzhoufm.com/podcast/601f6004cc0f3792c222e5a4" },
+                        { name: "疯投圈", desc: "投资人视角的创投行业内幕与商业模式分析，深刻犀利。", tags: ["Venture", "Insight"], link: "https://www.fengtouquan.com/" },
+                        { name: "海外独角兽", desc: "深度解析全球前沿科技公司与 AI 趋势，研究报告级别的播客。", tags: ["Analysis", "Global"], link: "https://www.xiaoyuzhoufm.com/podcast/61dc055928d1576757d59014" },
+                        { name: "创业内幕", desc: "GGV 纪源资本出品，访谈一线创业者和投资人。", tags: ["Startup", "GGV"], link: "https://www.xiaoyuzhoufm.com/podcast/5e280fab418a84a0461fa348" },
+                        { name: "The MAD Podcast", desc: "Matt Turck 主理，专注大数据、机器学习与 AI 领域的创投访谈。", tags: ["Data", "AI", "VC"], link: "https://www.youtube.com/@DataDrivenNYC" },
+                        { name: "Jeff Su", desc: "职场生产力工具（Excel, LinkedIn, Gmail）与求职黑客技巧，非常实用。", tags: ["Productivity", "Career"], link: "https://www.youtube.com/@JeffSu" },
+                        { name: "Kevin Stratvert", desc: "前微软员工，提供保姆级的 Microsoft/Windows 软件操作教程。", tags: ["Tutorial", "Office"], link: "https://www.youtube.com/@KevinStratvert" },
+                        { name: "Ali Abdaal", desc: "全球顶流生产力博主，分享高效生活、阅读与被动收入。", tags: ["Life Hack", "Creator"], link: "https://www.youtube.com/@aliabdaal" },
+                        { name: "Dan Koe", desc: "探讨创作者经济、心流与深度工作的哲学思考，视觉风格独特。", tags: ["Creator", "Mind"], link: "https://www.youtube.com/@DanKoe" },
+                        { name: "Greg Isenberg", desc: "专注于社区驱动型商业（Community Based Business）构建指南。", tags: ["Community", "Niche"], link: "https://www.youtube.com/@GregIsenberg" },
+                        { name: "Linda Raynier", desc: "职业规划、面试技巧与职场自信建设，适合求职者。", tags: ["Career", "Interview"], link: "https://www.youtube.com/@LindaRaynier" },
+                        { name: "小Lin说", desc: "用极其通俗有趣的画风讲解复杂的宏观经济和金融危机，非常下饭。", tags: ["Macro Eco", "Finance"], link: "https://www.youtube.com/@XiaolinTalks" },
+                        { name: "Tina Huang", desc: "数据科学家职业路径与学习方法分享，适合想转行 Data 的人。", tags: ["Data Sci", "Study"], link: "https://www.youtube.com/@TinaHuang1" }
+                    ],
+                    english: [
+                        { name: "Luke's ENGLISH Podcast", desc: "强烈推荐。由英国老师 Luke 主持，幽默、地道、深度，沉浸式听力。", tags: ["British", "Fun", "Podcast"], link: "https://www.youtube.com/@LukesEnglishPodcast" },
+                        { name: "All Ears English", desc: "主打美式英语，Connection NOT Perfection，氛围轻松活泼。", tags: ["American", "Culture"], link: "https://www.youtube.com/@AllEarsEnglishPodcast" },
+                        { name: "Think Fast, Talk Smart", desc: "斯坦福商学院出品，专注于职场沟通技巧、演讲与表达，非常硬核。", tags: ["Comm", "Stanford"], link: "https://www.youtube.com/playlist?list=PL6caGRBUYZCmgDGM2RK6mxKB9jG_ccmm3" },
+                        { name: "English with Lucy", desc: "画面精美，专注于优雅精致的英式发音与词汇教学。", tags: ["British", "Pronunciation"], link: "https://www.youtube.com/@EnglishwithLucy" },
+                        { name: "Rachel's English", desc: "发音圣经。专注于美式英语发音口型、连读技巧，极为专业。", tags: ["Pronunciation", "Mouth"], link: "https://www.youtube.com/@rachelsenglish" },
+                        { name: "英语兔", desc: "B站/YouTube 知名博主，从语言学底层逻辑解析发音与语法，极其通透。", tags: ["Logic", "Grammar", "CN"], link: "https://www.youtube.com/@YingYuTu" },
+                        { name: "BBC Learning English", desc: "经典的 6 Minute English 出处，适合利用碎片时间磨耳朵。", tags: ["Daily", "Short"], link: "https://www.youtube.com/@bbclearningenglish" },
+                        { name: "Speak English with ESLPod", desc: "慢速英语，老牌经典，适合中级学习者磨耳朵。", tags: ["Listening", "Slow"], link: "https://www.youtube.com/@eslpod" },
+                        { name: "English with Cambridge", desc: "剑桥英语官方频道，内容权威，涵盖考试与日常表达。", tags: ["Academic", "Exam"], link: "https://www.youtube.com/@CambridgeEnglishTV" },
+                        { name: "Learn English With TV Series", desc: "通过流行美剧、电影片段学英语，寓教于乐。", tags: ["Fun", "TV"], link: "https://www.youtube.com/@LearnEnglishWithTVSeries" },
+                        { name: "mmmEnglish", desc: "澳洲口音，实用日常表达与语法，讲解清晰。", tags: ["Aussie", "Daily"], link: "https://www.youtube.com/@mmmEnglish" },
+                        { name: "IELTS Liz", desc: "雅思备考权威技巧分享，适合考生。", tags: ["IELTS", "Exam"], link: "https://www.youtube.com/@iaborat" }
+                    ],
+                    culture: [
+                        { name: "Lex Fridman", desc: "硬核访谈。对话全球顶尖科学家、思想家，每期时长极长但深度极深。", tags: ["Deep Dive", "Philosophy"], link: "https://www.youtube.com/@lexfridman" },
+                        { name: "Naval / The Almanack", desc: "硅谷哲学家 Naval Ravikant 的财富与幸福智慧（推荐阅读《纳瓦尔宝典》）。", tags: ["Wisdom", "Wealth"], link: "https://www.youtube.com/@naval" },
+                        { name: "This American Life", desc: "美国国民级播客，叙事新闻的巅峰，讲述真实动人的美国故事。", tags: ["Story", "Journalism"], link: "https://www.youtube.com/@this-american-life" },
+                        { name: "纵横四海", desc: "携隐 Melody 主理，通过读书与思考探索人生认知边界，内容极具力量感。", tags: ["Cognition", "Books"], link: "https://www.xiaoyuzhoufm.com/podcast/624bc68846c48316e6378e9f" },
+                        { name: "文化有限", desc: "三位主播共同推荐好书，氛围像老友聊天，轻松中有深度。", tags: ["Books", "Relax"], link: "https://www.xiaoyuzhoufm.com/podcast/5e280fb5418a84a0461fc1f4" },
+                        { name: "东腔西调", desc: "探讨文化与社会议题，视角独特，提供意想不到的切入点。", tags: ["Society", "Culture"], link: "https://www.xiaoyuzhoufm.com/podcast/5e5b7e8d418a84a046b088b4" },
+                        { name: "Modern Love", desc: "纽约时报出品，由明星朗读读者的真实爱情故事，温暖治愈。", tags: ["Love", "Emotion"], link: "https://www.nytimes.com/column/modern-love-podcast" },
+                        { name: "TED / TED-Ed", desc: "传播有价值的思想，涵盖各个领域，TED-Ed 为动画版。", tags: ["Ideas", "Animation"], link: "https://www.youtube.com/@TED" },
+                        { name: "Life Kit", desc: "NPR 出品的生活指南，提供实用的生活建议（如理财、健康）。", tags: ["Guide", "NPR"], link: "https://www.npr.org/lifekit" },
+                        { name: "老高與小茉", desc: "顶流传说。讲述都市传说、宇宙奥秘，不仅是科普更是睡前故事会。", tags: ["Mystery", "Story"], link: "https://www.youtube.com/@MrandMrsGao" },
+                        { name: "脑洞乌托邦", desc: "著名谜案与未解之谜解说频道，小乌的讲述风格非常有沉浸感。", tags: ["Crime", "Mystery"], link: "https://www.youtube.com/@NDWTB" },
+                        { name: "Better Leaf 好葉", desc: "个人成长与心理学动画频道，每天一点正能量。", tags: ["Psych", "Growth"], link: "https://www.youtube.com/@BetterLeaf" },
+                        { name: "StoryCorps", desc: "记录普通人的真实对话与故事，往往感人至深。", tags: ["Humanity", "Real"], link: "https://www.youtube.com/@storycorps" },
+                        { name: "岩中花述", desc: "时尚与文化类播客，探讨女性成长与生活方式。", tags: ["Female", "Style"], link: "https://www.xiaoyuzhoufm.com/podcast/637f2d3e09880624867c2691" },
+                        { name: "天真不天真", desc: "杨天真的频道，分享职场自信、人际关系与通透的人生态度。", tags: ["Life View", "Work"], link: "https://www.youtube.com/@YangTianzhenOfficial" }
+                    ],
+                    books_recommend: [
+                        { name: "纳瓦尔宝典", desc: "硅谷知名投资人 Naval 关于财富与幸福的智慧语录，字字珠玑。", tags: ["Wisdom", "Wealth", "Life"], link: "#" },
+                        { name: "穷查理宝典", desc: "巴菲特合伙人查理·芒格的演讲与文章汇编，强调多元思维模型。", tags: ["Investing", "Mental Models"], link: "#" },
+                        { name: "原子习惯", desc: "改变习惯的实操指南，教你通过细微的改变获得巨大的复利效应。", tags: ["Growth", "Habits"], link: "#" },
+                        { name: "思考，快与慢", desc: "诺奖得主揭示人类大脑的两套思维系统，提升决策质量的必读经典。", tags: ["Psychology", "Cognition"], link: "#" },
+                        { name: "黑客与画家", desc: "硅谷创业教父 Paul Graham 的文集，探讨技术、创业与财富的本质。", tags: ["Tech", "Startup", "Essay"], link: "#" },
+                        { name: "从 0 到 1", desc: "PayPal 创始人关于创业与未来的深刻洞见，强调垄断与创新的重要性。", tags: ["Startup", "Business"], link: "#" },
+                        { name: "原则", desc: "桥水基金创始人瑞·达利欧的生活与工作原则，系统化的人生算法。", tags: ["Management", "Life"], link: "#" },
+                        { name: "反脆弱", desc: "讨论如何在不确定性中获益，建立强大的适应与进化能力。", tags: ["Philosophy", "Risk"], link: "#" },
+                        { name: "必然", desc: "凯文·凯利对未来 30 年科技趋势的预言，理解科技发展的底层逻辑。", tags: ["Future", "Tech"], link: "#" },
+                        { name: "深度工作", desc: "在碎片化时代如何保持专注，通过深度工作创造核心价值。", tags: ["Productivity", "Focus"], link: "#" }
+                    ],
+                    websites_tools: [
+                        { name: "ChatGPT", desc: "OpenAI 出品的里程碑式 LLM，日常问答、代码辅助、创意写作首选。", tags: ["AI", "LLM"], link: "https://chat.openai.com/" },
+                        { name: "Claude", desc: "Anthropic 出品，擅长长文本分析、代码编写，语言风格更自然。", tags: ["AI", "LLM"], link: "https://claude.ai/" },
+                        { name: "Perplexity", desc: "结合了搜索与 AI 的问答引擎，查找准确信息和引用来源的神器。", tags: ["AI", "Search"], link: "https://www.perplexity.ai/" },
+                        { name: "Midjourney", desc: "目前最强大的 AI 绘画工具，适合创意灵感与高质量图像生成。", tags: ["AI", "Image"], link: "https://www.midjourney.com/" },
+                        { name: "Notion", desc: "All-in-one 笔记与知识库工具，构建第二大脑的核心系统。", tags: ["PKM", "Notes"], link: "https://www.notion.so/" },
+                        { name: "Obsidian", desc: "本地化、双向链接的知识管理工具，适合深度笔记与卡片盒笔记法。", tags: ["PKM", "Local"], link: "https://obsidian.md/" },
+                        { name: "Readwise", desc: "稍后阅读与高亮汇聚工具，将碎片化阅读整合到你的笔记系统中。", tags: ["Reading", "PKM"], link: "https://readwise.io/" },
+                        { name: "Product Hunt", desc: "全球最好的新产品发现社区，每天了解最新的科技产品与创意。", tags: ["Discovery", "Tech"], link: "https://www.producthunt.com/" },
+                        { name: "Hacker News", desc: "Y Combinator 旗下的科技新闻聚合，高质量的极客讨论社区。", tags: ["News", "Tech"], link: "https://news.ycombinator.com/" },
+                        { name: "arXiv", desc: "康奈尔大学运营的学术预印本数据库，追踪 AI 与计算机科学最新论文。", tags: ["Research", "Paper"], link: "https://arxiv.org/" },
+                        { name: "Papers with Code", desc: "将论文与代码实现结合，机器学习研究者的必备资源库。", tags: ["ML", "Code"], link: "https://paperswithcode.com/" },
+                        { name: "Medium", desc: "优质的长文章阅读平台，涵盖技术、设计、文化等深度内容。", tags: ["Reading", "Blog"], link: "https://medium.com/" },
+                        { name: "Substack", desc: "独立创作者的 Newsletter 平台，订阅你喜欢的专家深度见解。", tags: ["Newsletter"], link: "https://substack.com/" },
+                        { name: "GitHub Trending", desc: "查看 GitHub 上最热门的开源项目，紧跟技术圈的开发潮流。", tags: ["Code", "OSS"], link: "https://github.com/trending" }
+                    ],
+                    books: [],
+                    movies: [],
+                    videos: [],
+                    podcasts: []
+                },
+                footer: { title: "一起造点什么", sub: "喝杯咖啡？聊聊 AI，或者约个跑？", wechat_btn: "公众号" },
+                ui: { view_archives: "查看所有归档", close: "关闭", read_md: "阅读全文", scan_qr: "扫码关注", follow_tip: "关注公众号获取最新文章" }
+            },
+            en: {
+                nav: { journey: "Journey", run: "Offline Mode", work: "Project Lab", blog: "Insights", inputs: "Second Brain", contact: "Contact" },
+                hero: {
+                    role: "AI Explorer & Trail Runner",
+                    slogan_main: "Code with Warmth",
+                    slogan_sub: "Live with Passion",
+                    quote: "A rational optimist connecting technology, scenarios, and business.",
+                    intro_parts: [
+                        { text: "Hi, I'm Hera. I'm not just a ", highlight: false }, { text: "Product Manager", highlight: true },
+                        { text: ", but a curious ", highlight: false }, { text: "Explorer", highlight: true },
+                        { text: ". I am passionate about transforming ", highlight: false }, { text: "AI Algorithms", highlight: true },
+                        { text: " into tools that solve real-world problems.", highlight: false },
+                    ],
+                    btn_work: "Enter Lab", btn_blog: "Read Thoughts",
+                    sticker_1: "AI Enthusiast", sticker_2: "Productivity Geek", sticker_3: "Curious Cat"
+                },
+                resume: { title: "My Journey", subtitle: "13 Years • Growth • Exploration", jobs: [
+                    { role: "Co-founder / CPO", company: "Chenghuang Smart Medical", period: "2023 - NOW", desc: "An experiment in dignity. Using AI Agents to connect fragmented medical care, making technology truly serve life.", tags: ["Startup", "AI for Good", "Health"] },
+                    { role: "AI Business Lead", company: "SenseTime", period: "2017 - 2023", desc: "Witnessed the golden age of AI. From Winter Olympics to HK malls, I saw how CV changed the physical world.", tags: ["Computer Vision", "Smart City", "Zero to One"] },
+                    { role: "Data Product Manager", company: "iClick Interactive", period: "2015 - 2017", desc: "Mining value from massive data for 2000+ brands. Understanding data is understanding humanity.", tags: ["Big Data", "Insights"] },
+                    { role: "R&D Engineer", company: "Ultrapower", period: "2012 - 2015", desc: "Code is my native language for the digital world. It taught me robustness is key to any grand vision.", tags: ["Engineering", "Tech Roots"] }
+                ]},
+                run: { title: "Offline Mode", subtitle: "Disconnection is the new luxury", stats: [{ label: "Marathon PB", value: "3:30" }, { label: "Max Distance", value: "50KM+" }, { label: "Races", value: "20+" }],
+                    races: [
+                        { id: "race-01", title: "Chongli 168 Ultra", category: "50KM Ultra", date: "2024-07", result: "Finisher", image_placeholder: "assets/races/chongli168-start.jpg", images: ["assets/races/chongli168-start.jpg"], desc: "Hearing the wind on the ridge at 2000m. Trail running is a conversation with oneself.", tags: ["Hardcore", "Flow"] },
+                        { id: "race-02", title: "Asia Desert Challenge", category: "70KM Desert", date: "2023-10", result: "Gold Medal", image_placeholder: "assets/races/yasha-start.jpg", images: ["assets/races/yasha-start.jpg"], desc: "Three days in Tengger Desert. Feeling the power of team and nature.", tags: ["Team", "Willpower"] },
+                        { id: "race-03", title: "Moganshan Trail", category: "30KM Trail", date: "2023-04", result: "Finisher", image_placeholder: "assets/races/moganshan-bamboo.jpg", images: ["assets/races/moganshan-bamboo.jpg"], desc: "Running through bamboo seas. Every step is uncertain but counts.", tags: ["Technical", "Nature"] },
+                        { id: "race-04", title: "Wutaishan Hiking", category: "40KM Trail", date: "2023-06", result: "Finisher", image_placeholder: "assets/races/wutaishan-mountain.jpg", images: ["assets/races/wutaishan-mountain.jpg"], desc: "At the Buddhist holy mountain Wutaishan, feeling the power of faith and nature.", tags: ["Sacred", "Mountain", "Spiritual"] },
+                        { id: "race-05", title: "Siguniang Mountain", category: "5276m Altitude", date: "2023-09", result: "Finisher", image_placeholder: "assets/races/siguniang-mountain.jpg", images: ["assets/races/siguniang-mountain.jpg"], desc: "Running at the foot of Siguniang Mountain, feeling the majesty of snow peaks and the charm of the plateau.", tags: ["Snow Peak", "Plateau", "Majestic"] },
+                        { id: "race-06", title: "Sailing Challenge", category: "Sailing", date: "2024-05", result: "Participant", image_placeholder: "assets/races/sailing-boat.jpg", images: ["assets/races/sailing-boat.jpg"], desc: "Sailing on the sea, feeling the breeze and waves, experiencing intimate contact with the ocean.", tags: ["Ocean", "Sailing", "Adventure"] },
+                        { id: "race-08", title: "Spotlight Event", category: "Event", date: "2024-03", result: "Participant", image_placeholder: "assets/races/spotlight-event.jpg", images: ["assets/races/spotlight-event.jpg"], desc: "Joining the Spotlight event, exchanging ideas with elites from various industries.", tags: ["Networking", "Learning", "Social"] },
+                        { id: "race-09", title: "Creative Running Art", category: "Fun Run", date: "2024-02", result: "Creativity Award", image_placeholder: "assets/races/running-2024.jpg", images: ["assets/races/running-2024.jpg"], desc: "Drawing creative text and patterns with running tracks, perfectly combining sports and art.", tags: ["Creative", "Art", "Fun"] },
+                        { id: "race-10", title: "Great Wall Trail", category: "25KM Trail", date: "2023-11", result: "Finisher", image_placeholder: "assets/races/greatwall-running.jpg", images: ["assets/races/greatwall-running.jpg"], desc: "Running on the Great Wall, feeling the weight of history and the majesty of nature.", tags: ["Great Wall", "History", "Majestic"] },
+                        { id: "race-11", title: "Xiong'an Marathon", category: "42.195 KM", date: "2024-04", result: "Finisher", image_placeholder: "assets/races/xiongan-start.jpg", images: ["assets/races/xiongan-start.jpg"], desc: "Participating in Xiong'an Marathon, feeling the vitality and charm of this future city.", tags: ["Marathon", "City", "Future"] }
+                    ]
+                },
+                projects: { title: "Project Lab", subtitle: "Where ideas meet reality", quote: "Technology only has true vitality when it lands in scenarios and forms a business closed loop.",
+                    list: [
+                        { id: "proj-01", title: "Winter Olympics: AI Eye", role: "National Project", image: "assets/projects/olympics-curling.jpg", image_text: "OLYMPICS", desc: "Built the world's first AI tracking for Curling. 3.3cm accuracy.", tech: ["Tech", "AR", "Edge"] },
+                        { id: "proj-02", title: "HK Jockey Club: Digital", role: "Flagship", image: "assets/projects/hkjc-smart-retail.png", image_text: "HKJC", desc: "Digitized 101 stores with 600+ cameras. Helping a century-old institution understand every customer.", tech: ["Digital Transformation", "SaaS"] },
+                        { id: "proj-03", title: "USEN Japan Retail", role: "Global", image: "assets/projects/usen-retail.jpg", image_text: "USEN", desc: "Exporting AI to Japanese retail. Efficiency is a universal language.", tech: ["AIoT", "Global"] },
+                        { id: "proj-04", title: "Chenghuang Smart Medical", role: "Startup", image: "assets/projects/healthcare-agent.png", image_text: "HEALTH", desc: "Using AI Agents to connect fragmented medical care, making technology truly serve life.", tech: ["LLM", "Agent"] },
+                        { id: "proj-05", title: "COMAC: Smart Factory", role: "High-end Manufacturing", image: "assets/projects/comac-factory.jpg", image_text: "COMAC", desc: "Building edge-cloud collaborative digital twin platform in aircraft manufacturing workshops. ±50cm precision positioning.", tech: ["Digital Twin", "Edge Computing", "Industrial IoT"] },
+                        { id: "proj-06", title: "Gaosi Education: Smart Class", role: "AI + Education", image: "assets/projects/gaosi-education.jpg", image_text: "GAOSI", desc: "Using computer vision to quantify teaching process. Making data the teacher's eyes to see every student's growth.", tech: ["Computer Vision", "Education SaaS", "AIoT"] },
+                        { id: "proj-07", title: "HK Sun Hung Kai: Smart Mall", role: "Commercial Real Estate", image: "assets/projects/shkp-smart-mall.png", image_text: "SHKP", desc: "Deploying AI Box edge devices for real-time perception and analysis in shopping malls.", tech: ["Edge-Cloud Architecture", "AI Box", "Smart Retail"] }
+                    ]
+                },
+                blog: { title: "Hera's Insights", subtitle: "Deep Dives • Technical Thoughts • Value", posts: []},
+                inputs: { inputs: "Second Brain", subtitle: "You are what you consume",
+                    vault_title: "Knowledge Input Flow",
+                    vault_desc: "A curated collection of premium resources in AI, business, language learning, and humanities. Building your personal, continuous, high-quality knowledge input system.",
+                    sources_label: "Sources",
+                    channels: "Channels",
+                    channels_sub: "Bloggers & Podcasts",
+                    books_title: "Books",
+                    books_sub: "Deep Reading",
+                    tools_title: "Tools/Websites",
+                    tools_sub: "Websites & Apps",
+                    hot_picks: "Hot Picks",
+                    view_all: "View All",
+                    ai_tech: [
+                        { name: "Andrej Karpathy", desc: "OpenAI co-founder, ex-Tesla AI Director. Must-watch LLM masterclass, clear and hardcore.", tags: ["AI", "Code", "LLM"], link: "https://www.youtube.com/@AndrejKarpathy" },
+                        { name: "Mu Li (d2l.ai)", desc: "Amazon Chief Scientist. Best deep learning course, line-by-line paper reading.", tags: ["Deep Learning", "Course"], link: "https://www.youtube.com/@mu_li" },
+                        { name: "Hung-yi Lee", desc: "NTU Professor. The humorous ML 'Pokemon Master', great for beginners to advanced.", tags: ["ML", "Tutorial", "CN"], link: "https://www.youtube.com/@HungyiLeeNTU" },
+                        { name: "Jason Liu", desc: "Focused on AI engineering and RAG implementation. Very hardcore and cutting-edge.", tags: ["RAG", "Engineering"], link: "https://www.youtube.com/@jxnlco" },
+                        { name: "AI Foundations", desc: "Introduction to AI tools, concepts, and practical application demos.", tags: ["Tools", "Basics"], link: "https://www.youtube.com/@AI-Foundations" },
+                        { name: "The AI Daily Brief", desc: "Daily AI news briefing. Stay updated with industry trends.", tags: ["News", "Daily"], link: "https://www.youtube.com/@AIDailyBrief" },
+                        { name: "Back to Axton", desc: "AI automation workflows and latest AI tool reviews. Practical and efficiency-focused.", tags: ["Workflow", "Tools"], link: "https://www.youtube.com/@AxtonLiu" },
+                        { name: "Dr. Kai", desc: "MIT Resource Economics PhD. Hardcore data-driven analysis of socioeconomic issues.", tags: ["Data", "Economics"], link: "https://www.youtube.com/@Kai_PhD" },
+                        { name: "Two Minute Papers", desc: "Two-minute breakdowns of latest AI papers and graphics tech. Stunning visual demos.", tags: ["Research", "Visuals"], link: "https://www.youtube.com/@TwoMinutePapers" },
+                        { name: "ChuChuShoe", desc: "Famous Taiwanese science YouTuber. Cold humor explaining science and logic.", tags: ["Science", "Logic"], link: "https://www.youtube.com/@chuchushoe" }
+                    ],
+                    business: [
+                        { name: "Lenny's Podcast", desc: "The PM Bible. In-depth interviews with top PMs and growth experts.", tags: ["Product", "Growth", "SaaS"], link: "https://www.youtube.com/@LennysPodcast" },
+                        { name: "Silicon Valley 101", desc: "Deep interviews with Silicon Valley tech and VC insiders. High-quality Chinese tech podcast.", tags: ["VC", "Tech", "Interview"], link: "https://www.youtube.com/@valley101podcast" },
+                        { name: "Business is This Way", desc: "From Yicai/LatePost. Observing everyday life through a business lens.", tags: ["Biz Logic", "Analysis"], link: "https://www.xiaoyuzhoufm.com/podcast/601f6004cc0f3792c222e5a4" },
+                        { name: "Crazy VC Circle", desc: "VC perspective on startup industry secrets and business model analysis.", tags: ["Venture", "Insight"], link: "https://www.fengtouquan.com/" },
+                        { name: "Overseas Unicorn", desc: "In-depth analysis of global cutting-edge tech companies and AI trends.", tags: ["Analysis", "Global"], link: "https://www.xiaoyuzhoufm.com/podcast/61dc055928d1576757d59014" },
+                        { name: "Startup Insider", desc: "By GGV Capital. Interviews with frontline founders and investors.", tags: ["Startup", "GGV"], link: "https://www.xiaoyuzhoufm.com/podcast/5e280fab418a84a0461fa348" },
+                        { name: "The MAD Podcast", desc: "By Matt Turck. Focus on big data, ML, and AI venture interviews.", tags: ["Data", "AI", "VC"], link: "https://www.youtube.com/@DataDrivenNYC" },
+                        { name: "Jeff Su", desc: "Productivity tools (Excel, LinkedIn, Gmail) and career hacks. Very practical.", tags: ["Productivity", "Career"], link: "https://www.youtube.com/@JeffSu" },
+                        { name: "Kevin Stratvert", desc: "Ex-Microsoft employee. Step-by-step Microsoft/Windows software tutorials.", tags: ["Tutorial", "Office"], link: "https://www.youtube.com/@KevinStratvert" },
+                        { name: "Ali Abdaal", desc: "Top global productivity YouTuber. Efficient living, reading, and passive income.", tags: ["Life Hack", "Creator"], link: "https://www.youtube.com/@aliabdaal" },
+                        { name: "Dan Koe", desc: "Exploring creator economy, flow state, and deep work philosophy.", tags: ["Creator", "Mind"], link: "https://www.youtube.com/@DanKoe" },
+                        { name: "Greg Isenberg", desc: "Guide to building Community-Based Businesses.", tags: ["Community", "Niche"], link: "https://www.youtube.com/@GregIsenberg" },
+                        { name: "Linda Raynier", desc: "Career planning, interview skills, and workplace confidence. Great for job seekers.", tags: ["Career", "Interview"], link: "https://www.youtube.com/@LindaRaynier" },
+                        { name: "Xiaolin Talks", desc: "Complex macroeconomics and financial crises explained in a fun, engaging way.", tags: ["Macro Eco", "Finance"], link: "https://www.youtube.com/@XiaolinTalks" },
+                        { name: "Tina Huang", desc: "Data scientist career path and study methods. Great for career changers.", tags: ["Data Sci", "Study"], link: "https://www.youtube.com/@TinaHuang1" }
+                    ],
+                    english: [
+                        { name: "Luke's ENGLISH Podcast", desc: "Highly recommended. British teacher Luke hosts with humor, authenticity, and depth.", tags: ["British", "Fun", "Podcast"], link: "https://www.youtube.com/@LukesEnglishPodcast" },
+                        { name: "All Ears English", desc: "American English focus. Connection NOT Perfection. Relaxed and lively atmosphere.", tags: ["American", "Culture"], link: "https://www.youtube.com/@AllEarsEnglishPodcast" },
+                        { name: "Think Fast, Talk Smart", desc: "Stanford Business School production. Workplace communication skills and public speaking.", tags: ["Comm", "Stanford"], link: "https://www.youtube.com/playlist?list=PL6caGRBUYZCmgDGM2RK6mxKB9jG_ccmm3" },
+                        { name: "English with Lucy", desc: "Beautiful visuals. Focus on elegant British pronunciation and vocabulary.", tags: ["British", "Pronunciation"], link: "https://www.youtube.com/@EnglishwithLucy" },
+                        { name: "Rachel's English", desc: "Pronunciation bible. Focus on American English mouth positions and linking sounds.", tags: ["Pronunciation", "Mouth"], link: "https://www.youtube.com/@rachelsenglish" },
+                        { name: "English Rabbit", desc: "Famous Bilibili/YouTube creator. Explains pronunciation and grammar from linguistic fundamentals.", tags: ["Logic", "Grammar", "CN"], link: "https://www.youtube.com/@YingYuTu" },
+                        { name: "BBC Learning English", desc: "Home of classic 6 Minute English. Perfect for using spare time to train your ears.", tags: ["Daily", "Short"], link: "https://www.youtube.com/@bbclearningenglish" },
+                        { name: "Speak English with ESLPod", desc: "Slow-paced English. Classic and time-tested, great for intermediate learners.", tags: ["Listening", "Slow"], link: "https://www.youtube.com/@eslpod" },
+                        { name: "English with Cambridge", desc: "Official Cambridge English channel. Authoritative content covering exams and daily expressions.", tags: ["Academic", "Exam"], link: "https://www.youtube.com/@CambridgeEnglishTV" },
+                        { name: "Learn English With TV Series", desc: "Learn English through popular TV shows and movie clips. Entertaining and educational.", tags: ["Fun", "TV"], link: "https://www.youtube.com/@LearnEnglishWithTVSeries" },
+                        { name: "mmmEnglish", desc: "Australian accent. Practical daily expressions and grammar, clear explanations.", tags: ["Aussie", "Daily"], link: "https://www.youtube.com/@mmmEnglish" },
+                        { name: "IELTS Liz", desc: "Authoritative IELTS prep tips. Perfect for test-takers.", tags: ["IELTS", "Exam"], link: "https://www.youtube.com/@iaborat" }
+                    ],
+                    culture: [
+                        { name: "Lex Fridman", desc: "Hardcore interviews. Conversations with world's top scientists and thinkers. Long but deep.", tags: ["Deep Dive", "Philosophy"], link: "https://www.youtube.com/@lexfridman" },
+                        { name: "Naval / The Almanack", desc: "Silicon Valley philosopher Naval Ravikant's wisdom on wealth and happiness.", tags: ["Wisdom", "Wealth"], link: "https://www.youtube.com/@naval" },
+                        { name: "This American Life", desc: "National-level American podcast. The pinnacle of narrative journalism.", tags: ["Story", "Journalism"], link: "https://www.youtube.com/@this-american-life" },
+                        { name: "Cross Four Seas", desc: "Hosted by Melody. Exploring cognitive boundaries through reading and thinking.", tags: ["Cognition", "Books"], link: "https://www.xiaoyuzhoufm.com/podcast/624bc68846c48316e6378e9f" },
+                        { name: "Culture Limited", desc: "Three hosts recommending great books. Like chatting with old friends.", tags: ["Books", "Relax"], link: "https://www.xiaoyuzhoufm.com/podcast/5e280fb5418a84a0461fc1f4" },
+                        { name: "East West Tune", desc: "Exploring culture and society topics with unique perspectives.", tags: ["Society", "Culture"], link: "https://www.xiaoyuzhoufm.com/podcast/5e5b7e8d418a84a046b088b4" },
+                        { name: "Modern Love", desc: "By NY Times. Stars reading real readers' love stories. Warm and healing.", tags: ["Love", "Emotion"], link: "https://www.nytimes.com/column/modern-love-podcast" },
+                        { name: "TED / TED-Ed", desc: "Spreading ideas worth spreading. TED-Ed is the animated version.", tags: ["Ideas", "Animation"], link: "https://www.youtube.com/@TED" },
+                        { name: "Life Kit", desc: "NPR's life guide. Practical advice on finance, health, and more.", tags: ["Guide", "NPR"], link: "https://www.npr.org/lifekit" },
+                        { name: "Mr. & Mrs. Gao", desc: "Top legend. Urban legends and cosmic mysteries. More than science, it's bedtime stories.", tags: ["Mystery", "Story"], link: "https://www.youtube.com/@MrandMrsGao" },
+                        { name: "Brainstorm Utopia", desc: "Famous mystery and unsolved case channel. Immersive storytelling style.", tags: ["Crime", "Mystery"], link: "https://www.youtube.com/@NDWTB" },
+                        { name: "Better Leaf", desc: "Personal growth and psychology animation channel. Daily positive energy.", tags: ["Psych", "Growth"], link: "https://www.youtube.com/@BetterLeaf" },
+                        { name: "StoryCorps", desc: "Recording real conversations and stories of ordinary people. Often deeply moving.", tags: ["Humanity", "Real"], link: "https://www.youtube.com/@storycorps" },
+                        { name: "Rock Flower Talk", desc: "Fashion and culture podcast exploring women's growth and lifestyle.", tags: ["Female", "Style"], link: "https://www.xiaoyuzhoufm.com/podcast/637f2d3e09880624867c2691" },
+                        { name: "Naive or Not", desc: "Yang Tianzhen's channel. Workplace confidence, relationships, and life philosophy.", tags: ["Life View", "Work"], link: "https://www.youtube.com/@YangTianzhenOfficial" }
+                    ],
+                    books_recommend: [
+                        { name: "The Almanack of Naval Ravikant", desc: "Naval's wisdom on wealth and happiness. Every word is gold.", tags: ["Wisdom", "Wealth", "Life"], link: "#" },
+                        { name: "Poor Charlie's Almanack", desc: "Charlie Munger's speeches and essays. Emphasizes multi-disciplinary mental models.", tags: ["Investing", "Mental Models"], link: "#" },
+                        { name: "Atomic Habits", desc: "Practical guide to habit change. Small changes compound into huge results.", tags: ["Growth", "Habits"], link: "#" },
+                        { name: "Thinking, Fast and Slow", desc: "Nobel laureate reveals two thinking systems. Essential for better decision-making.", tags: ["Psychology", "Cognition"], link: "#" },
+                        { name: "Hackers & Painters", desc: "Paul Graham's essays on tech, startups, and the nature of wealth.", tags: ["Tech", "Startup", "Essay"], link: "#" },
+                        { name: "Zero to One", desc: "Peter Thiel on startups and the future. Monopoly and innovation insights.", tags: ["Startup", "Business"], link: "#" },
+                        { name: "Principles", desc: "Ray Dalio's life and work principles. A systematic algorithm for life.", tags: ["Management", "Life"], link: "#" },
+                        { name: "Antifragile", desc: "How to benefit from uncertainty. Building adaptive and evolutionary capabilities.", tags: ["Philosophy", "Risk"], link: "#" },
+                        { name: "The Inevitable", desc: "Kevin Kelly's predictions for the next 30 years of tech trends.", tags: ["Future", "Tech"], link: "#" },
+                        { name: "Deep Work", desc: "How to stay focused in a fragmented era. Creating core value through deep work.", tags: ["Productivity", "Focus"], link: "#" }
+                    ],
+                    websites_tools: [
+                        { name: "ChatGPT", desc: "OpenAI's landmark LLM. First choice for Q&A, coding assistance, creative writing.", tags: ["AI", "LLM"], link: "https://chat.openai.com/" },
+                        { name: "Claude", desc: "By Anthropic. Excels at long-text analysis, coding. More natural language style.", tags: ["AI", "LLM"], link: "https://claude.ai/" },
+                        { name: "Perplexity", desc: "AI-powered search engine. The best tool for finding accurate info with citations.", tags: ["AI", "Search"], link: "https://www.perplexity.ai/" },
+                        { name: "Midjourney", desc: "Currently the most powerful AI art tool. Great for creative inspiration.", tags: ["AI", "Image"], link: "https://www.midjourney.com/" },
+                        { name: "Notion", desc: "All-in-one notes and knowledge base. Core system for building your second brain.", tags: ["PKM", "Notes"], link: "https://www.notion.so/" },
+                        { name: "Obsidian", desc: "Local-first, bi-directional linking knowledge management. Perfect for Zettelkasten.", tags: ["PKM", "Local"], link: "https://obsidian.md/" },
+                        { name: "Readwise", desc: "Read-later and highlight aggregation. Integrating fragmented reading into your notes.", tags: ["Reading", "PKM"], link: "https://readwise.io/" },
+                        { name: "Product Hunt", desc: "Best product discovery community. Daily new tech products and ideas.", tags: ["Discovery", "Tech"], link: "https://www.producthunt.com/" },
+                        { name: "Hacker News", desc: "Y Combinator's tech news aggregator. High-quality geek discussion community.", tags: ["News", "Tech"], link: "https://news.ycombinator.com/" },
+                        { name: "arXiv", desc: "Cornell University's academic preprint database. Track latest AI and CS papers.", tags: ["Research", "Paper"], link: "https://arxiv.org/" },
+                        { name: "Papers with Code", desc: "Combining papers with code implementations. Essential for ML researchers.", tags: ["ML", "Code"], link: "https://paperswithcode.com/" },
+                        { name: "Medium", desc: "Quality long-form reading platform. Deep content on tech, design, culture.", tags: ["Reading", "Blog"], link: "https://medium.com/" },
+                        { name: "Substack", desc: "Independent creator newsletter platform. Subscribe to expert insights.", tags: ["Newsletter"], link: "https://substack.com/" },
+                        { name: "GitHub Trending", desc: "View hottest open source projects. Stay current with dev trends.", tags: ["Code", "OSS"], link: "https://github.com/trending" }
+                    ],
+                    books: [],
+                    movies: [],
+                    videos: [],
+                    podcasts: []
+                },
+                footer: { title: "Let's Build Something", sub: "Coffee? AI? Or a run?", wechat_btn: "WeChat" },
+                ui: { view_archives: "View All Archives", close: "Close", read_md: "READ DOC", scan_qr: "Scan QR Code", follow_tip: "Follow for latest updates" }
+            }
+        };
+
+        const BrutalistButton = ({ children, onClick, className = "", variant = "primary" }) => {
+            const baseStyle = "px-6 py-3 font-bold border-2 border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none flex items-center gap-2 select-none whitespace-nowrap";
+            const variants = { primary: "bg-[#a3e635] hover:bg-[#84cc16] text-black", secondary: "bg-[#f472b6] hover:bg-[#ec4899] text-black", outline: "bg-white hover:bg-gray-100 text-black", dark: "bg-black text-white hover:bg-gray-800" };
+            return <button onClick={onClick} className={`${baseStyle} ${variants[variant]} ${className}`}>{children}</button>;
+        };
+
+        const BrutalistCard = ({ children, className = "", color = "bg-white", onClick }) => (
+            <div onClick={onClick} className={`border-2 border-black p-6 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] ${color} ${className} ${onClick ? 'cursor-pointer hover:-translate-y-1 hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)]' : ''} transition-all duration-300 h-full flex flex-col`}>{children}</div>
+        );
+
+        const Tag = ({ children, color = "bg-white" }) => (
+            <span className={`px-2 py-1 text-xs font-mono font-bold border border-black ${color} shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] whitespace-nowrap`}>{children}</span>
+        );
+
+        const Marquee = ({ text }) => (
+            <div className="w-full bg-black text-white overflow-hidden py-3 border-y-4 border-black flex">
+                <div className="animate-marquee whitespace-nowrap flex gap-12">
+                    {[...Array(10)].map((_, i) => <span key={i} className="font-mono font-bold uppercase tracking-widest text-xl flex items-center gap-4">{text} <Icon name="zap" className="w-5 h-5 fill-[#a3e635] text-[#a3e635]" /></span>)}
+                </div>
+            </div>
+        );
+
+        const HorizontalScroll = ({ children, className = "" }) => {
+            const scrollRef = useRef(null);
+            const manualScroll = (direction) => { if (scrollRef.current) scrollRef.current.scrollBy({ left: direction === 'left' ? -400 : 400, behavior: 'smooth' }); };
+            return (
+                <div className={`relative group ${className}`}>
+                    <div className="absolute -top-16 right-0 flex gap-2 z-30">
+                        <button onClick={() => manualScroll('left')} className="w-10 h-10 border-2 border-black bg-white hover:bg-black hover:text-white flex items-center justify-center transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] group/btn"><Icon name="arrowLeft" size={20} className="text-black group-hover/btn:text-white" /></button>
+                        <button onClick={() => manualScroll('right')} className="w-10 h-10 border-2 border-black bg-white hover:bg-black hover:text-white flex items-center justify-center transition-colors shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px] group/btn"><Icon name="arrowRight" size={20} className="text-black group-hover/btn:text-white" /></button>
+                        </div>
+                    <div ref={scrollRef} className="flex gap-6 overflow-x-auto pb-8 pt-2 snap-x snap-mandatory custom-scrollbar px-1">{children}</div>
+                    </div>
+            );
+        };
+
+        const AutoScrollGallery = ({ children, className = "" }) => (
+            <div className={`gallery-container overflow-hidden w-full ${className}`}>
+                <div className="gallery-track flex gap-6 py-4">{children}{children}{children}</div>
+            </div>
+        );
+
+        const FullScreenModal = ({ title, onClose, children, tags = [] }) => (
+            <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+                <div className="bg-white w-full max-w-5xl h-[90vh] border-4 border-black shadow-[16px_16px_0px_0px_#a3e635] flex flex-col relative overflow-hidden">
+                    <div className="bg-black text-white p-4 flex justify-between items-center border-b-4 border-black shrink-0">
+                        <div className="flex items-center gap-4 overflow-hidden"><div className="font-mono font-bold text-xl truncate uppercase text-[#a3e635]">{title}</div><div className="hidden md:flex gap-2">{tags.map((t, i) => <span key={i} className="text-xs font-mono font-bold border border-white px-2 py-0.5">{t}</span>)}</div></div>
+                        <button onClick={onClose} className="hover:text-[#a3e635] transition-colors shrink-0"><Icon name="x" size={28} /></button>
+                        </div>
+                    <div className="flex-1 overflow-y-auto p-6 md:p-10 bg-[#f8f8f8]">{children}</div>
+                    <div className="p-4 border-t-4 border-black bg-white flex justify-end shrink-0"><BrutalistButton variant="primary" onClick={onClose} className="!py-2">Close</BrutalistButton></div>
+                </div>
+                        </div>
+        );
+
+        const MediaCard = ({ item, type }) => {
+            if (!item) return null;
+            const isVideo = type === 'videos';
+            const isClickable = (type === 'videos' || type === 'podcasts') && item.link && item.link !== '#';
+            const aspectRatio = type === 'books' || type === 'podcasts' ? 'aspect-[3/4]' : 'aspect-video';
+            
+            // 野兽派排版即视觉设计：高饱和度纯色背景 + 巨大首字母/关键词
+            const getTypographyVisual = (type, item) => {
+                // 高饱和度颜色调色板
+                const colors = ['#CCFF00', '#FF00FF', '#00FFFF', '#FF6B35', '#8A2BE2', '#FF1493'];
+                const bgColor = colors[Math.floor(Math.random() * colors.length)];
+                
+                // 获取首字母或关键词
+                let displayText = '';
+                if (type === 'books') {
+                    displayText = item.title.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
+                } else if (type === 'videos') {
+                    displayText = item.title.split(' ').map(word => word[0]).join('').toUpperCase().slice(0, 2);
+                } else {
+                    displayText = type.toUpperCase().slice(0, 2);
+                }
+                
+                return (
+                    <div className="w-full h-full flex items-center justify-center border-2 border-black" style={{backgroundColor: bgColor}}>
+                        <div className="text-center">
+                            <div className="text-6xl md:text-8xl font-serif font-black text-black mb-2">{displayText}</div>
+                    </div>
+                </div>
+            );
+        };
+        
+            // 高对比度贴纸标签
+            const StickerTag = ({ children, variant = "black" }) => (
+                <span className={`px-2 py-1 text-xs font-mono font-bold border border-black ${
+                    variant === 'black' ? 'bg-black text-white' : 'bg-white text-black'
+                }`}>{children}</span>
+            );
+            
+            // 硬阴影卡片容器
+            const cardContent = (
+                <div className={`relative w-full border-2 border-black overflow-hidden mb-4 ${aspectRatio} shadow-[6px_6px_0px_0px_#000000]`}>
+                    {getTypographyVisual(type, item)}
+                    {isVideo && (
+                        <div className="absolute inset-0 flex items-center justify-center bg-black/30 group-hover:bg-transparent transition-all">
+                            <div className="w-12 h-12 bg-white border-2 border-black flex items-center justify-center">
+                                <span className="text-black font-black text-xl">▶</span>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+            
+            // 获取标签
+            const getTags = (type, item) => {
+                if (type === 'books') return ['READING', 'LEARN'];
+                if (type === 'videos') return ['VIDEO', 'WATCH'];
+                if (item.tag) return [item.tag.toUpperCase()];
+                return [type.toUpperCase()];
+            };
+            return (
+                <div className={`group border-2 border-black bg-white p-3 hover:shadow-[8px_8px_0px_0px_#000000] hover:-translate-y-1 transition-all h-full flex flex-col shadow-[4px_4px_0px_0px_#000000] ${isClickable ? 'cursor-pointer' : 'cursor-default'}`}>
+                    {isClickable ? (
+                        <a href={item.link} target="_blank" rel="noopener noreferrer">
+                            {cardContent}
+                            <div className="flex-1">
+                                <div className="flex gap-2 mb-2">
+                                    {getTags(type, item).map((tag, i) => (
+                                        <StickerTag key={i} variant={i % 2 === 0 ? 'black' : 'white'}>{tag}</StickerTag>
+                                    ))}
+                                </div>
+                                <h3 className="font-black text-lg leading-tight mb-1 line-clamp-2">{item.title}</h3>
+                                <p className="font-mono text-xs text-gray-500 mb-2">{item.author}</p>
+                                <p className="text-sm text-gray-800 border-l-2 border-black pl-2 line-clamp-3 group-hover:border-black/50">{item.note}</p>
+                            </div>
+                            {item.rating && (
+                                <div className="flex mt-3 pt-3 border-t border-black group-hover:border-black/50">
+                                    {[...Array(item.rating)].map((_, i) => (
+                                        <span key={i} className="text-black font-black text-lg">■</span>
+                                    ))}
+                                </div>
+                            )}
+                            {isClickable && (
+                                <div className="mt-3 pt-3 border-t border-black group-hover:border-black/50">
+                                    <div className="bg-black text-white text-center py-2 font-mono font-bold text-sm">
+                                        {type === 'videos' ? 'WATCH ▶' : 'LISTEN ▶'}
+                                    </div>
+                                </div>
+                            )}
+                        </a>
+                    ) : (
+                        <>
+                            {cardContent}
+                            <div className="flex-1">
+                                <div className="flex gap-2 mb-2">
+                                    {getTags(type, item).map((tag, i) => (
+                                        <StickerTag key={i} variant={i % 2 === 0 ? 'black' : 'white'}>{tag}</StickerTag>
+                                    ))}
+                    </div>
+                                <h3 className="font-black text-lg leading-tight mb-1 line-clamp-2">{item.title}</h3>
+                                <p className="font-mono text-xs text-gray-500 mb-2">{item.author}</p>
+                                <p className="text-sm text-gray-800 border-l-2 border-black pl-2 line-clamp-3 group-hover:border-black/50">{item.note}</p>
+                            </div>
+                            {item.rating && (
+                                <div className="flex mt-3 pt-3 border-t border-black group-hover:border-black/50">
+                                    {[...Array(item.rating)].map((_, i) => (
+                                        <span key={i} className="text-black font-black text-lg">■</span>
+                                    ))}
+                                </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            );
+        };
+        
+        const RaceCard = ({ race }) => {
+            const [imgIndex, setImgIndex] = useState(0);
+            // 如果有 images 数组则使用，否则使用 image_placeholder 构造数组
+            const images = race.images && race.images.length > 0 ? race.images : [race.image_placeholder];
+            
+            const nextImg = (e) => {
+                e.stopPropagation();
+                setImgIndex((prev) => (prev + 1) % images.length);
+            };
+            
+            const prevImg = (e) => {
+                e.stopPropagation();
+                setImgIndex((prev) => (prev - 1 + images.length) % images.length);
+            };
+
+            return (
+                <div className="min-w-[320px] md:min-w-[380px] snap-center h-full">
+                    <div className="relative group h-full flex flex-col">
+                        <div className="absolute -top-3 -right-3 z-20 bg-yellow-400 border-2 border-black rounded-full w-12 h-12 flex items-center justify-center shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] group-hover:scale-110 transition-transform">
+                            <Icon name="award" className="w-6 h-6 text-black" />
+                        </div>
+                        <BrutalistCard className="relative overflow-hidden group-hover:shadow-[12px_12px_0px_0px_#f472b6] transition-all flex flex-col h-full" color="bg-white">
+                            <div className="flex justify-between items-end mb-4 border-b-2 border-black pb-2">
+                                <h3 className="text-xl font-black truncate pr-4">{race.title}</h3>
+                                <span className="font-mono text-lg font-bold bg-black text-white px-2">{race.category}</span>
+                            </div>
+                            
+                            {/* Image Carousel Area */}
+                            <div className="w-full aspect-video bg-gray-200 border-2 border-black mb-4 flex items-center justify-center relative overflow-hidden group-hover:grayscale-0 transition-all grayscale group/image">
+                                <div className="text-center w-full h-full flex items-center justify-center bg-gray-100">
+                                    {images[imgIndex] && (images[imgIndex].startsWith('http') || images[imgIndex].includes('/')) ? (
+                                        <img src={images[imgIndex]} alt={race.title} className="w-full h-full object-cover" />
+                        ) : (
+                            <div className="text-center">
+                                            <Icon name="mountain" className="w-10 h-10 mx-auto mb-2 opacity-50" />
+                                            <span className="font-mono text-xs font-bold opacity-50">[{images[imgIndex]}]</span>
+                            </div>
+                        )}
+                    </div>
+
+                                {images.length > 1 && (
+                                    <>
+                                        <button onClick={prevImg} className="absolute left-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px] z-10 opacity-0 group-hover/image:opacity-100 transition-opacity duration-300"><Icon name="arrowLeft" size={16} /></button>
+                                        <button onClick={nextImg} className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 bg-white border-2 border-black flex items-center justify-center hover:bg-black hover:text-white transition-colors shadow-[2px_2px_0px_0px_rgba(0,0,0,1)] active:shadow-none active:translate-x-[1px] active:translate-y-[1px] z-10 opacity-0 group-hover/image:opacity-100 transition-opacity duration-300"><Icon name="arrowRight" size={16} /></button>
+                                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1 z-10">
+                                            {images.map((_, idx) => (
+                                                <div key={idx} className={`w-2 h-2 border border-black ${idx === imgIndex ? 'bg-[#a3e635]' : 'bg-white'}`} />
+                                            ))}
+                        </div>
+                                    </>
+                                )}
+                        </div>
+
+                            <p className="font-medium text-gray-800 mb-4 text-base flex-1">{race.desc}</p>
+                            <div className="flex justify-between items-end mt-auto">
+                                <div className="flex flex-wrap gap-2">{race.tags.map((tag, i) => <Tag key={i} color="bg-[#f472b6]">{tag}</Tag>)}</div>
+                                <span className="font-mono text-xs font-bold text-gray-500">{race.date}</span>
+                        </div>
+                        </BrutalistCard>
+                    </div>
+                </div>
+            );
+        };
+        
+        const renderProjectCard = (project) => (
+            <div key={project.id} className="min-w-[300px] md:min-w-[350px] snap-center h-full">
+                <div className="bg-white border-4 border-black p-1 flex flex-col h-full hover:-translate-y-2 transition-transform duration-300 shadow-[8px_8px_0px_0px_rgba(0,0,0,1)]">
+                    <div className="bg-black text-white p-2 font-mono font-bold text-xs flex justify-between"><span>{project.id.toUpperCase()}</span><div className="flex gap-1"><div className="w-2 h-2 rounded-full bg-red-500"></div><div className="w-2 h-2 rounded-full bg-yellow-500"></div><div className="w-2 h-2 rounded-full bg-green-500"></div></div></div>
+                    <div className="aspect-[3/2] bg-gray-200 border-b-4 border-black flex items-center justify-center relative overflow-hidden group">
+                        {project.image ? (
+                            <img src={project.image} alt={project.title} className="w-full h-full object-cover" />
+                        ) : (
+                            <>
+                                <div className="text-center opacity-40 group-hover:opacity-100 transition-opacity"><Icon name="mapPin" size={40} className="mx-auto mb-2" /><span className="font-mono font-bold">[IMG]</span></div>
+                                <div className="absolute inset-0 flex items-center justify-center opacity-10 font-black text-4xl uppercase transform -rotate-45 pointer-events-none">{project.image_text}</div>
+                            </>
+                        )}
+                    </div>
+                    <div className="p-5 flex-1 flex flex-col"><h3 className="text-xl font-black mb-1 leading-none">{project.title}</h3><span className="inline-block bg-[#f472b6] border border-black px-2 py-0.5 text-[10px] font-bold w-fit mb-3 mt-2">{project.role}</span><p className="text-base font-medium mb-4 flex-1 leading-relaxed">{project.desc}</p><div className="border-t-2 border-black pt-3 mt-auto"><div className="flex flex-wrap gap-2">{project.tech.map((tech, i) => <span key={i} className="text-[10px] font-mono font-bold border border-black px-1 bg-white">{tech}</span>)}</div></div></div>
+                </div>
+            </div>
+        );
+
+        // --- Data Fetching Logic ---
+        const useDataFetcher = () => {
+            const [content, setContent] = useState(DEFAULT_CONTENT);
+            const [status, setStatus] = useState(null);
+            const [archives, setArchives] = useState([]);
+            
+            useEffect(() => {
+                const fetchData = async () => {
+                    try {
+                        // 1. Fetch Status
+                        const statusRes = await fetch('data/status.json');
+                        if (statusRes.ok) {
+                            const statusData = await statusRes.json();
+                            setStatus(statusData);
+                        }
+
+                        // 2. Fetch Archives
+                        const archivesRes = await fetch('data/archives.json');
+                        if (archivesRes.ok) {
+                            const archivesData = await archivesRes.json();
+                            setArchives(archivesData);
+                        }
+
+                        // 2.1 Fetch Resume
+                        let resumeData = [];
+                        try {
+                            const resumeRes = await fetch('data/resume.json');
+                            if (resumeRes.ok) {
+                                const data = await resumeRes.json();
+                                resumeData = data.jobs || [];
+                            }
+                        } catch (e) { console.error("Failed to fetch resume:", e); }
+
+                        // 2.2 Fetch Projects (Chinese)
+                        let projectsDataZh = [];
+                        try {
+                            const projectsRes = await fetch('data/projects.json');
+                            if (projectsRes.ok) {
+                                const data = await projectsRes.json();
+                                projectsDataZh = data.list || [];
+                            }
+                        } catch (e) { console.error("Failed to fetch zh projects:", e); }
+
+                        // 2.2.1 Fetch Projects (English)
+                        let projectsDataEn = [];
+                        try {
+                            const projectsRes = await fetch('data/en/projects.json');
+                            if (projectsRes.ok) {
+                                const data = await projectsRes.json();
+                                projectsDataEn = data.list || [];
+                            }
+                        } catch (e) { console.error("Failed to fetch en projects:", e); }
+
+                        // 2.3 Fetch Races (Chinese)
+                        let racesDataZh = [];
+                        try {
+                            const racesRes = await fetch('data/races.json');
+                            if (racesRes.ok) {
+                                const data = await racesRes.json();
+                                racesDataZh = data.races || [];
+                            }
+                        } catch (e) { console.error("Failed to fetch zh races:", e); }
+
+                        // 2.3.1 Fetch Races (English)
+                        let racesDataEn = [];
+                        try {
+                            const racesRes = await fetch('data/en/races.json');
+                            if (racesRes.ok) {
+                                const data = await racesRes.json();
+                                racesDataEn = data.races || [];
+                            }
+                        } catch (e) { console.error("Failed to fetch en races:", e); }
+
+                        // 3. Fetch Index (List of all MD files)
+                        let indexData = { posts: [], inputs: { books: [], movies: [], podcasts: [], videos: [] } };
+                        try {
+                            const indexRes = await fetch('data/index.json');
+                            if (indexRes.ok) {
+                                indexData = await indexRes.json();
+                            } else {
+                                console.warn("Index file not found, falling back to empty lists.");
+                            }
+                        } catch (e) {
+                            console.error("Failed to fetch index:", e);
+                        }
+
+                        // 4. Fetch Blog Posts (Markdown)
+                        const postFiles = indexData.posts; 
+                        const posts = await Promise.all(postFiles.map(async (file) => {
+                            try {
+                                const res = await fetch(`data/posts/${file}`);
+                                if (!res.ok) return null;
+                                const text = await res.text();
+                                // 使用 js-yaml 解析 Front Matter
+                                const parts = text.split('---');
+                                if (parts.length < 3) return null;
+                                const frontMatter = jsyaml.load(parts[1]);
+                                const body = parts.slice(2).join('---');
+                                return { ...frontMatter, content: body };
+                            } catch (e) {
+                                console.error(`Error loading post ${file}:`, e);
+                                return null;
+                            }
+                        }));
+                        
+                        // 5. Fetch Inputs (Books, Movies, etc. - old structure)
+                        const inputCategories = ['books', 'movies', 'podcasts', 'videos'];
+                        const inputsData = {};
+
+                        await Promise.all(inputCategories.map(async (category) => {
+                            const files = indexData.inputs[category] || [];
+                            const items = await Promise.all(files.map(async (file) => {
+                                try {
+                                    const res = await fetch(`data/inputs/${category}/${file}`);
+                                    if (!res.ok) return null;
+                                    const text = await res.text();
+                                    const parts = text.split('---');
+                                    if (parts.length < 3) return null;
+                                    const frontMatter = jsyaml.load(parts[1]);
+                                    const body = parts.slice(2).join('---');
+                                    return { ...frontMatter, content: body };
+                                } catch (e) {
+                                    console.error(`Error loading ${category} ${file}:`, e);
+                                    return null;
+                                }
+                            }));
+                            inputsData[category] = items.filter(i => i !== null);
+                        }));
+
+                        // 6. Fetch Second Brain Data (Creators, Books, Tools) for both languages
+                        let zhCreators = {}, zhBooks = [], zhTools = [];
+                        let enCreators = {}, enBooks = [], enTools = [];
+
+                        try {
+                            const [zhCreatorsRes, zhBooksRes, zhToolsRes, enCreatorsRes, enBooksRes, enToolsRes] = await Promise.all([
+                                fetch('data/inputs/zh/creators.json'),
+                                fetch('data/inputs/zh/books.json'),
+                                fetch('data/inputs/zh/tools.json'),
+                                fetch('data/inputs/en/creators.json'),
+                                fetch('data/inputs/en/books.json'),
+                                fetch('data/inputs/en/tools.json')
+                            ]);
+
+                            if (zhCreatorsRes.ok) zhCreators = await zhCreatorsRes.json();
+                            if (zhBooksRes.ok) zhBooks = await zhBooksRes.json();
+                            if (zhToolsRes.ok) zhTools = await zhToolsRes.json();
+                            if (enCreatorsRes.ok) enCreators = await enCreatorsRes.json();
+                            if (enBooksRes.ok) enBooks = await enBooksRes.json();
+                            if (enToolsRes.ok) enTools = await enToolsRes.json();
+                        } catch (e) {
+                            console.error("Failed to fetch Second Brain config:", e);
+                        }
+                        
+                        // Update Content State
+                        const loadedPosts = posts.filter(p => p !== null);
+                        setContent(prev => ({
+                            ...prev,
+                            zh: {
+                                ...prev.zh,
+                                resume: { ...prev.zh.resume, jobs: resumeData.length > 0 ? resumeData : prev.zh.resume.jobs },
+                                projects: { ...prev.zh.projects, list: projectsDataZh.length > 0 ? projectsDataZh : prev.zh.projects.list },
+                                run: { ...prev.zh.run, races: racesDataZh.length > 0 ? racesDataZh : prev.zh.run.races },
+                                blog: { ...prev.zh.blog, posts: loadedPosts.length > 0 ? loadedPosts : prev.zh.blog.posts },
+                                inputs: {
+                                    ...prev.zh.inputs,
+                                    // Second Brain data from config files
+                                    ai_tech: zhCreators.ai_tech || prev.zh.inputs.ai_tech,
+                                    business: zhCreators.business || prev.zh.inputs.business,
+                                    english: zhCreators.english || prev.zh.inputs.english,
+                                    culture: zhCreators.culture || prev.zh.inputs.culture,
+                                    books_recommend: zhBooks.length > 0 ? zhBooks : prev.zh.inputs.books_recommend,
+                                    websites_tools: zhTools.length > 0 ? zhTools : prev.zh.inputs.websites_tools,
+                                    // Old structure
+                                    books: inputsData.books.length > 0 ? inputsData.books : (prev.zh.inputs.books || []),
+                                    movies: inputsData.movies.length > 0 ? inputsData.movies : (prev.zh.inputs.movies || []),
+                                    podcasts: inputsData.podcasts.length > 0 ? inputsData.podcasts : (prev.zh.inputs.podcasts || []),
+                                    videos: inputsData.videos.length > 0 ? inputsData.videos : (prev.zh.inputs.videos || []),
+                                }
+                            },
+                            en: {
+                                ...prev.en,
+                                // English projects and races from separate JSON files
+                                projects: { ...prev.en.projects, list: projectsDataEn.length > 0 ? projectsDataEn : prev.en.projects.list },
+                                run: { ...prev.en.run, races: racesDataEn.length > 0 ? racesDataEn : prev.en.run.races },
+                                blog: { ...prev.en.blog, posts: loadedPosts.length > 0 ? loadedPosts : prev.en.blog.posts },
+                                inputs: {
+                                    ...prev.en.inputs,
+                                    // Second Brain data from config files (English)
+                                    ai_tech: enCreators.ai_tech || prev.en.inputs.ai_tech,
+                                    business: enCreators.business || prev.en.inputs.business,
+                                    english: enCreators.english || prev.en.inputs.english,
+                                    culture: enCreators.culture || prev.en.inputs.culture,
+                                    books_recommend: enBooks.length > 0 ? enBooks : prev.en.inputs.books_recommend,
+                                    websites_tools: enTools.length > 0 ? enTools : prev.en.inputs.websites_tools,
+                                }
+                            }
+                        }));
+
+                    } catch (error) {
+                        console.error("Failed to fetch data:", error);
+                    }
+                };
+                
+                fetchData();
+            }, []);
+            
+            return { content, status, archives };
+        };
+
+        function App() {
+            const { content, status, archives } = useDataFetcher();
+            const [lang, setLang] = useState('zh');
+            const [readingArticle, setReadingArticle] = useState(null);
+            const [showInputsFullPage, setShowInputsFullPage] = useState(false);
+            const [mainInputTab, setMainInputTab] = useState('creators'); // 'creators', 'books', 'websites'
+            const [activeInputTab, setActiveInputTab] = useState('ai_tech');
+            const [showWeChat, setShowWeChat] = useState(false);
+            const t = content[lang];
+
+            const scrollTo = (id) => {
+                const element = document.getElementById(id);
+                if (element) element.scrollIntoView({ behavior: 'smooth' });
+            };
+
+            const USE_IMAGE_LOGO = true; 
+            const LOGO_IMAGE_PATH = "assets/logo/logo.png";
+
+                return (
+                <div className="min-h-screen">
+                    {/* Modals */}
+                    {readingArticle && <FullScreenModal title={`READING: ${readingArticle.title}`} tags={[readingArticle.category]} onClose={() => setReadingArticle(null)}><div className="max-w-3xl mx-auto bg-white border-2 border-black p-8 md:p-12 shadow-[8px_8px_0px_0px_rgba(0,0,0,0.1)]"><div className="mb-8 pb-8 border-b-2 border-dashed border-gray-300"><h1 className="text-2xl md:text-4xl font-black mb-4">{readingArticle.title}</h1><div className="flex flex-wrap gap-4 text-sm font-mono text-gray-600"><span className="flex items-center gap-1"><Icon name="calendar" size={14}/> {readingArticle.date}</span><span className="flex items-center gap-1"><Icon name="tag" size={14}/> {readingArticle.category}</span></div></div><div className="prose prose-lg prose-gray max-w-none prose-headings:font-black prose-headings:text-black prose-h2:text-2xl prose-h2:mt-8 prose-h2:mb-4 prose-h3:text-xl prose-h3:mt-6 prose-h3:mb-3 prose-p:text-gray-700 prose-p:leading-relaxed prose-li:text-gray-700 prose-strong:text-black prose-blockquote:border-l-4 prose-blockquote:border-[#a3e635] prose-blockquote:bg-gray-50 prose-blockquote:py-2 prose-blockquote:px-4 prose-blockquote:not-italic prose-table:border-collapse prose-th:bg-gray-100 prose-th:border prose-th:border-gray-300 prose-th:px-4 prose-th:py-2 prose-td:border prose-td:border-gray-300 prose-td:px-4 prose-td:py-2 prose-code:bg-gray-100 prose-code:px-1 prose-code:rounded prose-pre:bg-gray-900 prose-a:text-blue-600 prose-a:no-underline hover:prose-a:underline" dangerouslySetInnerHTML={{ __html: marked.parse(readingArticle.content || '') }}></div></div></FullScreenModal>}
+                    
+                    {/* Full Screen Inputs Page - Sidebar Layout */}
+                    {showInputsFullPage && (
+                        <div className="fixed inset-0 z-[100] flex">
+                            {/* Left Sidebar */}
+                            <div className="w-64 bg-white border-r-4 border-black flex flex-col shrink-0 h-full overflow-y-auto">
+                                {/* Back Button */}
+                                <button 
+                                    onClick={() => setShowInputsFullPage(false)} 
+                                    className="w-full py-4 bg-black text-white font-mono font-bold text-sm hover:bg-gray-800 transition-colors flex items-center justify-center gap-2">
+                                    <Icon name="arrowLeft" size={16} /> DASHBOARD
+                                </button>
+                                
+                                {/* Navigation Items */}
+                                <div className="flex flex-col">
+                                    {/* Channels/博主视频 */}
+                                    <button 
+                                        onClick={() => setMainInputTab('creators')}
+                                        className={`w-full p-4 text-left border-b-2 border-black flex items-center gap-3 transition-all ${
+                                            mainInputTab === 'creators' ? 'bg-[#facc15]' : 'bg-white hover:bg-gray-50'
+                                        }`}>
+                                        <span className="w-10 h-10 bg-[#facc15] border-2 border-black flex items-center justify-center font-mono font-black text-sm">CH</span>
+                                        <div>
+                                            <div className="font-bold text-sm">CHANNELS</div>
+                                            <div className="text-xs text-gray-500">{(t.inputs.ai_tech?.length || 0) + (t.inputs.business?.length || 0) + (t.inputs.english?.length || 0) + (t.inputs.culture?.length || 0)} Items</div>
+                    </div>
+                                    </button>
+                                    
+                                    {/* Books/书籍推荐 */}
+                                    <button 
+                                        onClick={() => setMainInputTab('books')}
+                                        className={`w-full p-4 text-left border-b-2 border-black flex items-center gap-3 transition-all ${
+                                            mainInputTab === 'books' ? 'bg-[#ec4899]' : 'bg-white hover:bg-gray-50'
+                                        }`}>
+                                        <span className="w-10 h-10 bg-[#ec4899] border-2 border-black flex items-center justify-center font-mono font-black text-sm text-white">BK</span>
+                                        <div>
+                                            <div className="font-bold text-sm">BOOKS</div>
+                                            <div className="text-xs text-gray-500">{t.inputs.books_recommend?.length || 0} Items</div>
+                    </div>
+                                    </button>
+                                    
+                                    {/* Tools/工具网站 */}
+                                    <button 
+                                        onClick={() => setMainInputTab('websites')}
+                                        className={`w-full p-4 text-left border-b-2 border-black flex items-center gap-3 transition-all ${
+                                            mainInputTab === 'websites' ? 'bg-[#22d3ee]' : 'bg-white hover:bg-gray-50'
+                                        }`}>
+                                        <span className="w-10 h-10 bg-[#22d3ee] border-2 border-black flex items-center justify-center font-mono font-black text-sm">TL</span>
+                                        <div>
+                                            <div className="font-bold text-sm">TOOLS</div>
+                                            <div className="text-xs text-gray-500">{t.inputs.websites_tools?.length || 0} Items</div>
+                            </div>
+                                    </button>
+                            </div>
+                                
+                                {/* Language Switch - Bottom of Sidebar */}
+                                <div className="mt-auto p-4 border-t-2 border-black">
+                                    <button 
+                                        onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')} 
+                                        className="w-full flex items-center justify-center gap-2 font-bold border-2 border-black px-3 py-2 hover:bg-black hover:text-white transition-colors bg-white">
+                                        <Icon name="languages" size={18} />
+                                        {lang === 'zh' ? 'EN' : '中文'}
+                                    </button>
+                        </div>
+                        </div>
+                            
+                            {/* Right Content Area */}
+                            <div className="flex-1 bg-[#f8f9fa] overflow-y-auto">
+                                <div className="p-6 md:p-10">
+                                    {/* Main Title & Badge */}
+                                    <div className="flex items-center justify-between mb-8">
+                                        <h1 className="text-4xl md:text-5xl font-black uppercase tracking-tight">
+                                            {mainInputTab === 'creators' && 'CHANNELS'}
+                                            {mainInputTab === 'books' && 'BOOKS'}
+                                            {mainInputTab === 'websites' && 'TOOLS'}
+                                    </h1>
+                                        <span className="bg-black text-white px-4 py-2 font-mono font-bold text-sm rounded">
+                                            {mainInputTab === 'creators' && 'BLOGGERS / PODCASTS'}
+                                            {mainInputTab === 'books' && 'MUST READ'}
+                                            {mainInputTab === 'websites' && 'WEB / APPS'}
+                                        </span>
+                                    </div>
+                                    
+                                    {/* Content by Category */}
+                                    {mainInputTab === 'creators' && (
+                                        <div className="space-y-10">
+                                            {/* AI & Tech Section */}
+                                            <div>
+                                                <div className="flex items-center gap-4 mb-5">
+                                                    <span className="bg-[#a3e635] text-black px-3 py-1 font-mono font-bold text-sm rounded">01 AI & TECH</span>
+                                                    <div className="flex-1 border-b border-gray-300"></div>
+                                                </div>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                                                    {(t.inputs.ai_tech || []).map((item, i) => (
+                                                        <a key={i} href={item.link && item.link !== '#' ? item.link : undefined} target="_blank" rel="noopener noreferrer"
+                                                           className={`block bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all ${item.link && item.link !== '#' ? 'cursor-pointer' : 'cursor-default'}`}>
+                                                            <div className="flex justify-between items-start mb-2">
+                                                                <h3 className="text-base font-bold text-blue-600 leading-tight pr-2">{item.name}</h3>
+                                                                {item.link && item.link !== '#' && (
+                                                                    <Icon name="externalLink" size={18} className="text-blue-400 shrink-0" />
+                                                                )}
+                                                            </div>
+                                                            <p className="text-sm text-gray-500 leading-relaxed mb-3">{item.desc}</p>
+                                                            <div className="flex flex-wrap gap-1.5">
+                                                                {item.tags.map((tag, idx) => (
+                                                                    <span key={idx} className="text-xs font-medium text-gray-600 bg-gray-200 px-2 py-0.5 rounded">{tag}</span>
+                                                                ))}
+                                                            </div>
+                                                        </a>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            
+                                            {/* Business Section */}
+                                            <div>
+                                                <div className="flex items-center gap-4 mb-5">
+                                                    <span className="bg-[#fb923c] text-black px-3 py-1 font-mono font-bold text-sm rounded">02 BUSINESS</span>
+                                                    <div className="flex-1 border-b border-gray-300"></div>
+                                                </div>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                                                    {(t.inputs.business || []).map((item, i) => (
+                                                        <a key={i} href={item.link && item.link !== '#' ? item.link : undefined} target="_blank" rel="noopener noreferrer"
+                                                           className={`block bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all ${item.link && item.link !== '#' ? 'cursor-pointer' : 'cursor-default'}`}>
+                                                            <div className="flex justify-between items-start mb-2">
+                                                                <h3 className="text-base font-bold text-blue-600 leading-tight pr-2">{item.name}</h3>
+                                                                {item.link && item.link !== '#' && (
+                                                                    <Icon name="externalLink" size={18} className="text-blue-400 shrink-0" />
+                                                                )}
+                                                            </div>
+                                                            <p className="text-sm text-gray-500 leading-relaxed mb-3">{item.desc}</p>
+                                                            <div className="flex flex-wrap gap-1.5">
+                                                                {item.tags.map((tag, idx) => (
+                                                                    <span key={idx} className="text-xs font-medium text-gray-600 bg-gray-200 px-2 py-0.5 rounded">{tag}</span>
+                                                                ))}
+                                                            </div>
+                                                        </a>
+                                                    ))}
+                                    </div>
+                                </div>
+                                            
+                                            {/* English Section */}
+                                            <div>
+                                                <div className="flex items-center gap-4 mb-5">
+                                                    <span className="bg-[#60a5fa] text-black px-3 py-1 font-mono font-bold text-sm rounded">03 ENGLISH</span>
+                                                    <div className="flex-1 border-b border-gray-300"></div>
+                                    </div>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                                                    {(t.inputs.english || []).map((item, i) => (
+                                                        <a key={i} href={item.link && item.link !== '#' ? item.link : undefined} target="_blank" rel="noopener noreferrer"
+                                                           className={`block bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all ${item.link && item.link !== '#' ? 'cursor-pointer' : 'cursor-default'}`}>
+                                                            <div className="flex justify-between items-start mb-2">
+                                                                <h3 className="text-base font-bold text-blue-600 leading-tight pr-2">{item.name}</h3>
+                                                                {item.link && item.link !== '#' && (
+                                                                    <Icon name="externalLink" size={18} className="text-blue-400 shrink-0" />
+                                                                )}
+                                </div>
+                                                            <p className="text-sm text-gray-500 leading-relaxed mb-3">{item.desc}</p>
+                                                            <div className="flex flex-wrap gap-1.5">
+                                                                {item.tags.map((tag, idx) => (
+                                                                    <span key={idx} className="text-xs font-medium text-gray-600 bg-gray-200 px-2 py-0.5 rounded">{tag}</span>
+                                                                ))}
+                            </div>
+                                                        </a>
+                                                    ))}
+                        </div>
+                                </div>
+                                            
+                                            {/* Culture Section */}
+                                            <div>
+                                                <div className="flex items-center gap-4 mb-5">
+                                                    <span className="bg-[#f472b6] text-black px-3 py-1 font-mono font-bold text-sm rounded">04 CULTURE</span>
+                                                    <div className="flex-1 border-b border-gray-300"></div>
+                                </div>
+                                                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                                                    {(t.inputs.culture || []).map((item, i) => (
+                                                        <a key={i} href={item.link && item.link !== '#' ? item.link : undefined} target="_blank" rel="noopener noreferrer"
+                                                           className={`block bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all ${item.link && item.link !== '#' ? 'cursor-pointer' : 'cursor-default'}`}>
+                                                            <div className="flex justify-between items-start mb-2">
+                                                                <h3 className="text-base font-bold text-blue-600 leading-tight pr-2">{item.name}</h3>
+                                                                {item.link && item.link !== '#' && (
+                                                                    <Icon name="externalLink" size={18} className="text-blue-400 shrink-0" />
+                                                                )}
+                                                            </div>
+                                                            <p className="text-sm text-gray-500 leading-relaxed mb-3">{item.desc}</p>
+                                                            <div className="flex flex-wrap gap-1.5">
+                                                                {item.tags.map((tag, idx) => (
+                                                                    <span key={idx} className="text-xs font-medium text-gray-600 bg-gray-200 px-2 py-0.5 rounded">{tag}</span>
+                                                                ))}
+                                                            </div>
+                                                        </a>
+                                                    ))}
+                                    </div>
+                                </div>
+                            </div>
+                                    )}
+                                    
+                                    {/* Books Content */}
+                                    {mainInputTab === 'books' && (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                                            {(t.inputs.books_recommend || []).map((item, i) => (
+                                                <a key={i} href={item.link && item.link !== '#' ? item.link : undefined} target="_blank" rel="noopener noreferrer"
+                                                   className={`block bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all ${item.link && item.link !== '#' ? 'cursor-pointer' : 'cursor-default'}`}>
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <h3 className="text-base font-bold text-blue-600 leading-tight pr-2">{item.name}</h3>
+                                                        {item.link && item.link !== '#' && (
+                                                            <Icon name="externalLink" size={18} className="text-blue-400 shrink-0" />
+                                                        )}
+                                </div>
+                                                    <p className="text-sm text-gray-500 leading-relaxed mb-3">{item.desc}</p>
+                                                    <div className="flex flex-wrap gap-1.5">
+                                                        {item.tags.map((tag, idx) => (
+                                                            <span key={idx} className="text-xs font-medium text-gray-600 bg-gray-200 px-2 py-0.5 rounded">{tag}</span>
+                                                        ))}
+                                                    </div>
+                                                </a>
+                                            ))}
+                        </div>
+                                    )}
+                                    
+                                    {/* Tools/Websites Content */}
+                                    {mainInputTab === 'websites' && (
+                                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+                                            {(t.inputs.websites_tools || []).map((item, i) => (
+                                                <a key={i} href={item.link && item.link !== '#' ? item.link : undefined} target="_blank" rel="noopener noreferrer"
+                                                   className={`block bg-white rounded-xl p-5 shadow-sm border border-gray-100 hover:shadow-lg hover:border-gray-200 transition-all ${item.link && item.link !== '#' ? 'cursor-pointer' : 'cursor-default'}`}>
+                                                    <div className="flex justify-between items-start mb-2">
+                                                        <h3 className="text-base font-bold text-blue-600 leading-tight pr-2">{item.name}</h3>
+                                                        {item.link && item.link !== '#' && (
+                                                            <Icon name="externalLink" size={18} className="text-blue-400 shrink-0" />
+                                                        )}
+                                            </div>
+                                                    <p className="text-sm text-gray-500 leading-relaxed mb-3">{item.desc}</p>
+                                                    <div className="flex flex-wrap gap-1.5">
+                                                        {item.tags.map((tag, idx) => (
+                                                            <span key={idx} className="text-xs font-medium text-gray-600 bg-gray-200 px-2 py-0.5 rounded">{tag}</span>
+                                                        ))}
+                                        </div>
+                                                </a>
+                                    ))}
+                                </div>
+                                    )}
+                                </div>
+                            </div>
+                                </div>
+                    )}
+                    
+                    {showWeChat && <div className="fixed inset-0 z-[110] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setShowWeChat(false)}><div className="bg-white p-8 border-4 border-black text-center shadow-[16px_16px_0px_0px_#22c55e] animate-fade-in-up" onClick={e => e.stopPropagation()}><h3 className="text-xl font-black mb-2">{lang === 'zh' ? '微信公众号' : 'WeChat Official Account'}</h3><p className="text-2xl font-black text-[#22c55e] mb-4">贺然产品库</p><p className="text-sm text-gray-600">{lang === 'zh' ? '搜索关注' : 'Search to follow'}</p></div></div>}
+
+                    {/* Nav */}
+                    <nav className="sticky top-0 z-50 bg-white border-b-4 border-black px-4 py-3 flex justify-between items-center animate-fade-in-up">
+                        <div className="flex items-center gap-3 select-none cursor-pointer group" onClick={() => scrollTo('hero')}>
+                            {USE_IMAGE_LOGO ? (<img src={LOGO_IMAGE_PATH} alt="HERA" className="h-12 object-contain hover:scale-105 transition-transform" />) : (<><div className="w-10 h-10 bg-black flex items-center justify-center border-2 border-black group-hover:bg-[#a3e635] transition-colors"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M4 4V20M20 4V20M4 12H20" stroke="white" strokeWidth="4" className="group-hover:stroke-black transition-colors" strokeLinecap="square"/></svg></div><div className="bg-white text-black px-2 py-1 font-black text-2xl tracking-tighter border-y-2 border-r-2 border-black group-hover:bg-black group-hover:text-white transition-colors">HERA</div></>)}
+                            </div>
+                        <div className="hidden md:flex gap-6 font-bold font-mono text-sm">
+                            <button onClick={() => scrollTo('journey')} className="hover:bg-black hover:text-white px-2 transition-colors uppercase flex items-center gap-1"><Icon name="footprints" size={14} /> {t.nav.journey}</button>
+                            <button onClick={() => scrollTo('run')} className="hover:bg-black hover:text-white px-2 transition-colors uppercase flex items-center gap-1"><Icon name="wifiOff" size={14} /> {t.nav.run}</button>
+                            <button onClick={() => scrollTo('work')} className="hover:bg-black hover:text-white px-2 transition-colors uppercase flex items-center gap-1"><Icon name="flaskConical" size={14} /> {t.nav.work}</button>
+                            <button onClick={() => scrollTo('blog')} className="hover:bg-black hover:text-white px-2 transition-colors uppercase flex items-center gap-1"><Icon name="penTool" size={14} /> {t.nav.blog}</button>
+                            <button onClick={() => scrollTo('inputs')} className="hover:bg-black hover:text-white px-2 transition-colors uppercase flex items-center gap-1"><Icon name="brainCircuit" size={14} /> {t.nav.inputs}</button>
+                                </div>
+                        <button onClick={() => setLang(lang === 'zh' ? 'en' : 'zh')} className="flex items-center gap-2 font-bold border-2 border-black px-3 py-1 hover:bg-black hover:text-white transition-colors"><Icon name="languages" size={18} />{lang === 'zh' ? 'EN' : '中'}</button>
+                    </nav>
+                    
+                    {/* Hero */}
+                    <header id="hero" className="container mx-auto px-4 py-32 grid md:grid-cols-2 gap-12 items-center min-h-[90vh]">
+                        <div className="space-y-8 relative animate-fade-in-up delay-100">
+                            <div className="inline-block bg-[#a3e635] border-2 border-black px-4 py-2 font-mono font-bold transform -rotate-2 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:rotate-0 transition-transform cursor-default">{t.hero.role}</div>
+                            <h1 className="text-5xl md:text-7xl font-black font-mono leading-[1.1] tracking-tighter uppercase">{t.hero.slogan_main} <br/><span className="text-transparent bg-clip-text bg-gradient-to-r from-[#f472b6] to-[#60a5fa] stroke-black text-black" style={{WebkitTextStroke: "2px black"}}>{t.hero.slogan_sub}</span></h1>
+                            <p className="text-xl font-medium max-w-lg border-l-8 border-black pl-6 py-2 bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_rgba(0,0,0,1)] transition-shadow duration-300">
+                                {t.hero.intro_parts.map((part, index) => <span key={index} className={part.highlight ? "highlight-text" : ""}>{part.text}</span>)}
+                            </p>
+                            <div className="flex items-start gap-2 max-w-lg text-sm font-mono text-gray-800 font-bold italic"><Icon name="quote" size={20} className="shrink-0 text-[#a3e635] fill-[#a3e635]" /><p className="text-black font-black">{t.hero.quote}</p></div>
+                            <div className="flex flex-wrap gap-4 pt-4">
+                                <BrutalistButton onClick={() => scrollTo('work')} variant="primary" className="glitch-hover"><Icon name="sparkles" className="w-5 h-5" /> {t.hero.btn_work}</BrutalistButton>
+                                <BrutalistButton onClick={() => scrollTo('blog')} variant="outline"><Icon name="bookOpen" className="w-5 h-5" /> {t.hero.btn_blog}</BrutalistButton>
+                                            </div>
+                                        </div>
+                        <div className="relative flex justify-center animate-fade-in-up delay-200">
+                            <div className="w-full max-w-md aspect-[4/5] bg-white border-4 border-black shadow-[20px_20px_0px_0px_rgba(0,0,0,1)] relative overflow-hidden group">
+                                <div className="absolute top-4 right-4 z-20"><Icon name="brain" size={48} strokeWidth={1.5} className="fill-[#60a5fa] animate-pulse" /></div>
+                                <div className="w-full h-full bg-gray-100 flex flex-col items-center justify-center text-center p-8 group-hover:scale-105 transition-transform duration-500">
+                                    <div className="w-40 h-40 bg-black rounded-full mb-6 overflow-hidden border-4 border-white shadow-xl"><img src="assets/avatar.jpg" alt="Hera" className="w-full h-full object-cover" /></div>
+                                    <h3 className="text-4xl font-black uppercase mb-1">Hera</h3>
+                                    <p className="font-mono text-sm font-bold bg-[#a3e635] px-2 inline-block uppercase">{t.hero.sticker_1}</p>
+                                    <p className="font-mono text-sm font-bold bg-[#f472b6] px-2 inline-block mt-2 ml-2 uppercase">{t.hero.sticker_2}</p>
+                                </div>
+                                <div className="absolute bottom-8 left-8 bg-white border-2 border-black px-4 py-2 font-black transform rotate-3 z-20 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] flex items-center gap-2"><Icon name="cat" size={20} className="fill-black text-black" /> {t.hero.sticker_3.toUpperCase()}</div>
+                                    </div>
+                                </div>
+                    </header>
+
+                    <Marquee text="EXPLORE • CREATE • RUN • LEARN • BUILD • REPEAT • " />
+
+                    {/* Resume */}
+                    <section id="journey" className="py-32 container mx-auto px-4 bg-white border-b-4 border-black">
+                        <div className="max-w-4xl mx-auto">
+                            <div className="text-center mb-16 animate-fade-in-up delay-100"><h2 className="text-5xl md:text-6xl font-black uppercase mb-4">{t.resume.title}</h2><p className="font-mono font-bold text-xl bg-black text-white inline-block px-4 py-1 transform -rotate-1">{t.resume.subtitle}</p></div>
+                            <div className="relative border-l-4 border-black ml-4 md:ml-0 space-y-12 pl-8 md:pl-0">
+                                {(t.resume.jobs || []).map((job, idx) => (
+                                    <div key={idx} className={`relative md:grid md:grid-cols-[1fr_4px_1fr] gap-8 items-start group animate-fade-in-up`} style={{animationDelay: `${idx * 0.1}s`}}>
+                                        <div className="absolute left-[-38px] top-6 w-5 h-5 bg-white border-4 border-black rounded-full md:left-1/2 md:ml-[-10px] z-10 group-hover:bg-[#a3e635] transition-colors"></div>
+                                        <div className={`md:text-right ${idx % 2 === 0 ? 'md:order-1' : 'md:order-3'}`}><div className="inline-block bg-black text-white font-mono font-bold px-3 py-1 mb-2 text-sm shadow-[4px_4px_0px_0px_#a3e635]">{job.period}</div><div className="flex flex-wrap gap-2 md:justify-end mt-2">{(job.tags || []).map((tag, i) => <span key={i} className="text-xs font-bold border border-black px-1 bg-gray-100">#{tag}</span>)}</div></div>
+                                        <div className="hidden md:block md:order-2"></div>
+                                        <div className={`bg-gray-50 border-2 border-black p-6 shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:shadow-[10px_10px_0px_0px_rgba(0,0,0,1)] transition-all ${idx % 2 === 0 ? 'md:order-3' : 'md:order-1'}`}><h3 className="text-2xl font-black">{job.company}</h3><h4 className="text-lg font-bold text-gray-600 mb-4">{job.role}</h4><p className="font-medium text-base leading-relaxed text-gray-800">{job.desc}</p></div>
+                            </div>
+                                ))}
+                            </div>
+                        </div>
+                    </section>
+                    
+                    {/* Run */}
+                    <section id="run" className="py-32 border-b-4 border-black bg-[#f0f0f0] overflow-hidden">
+                        <div className="container mx-auto px-4 mb-12 text-center animate-fade-in-up">
+                            <h2 className="text-5xl md:text-7xl font-black uppercase italic tracking-tighter flex justify-center items-center gap-4"><Icon name="wifiOff" size={48} strokeWidth={2.5} /> {t.run.title}</h2>
+                            <p className="font-mono font-bold mt-4 text-xl">{t.run.subtitle}</p>
+                            <div className="flex justify-center gap-4 mt-8 flex-wrap">{(t.run.stats || []).map((stat, i) => <div key={i} className="bg-black text-white p-4 border-2 border-black shadow-[4px_4px_0px_0px_#f472b6] min-w-[150px] transform hover:-translate-y-1 transition-transform"><div className="text-3xl font-black text-[#f472b6]">{stat.value}</div><div className="font-mono text-xs uppercase">{stat.label}</div></div>)}</div>
+                            </div>
+                        <HorizontalScroll>{(t.run.races || []).map((race) => <RaceCard key={race.id} race={race} />)}</HorizontalScroll>
+                    </section>
+
+                    {/* Work */}
+                    <section id="work" className="py-32 bg-[#a3e635] border-b-4 border-black overflow-hidden">
+                        <div className="container mx-auto px-4 mb-12">
+                            <div className="flex flex-col md:flex-row justify-between items-end pb-4 animate-fade-in-up">
+                                <div className="max-w-2xl"><h2 className="text-5xl md:text-7xl font-black uppercase flex items-center gap-3"><Icon name="flaskConical" size={64} strokeWidth={2} /> {t.projects.title}</h2><p className="font-mono font-bold mt-2">{t.projects.subtitle}</p><div className="mt-6 p-4 border-l-4 border-black bg-white/50 backdrop-blur-sm"><p className="font-bold font-serif text-lg italic leading-relaxed">"{t.projects.quote}"</p></div></div>
+                                <div className="mt-4 md:mt-0"><Icon name="star" className="w-16 h-16 fill-black animate-spin-slow" /></div>
+                            </div>
+                        </div>
+                        <HorizontalScroll>{(t.projects.list || []).map((proj) => renderProjectCard(proj))}</HorizontalScroll>
+                    </section>
+                    
+                    {/* Blog */}
+                    <section id="blog" className="py-32 bg-white border-b-4 border-black">
+                        <div className="container mx-auto px-4">
+                            <div className="mb-12 animate-fade-in-up">
+                                <h2 className="text-5xl md:text-7xl font-black uppercase text-black mb-2">
+                                    {lang === 'zh' ? '深度思考' : 'HERA\'S INSIGHTS'}
+                                </h2>
+                                <p className="font-mono font-bold mt-2 bg-[#60a5fa] inline-block px-2 border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">{t.blog.subtitle}</p>
+                            </div>
+                            <div className="space-y-6">
+                                {(t.blog.posts || []).map((post) => (
+                                    <div key={post.id} className="group border-4 border-black p-6 hover:bg-gray-50 transition-colors cursor-pointer relative shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] hover:shadow-[12px_12px_0px_0px_#60a5fa] hover:-translate-y-1 duration-300 animate-fade-in-up" onClick={() => setReadingArticle(post)}>
+                                        <div className="absolute top-0 right-0 bg-black text-white px-3 py-1 font-mono font-bold text-xs uppercase group-hover:bg-[#60a5fa] group-hover:text-black border-l-4 border-b-4 border-black">READ_MD</div>
+                                        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                            <div>
+                                                <div className="flex items-center gap-3 mb-2 font-mono text-xs font-bold text-gray-500"><span>{post.date}</span><span className="w-1 h-1 bg-black rounded-full"></span><span className="text-[#60a5fa] uppercase">{post.category}</span></div>
+                                                <h3 className="text-2xl md:text-3xl font-black group-hover:underline decoration-4 decoration-[#60a5fa] underline-offset-4">{post.title}</h3>
+                                                <p className="mt-2 text-gray-600 font-medium max-w-3xl truncate">{post.summary}</p>
+                                                <div className="flex gap-2 mt-4">{(post.tags || []).map((tag, i) => <span key={i} className="text-xs font-bold bg-gray-200 px-2 py-1 border border-black">#{tag}</span>)}</div>
+                            </div>
+                                            {/* Insights Circle Arrow Fix: Added shrink-0, margin, and border */}
+                                            <div className="md:self-center shrink-0 w-12 h-12 border-2 border-black rounded-full flex items-center justify-center group-hover:bg-black group-hover:text-white transition-colors ml-4"><Icon name="arrowRight" size={24} /></div>
+                        </div>
+                </div>
+                                    ))}
+                            </div>
+                        </div>
+                    </section>
+                    
+                    {/* Inputs */}
+                    <section id="inputs" className="py-32 bg-white border-t-4 border-black">
+                        <div className="container mx-auto px-4">
+                            {/* Section Title */}
+                            <div className="mb-12 flex justify-between items-start animate-fade-in-up">
+                                <div>
+                                    <h2 className="text-5xl md:text-7xl font-black uppercase text-black mb-2">
+                                        {lang === 'zh' ? '第二大脑' : 'SECOND BRAIN'}
+                                    </h2>
+                                    <p className="font-mono font-bold mt-2 bg-[#a3e635] inline-block px-2 border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">{t.inputs.subtitle}</p>
+                                </div>
+                                <BrutalistButton variant="dark" onClick={() => setShowInputsFullPage(true)} className="!px-6 !py-2 hidden md:flex">
+                                    <Icon name="sparkles" size={18} /> {lang === 'zh' ? '查看所有文档' : 'VIEW ALL'}
+                                </BrutalistButton>
+                            </div>
+                            
+                            {/* Vault Header */}
+                            <div className="border-4 border-black p-8 mb-8 relative bg-white shadow-[8px_8px_0px_0px_rgba(0,0,0,1)] animate-fade-in-up delay-100">
+                                {/* Watermark */}
+                                <div className="absolute inset-0 flex items-center justify-center opacity-5 pointer-events-none">
+                                    <span className="text-9xl font-black transform -rotate-12">VAULT</span>
+                                </div>
+                                
+                                <div className="relative z-10">
+                                    <h2 className="text-3xl md:text-4xl font-black mb-4">{t.inputs.vault_title}</h2>
+                                    <div className="border-l-4 border-black pl-4 mb-4">
+                                        <p className="text-base font-medium text-gray-700">
+                                            {t.inputs.vault_desc}
+                                        </p>
+                                    </div>
+                                    <div className="flex items-center gap-4 font-mono text-sm">
+                                        <span className="font-bold">{t.inputs.sources_label}: <span className="text-[#a3e635]">40+</span></span>
+                                        <span className="w-1 h-1 bg-black rounded-full"></span>
+                                        <span className="font-bold">{lang === 'zh' ? '状态' : 'Status'}: <span className="text-[#f472b6]">ARCHIVED</span></span>
+                            </div>
+                            </div>
+                        </div>
+
+                            {/* Quick Access Categories - Big Color Blocks */}
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-0 mb-8 animate-fade-in-up delay-100">
+                                {/* 博主/视频 - Yellow */}
+                                <button onClick={() => { setMainInputTab('creators'); setShowInputsFullPage(true); }} 
+                                    className="bg-[#facc15] border-4 border-black p-6 md:p-8 text-left group hover:brightness-105 transition-all relative min-h-[180px] flex flex-col justify-between">
+                                    <div className="flex justify-between items-start">
+                                        <span className="bg-white border-2 border-black px-2 py-1 text-xs font-mono font-bold">F 01</span>
+                                        <Icon name="video" className="w-8 h-8 text-black opacity-80" />
+                                    </div>
+                                    <div>
+                                        <h3 className="text-3xl md:text-4xl font-black uppercase tracking-tight">{t.inputs.channels}</h3>
+                                        <p className="font-mono text-sm font-medium opacity-70 mt-1">{t.inputs.channels_sub}</p>
+                                    </div>
+                            </button>
+                                
+                                {/* 书籍推荐 - Pink */}
+                                <button onClick={() => { setMainInputTab('books'); setShowInputsFullPage(true); }} 
+                                    className="bg-[#ec4899] border-4 border-black border-l-0 md:border-l-0 p-6 md:p-8 text-left group hover:brightness-105 transition-all relative min-h-[180px] flex flex-col justify-between">
+                                    <div className="flex justify-between items-start">
+                                        <span className="bg-white border-2 border-black px-2 py-1 text-xs font-mono font-bold">F 02</span>
+                                        <Icon name="bookOpen" className="w-8 h-8 text-black opacity-80" />
+                        </div>
+                                    <div>
+                                        <h3 className="text-3xl md:text-4xl font-black uppercase tracking-tight text-white">{t.inputs.books_title}</h3>
+                                        <p className="font-mono text-sm font-medium text-white opacity-80 mt-1">{t.inputs.books_sub}</p>
+                    </div>
+                                </button>
+                                
+                                {/* 工具/网站 - Cyan */}
+                                <button onClick={() => { setMainInputTab('websites'); setShowInputsFullPage(true); }} 
+                                    className="bg-[#22d3ee] border-4 border-black border-l-0 md:border-l-0 p-6 md:p-8 text-left group hover:brightness-105 transition-all relative min-h-[180px] flex flex-col justify-between">
+                                    <div className="flex justify-between items-start">
+                                        <span className="bg-white border-2 border-black px-2 py-1 text-xs font-mono font-bold">F 03</span>
+                                        <Icon name="settings" className="w-8 h-8 text-black opacity-80" />
+                            </div>
+                                    <div>
+                                        <h3 className="text-3xl md:text-4xl font-black uppercase tracking-tight">{t.inputs.tools_title}</h3>
+                                        <p className="font-mono text-sm font-medium opacity-70 mt-1">{t.inputs.tools_sub}</p>
+                        </div>
+                                </button>
+                            </div>
+                            
+                            {/* Hot Picks Section */}
+                            <div className="mb-4 flex justify-between items-center animate-fade-in-up delay-200">
+                                <div className="flex items-center gap-3">
+                                    <h3 className="text-xl font-black font-mono uppercase">{t.inputs.hot_picks}</h3>
+                                    <span className="bg-[#a3e635] text-black px-3 py-1 text-xs font-mono font-bold border-2 border-black shadow-[2px_2px_0px_0px_rgba(0,0,0,1)]">HOT</span>
+                                </div>
+                                {/* Mobile View All Button */}
+                                <button onClick={() => setShowInputsFullPage(true)} className="md:hidden text-sm font-mono font-bold underline">
+                                    {t.inputs.view_all} →
+                                    </button>
+                            </div>
+                            
+                            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8 animate-fade-in-up delay-300">
+                                <a href="https://www.youtube.com/@AndrejKarpathy" target="_blank" rel="noopener noreferrer"
+                                   className="bg-white border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all cursor-pointer group block">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <span className="text-xs font-mono font-bold bg-[#a3e635] text-black px-2 py-1 border border-black">AI & Tech</span>
+                                        <Icon name="externalLink" size={16} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
+                            </div>
+                                    <h4 className="font-black text-lg mb-2">Andrej Karpathy</h4>
+                                    <p className="text-sm text-gray-700 line-clamp-2">OpenAI 创始成员，前 Tesla AI 总监。</p>
+                                </a>
+                                
+                                <a href="https://www.youtube.com/@LennysPodcast" target="_blank" rel="noopener noreferrer"
+                                   className="bg-white border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all cursor-pointer group block">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <span className="text-xs font-mono font-bold bg-[#fb923c] text-black px-2 py-1 border border-black">Business</span>
+                                        <Icon name="externalLink" size={16} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
+                        </div>
+                                    <h4 className="font-black text-lg mb-2">Lenny's Podcast</h4>
+                                    <p className="text-sm text-gray-700 line-clamp-2">全球顶级 PM 与增长专家的深度访谈。</p>
+                                </a>
+                                
+                                <a href="https://www.youtube.com/@EnglishwithLucy" target="_blank" rel="noopener noreferrer"
+                                   className="bg-white border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all cursor-pointer group block">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <span className="text-xs font-mono font-bold bg-[#60a5fa] text-black px-2 py-1 border border-black">English</span>
+                                        <Icon name="externalLink" size={16} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
+                    </div>
+                                    <h4 className="font-black text-lg mb-2">English with Lucy</h4>
+                                    <p className="text-sm text-gray-700 line-clamp-2">优雅精致的英式发音与词汇教学。</p>
+                                </a>
+                            
+                                <a href="https://www.youtube.com/@lexfridman" target="_blank" rel="noopener noreferrer"
+                                   className="bg-white border-2 border-black p-5 shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:shadow-[6px_6px_0px_0px_rgba(0,0,0,1)] hover:-translate-y-1 transition-all cursor-pointer group block">
+                                    <div className="flex justify-between items-start mb-3">
+                                        <span className="text-xs font-mono font-bold bg-[#f472b6] text-black px-2 py-1 border border-black">Culture</span>
+                                        <Icon name="externalLink" size={16} className="text-gray-400 group-hover:text-blue-500 transition-colors" />
+                                    </div>
+                                    <h4 className="font-black text-lg mb-2">Lex Fridman</h4>
+                                    <p className="text-sm text-gray-700 line-clamp-2">与世界最强大脑的马拉松对话。</p>
+                                </a>
+                        </div>
+                    </div>
+                    </section>
+
+                    {/* Footer */}
+                    <footer className="bg-black text-white py-12 border-t-4 border-black">
+                        <div className="container mx-auto px-4 flex flex-col items-center text-center">
+                            <h2 className="text-4xl md:text-6xl font-black font-mono uppercase tracking-tighter mb-6 hover:text-[#a3e635] transition-colors cursor-default">{t.footer.title}</h2>
+                            <p className="font-mono mb-8 text-gray-400">{t.footer.sub}</p>
+                            <div className="flex flex-wrap justify-center items-center gap-6 mb-12">
+                                <a href="https://www.linkedin.com/in/sunheran1012" target="_blank" rel="noopener noreferrer" className="hover:text-[#a3e635] transform hover:scale-125 transition-all"><Icon name="linkedin" size={32} /></a>
+                                <a href="https://twitter.com/HeranSun80457" target="_blank" rel="noopener noreferrer" className="hover:text-[#a3e635] transform hover:scale-125 transition-all"><Icon name="twitter" size={32} /></a>
+                                <a href="mailto:sunheran1012@gmail.com" className="hover:text-[#a3e635] transform hover:scale-125 transition-all"><Icon name="mail" size={32} /></a>
+                                {/* WeChat Button - Inline Icon Style (Restored) */}
+                                <button onClick={() => setShowWeChat(true)} className="hover:text-[#a3e635] transform hover:scale-125 transition-all outline-none focus:outline-none"><Icon name="qrCode" size={32} /></button>
+                            </div>
+                            <div className="w-full border-t border-gray-800 pt-8 flex flex-col md:flex-row justify-between items-center text-xs font-mono text-gray-600"><p>© 2025 HERA. ALL RIGHTS RESERVED.</p><p className="mt-2 md:mt-0">MADE WITH WARMTH.</p></div>
+                        </div>
+                    </footer>
+                    <div className="fixed inset-0 pointer-events-none z-[-1]" style={{backgroundImage: "linear-gradient(#e5e5e5 1px, transparent 1px), linear-gradient(90deg, #e5e5e5 1px, transparent 1px)", backgroundSize: "40px 40px", opacity: 0.5}}></div>
+                </div>
+            );
+        }
+            
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<App />);
+    </script>
+</body>
+</html>

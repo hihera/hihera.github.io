@@ -1,0 +1,155 @@
+{
+  "races": [
+    {
+      "id": "race-01",
+      "title": "崇礼168 超级越野赛",
+      "category": "50KM Ultra",
+      "date": "2024-07",
+      "result": "Finisher",
+      "image_placeholder": "assets/races/chongli168-start.jpg",
+      "images": ["assets/races/chongli168-start.jpg", "assets/races/chongli168-trail.jpg", "assets/races/chongli168-finish.jpg", "assets/races/chongli168-map.png"],
+      "desc": "在海拔2000米的山脊线上，听见风的呼啸。越野跑不仅是体力的较量，更是与内心的独处。",
+      "tags": [
+        "硬核",
+        "MGC",
+        "心流"
+      ]
+    },
+    {
+      "id": "race-02",
+      "title": "亚太商学院沙漠挑战赛",
+      "category": "70KM 亚沙赛",
+      "date": "2023-10",
+      "result": "Gold Medal",
+      "image_placeholder": "assets/races/yasha-start.jpg",
+      "images": ["assets/races/yasha-start.jpg", "assets/races/yasha-camp.jpg", "assets/races/yasha-team.jpg", "assets/races/yasha-dune.jpg"],
+      "desc": "腾格里沙漠的三天两夜。与团队并肩作战，在沙丘与星空之间，感受团队的力量。",
+      "tags": [
+        "团队",
+        "沙漠",
+        "意志"
+      ]
+    },
+    {
+      "id": "race-03",
+      "title": "莫干山越野跑",
+      "category": "30KM Trail",
+      "date": "2023-04",
+      "result": "Finisher",
+      "image_placeholder": "assets/races/moganshan-bamboo.jpg",
+      "images": ["assets/races/moganshan-bamboo.jpg", "assets/races/moganshan-trail.jpg", "assets/races/moganshan-runner.jpg"],
+      "desc": "穿梭于竹海泥泞之间。每一步都不确定，但每一步都算数。像极了做产品的过程。",
+      "tags": [
+        "竹海",
+        "技术路段",
+        "团建"
+      ]
+    },
+    {
+      "id": "race-04",
+      "title": "五台山徒步",
+      "category": "40KM Trail",
+      "date": "2023-06",
+      "result": "Finisher",
+      "image_placeholder": "assets/races/wutaishan-mountain.jpg",
+      "images": ["assets/races/wutaishan-mountain.jpg", "assets/races/wutaishan-temple.jpg", "assets/races/wutaishan-trail.jpg"],
+      "desc": "在佛教圣地五台山，感受信仰与自然的力量，每一步都充满神圣感。",
+      "tags": [
+        "佛教圣地",
+        "高山",
+        "精神之旅"
+      ]
+    },
+    {
+      "id": "race-05",
+      "title": "四姑娘山登山",
+      "category": "海拔 5276米",
+      "date": "2023-09",
+      "result": "Finisher",
+      "image_placeholder": "assets/races/siguniang-mountain.jpg",
+      "images": ["assets/races/siguniang-mountain.jpg", "assets/races/siguniang-trail.jpg", "assets/races/siguniang-camp.jpg", "assets/races/siguniang-runner.jpg"],
+      "desc": "在四姑娘山脚下奔跑，感受雪山的壮美和高原的魅力。",
+      "tags": [
+        "雪山",
+        "高原",
+        "壮丽"
+      ]
+    },
+    {
+      "id": "race-06",
+      "title": "帆船挑战赛",
+      "category": "帆船赛",
+      "date": "2024-05",
+      "result": "Participant",
+      "image_placeholder": "assets/races/sailing-boat.jpg",
+      "images": ["assets/races/sailing-boat.jpg", "assets/races/sailing-race.jpg", "assets/races/sailing-sunset.jpg"],
+      "desc": "在海上航行，感受海风的吹拂和海浪的起伏，体验与海洋的亲密接触。",
+      "tags": [
+        "海洋",
+        "帆船",
+        "冒险"
+      ]
+    },
+
+    {
+      "id": "race-08",
+      "title": "聚光计划活动",
+      "category": "活动",
+      "date": "2024-03",
+      "result": "参与者",
+      "image_placeholder": "assets/races/spotlight-event.jpg",
+      "images": ["assets/races/spotlight-event.jpg", "assets/races/spotlight-team.jpg", "assets/races/spotlight-speaker.jpg", "assets/races/spotlight-audience.jpg"],
+      "desc": "参加聚光计划活动，与各行各业的精英交流，分享经验和想法。",
+      "tags": [
+        "交流",
+        "学习",
+        "社交"
+      ]
+    },
+    {
+      "id": "race-09",
+      "title": "创意跑字活动",
+      "category": "趣味跑",
+      "date": "2024-02",
+      "result": "创意奖",
+      "image_placeholder": "assets/races/running-2024.jpg",
+      "images": ["assets/races/running-2024.jpg", "assets/races/running-map.jpg", "assets/races/running-rose.jpg", "assets/races/running-tiger.jpg"],
+      "desc": "用跑步轨迹绘制创意文字和图案，将运动与艺术完美结合。",
+      "tags": [
+        "创意",
+        "艺术",
+        "趣味"
+      ]
+    },
+    {
+      "id": "race-10",
+      "title": "长城越野跑",
+      "category": "25KM Trail",
+      "date": "2023-11",
+      "result": "Finisher",
+      "image_placeholder": "assets/races/greatwall-running.jpg",
+      "images": ["assets/races/greatwall-running.jpg", "assets/races/greatwall-view.jpg", "assets/races/greatwall-group.jpg"],
+      "desc": "在长城上奔跑，感受历史的厚重和自然的壮美，体验独一无二的越野跑路线。",
+      "tags": [
+        "长城",
+        "历史",
+        "壮美"
+      ]
+    },
+    {
+      "id": "race-11",
+      "title": "雄安马拉松",
+      "category": "42.195 KM",
+      "date": "2024-04",
+      "result": "Finisher",
+      "image_placeholder": "assets/races/xiongan-start.jpg",
+      "images": ["assets/races/xiongan-start.jpg", "assets/races/xiongan-runner.jpg"],
+      "desc": "参加雄安马拉松，感受这座未来之城的活力和魅力。",
+      "tags": [
+        "马拉松",
+        "城市",
+        "未来"
+      ]
+    }
+  ]
+}

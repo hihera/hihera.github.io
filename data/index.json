@@ -1,0 +1,21 @@
+{
+  "posts": [
+    "2024-12-20-ai-agent.md",
+    "2024-11-15-ai-pm-guide.md",
+    "2024-10-20-douyin-guide.md"
+  ],
+  "inputs": {
+    "books": [
+      "inspired.md"
+    ],
+    "movies": [
+      "social-network.md"
+    ],
+    "podcasts": [
+      "lennys-podcast.md"
+    ],
+    "videos": [
+      "karpathy-llm.md"
+    ]
+  }
+}
