@@ -193,7 +193,7 @@
         // 初始加载时使用默认内容，后续通过 fetch 更新
         const DEFAULT_CONTENT = {
             zh: {
-                nav: { journey: "我的旅程", run: "离线模式", work: "项目实验室", blog: "深度思考", inputs: "第二大脑", contact: "联系" },
+                nav: { journey: "我的旅程", run: "离线模式", work: "项目实验室", blog: "深度思考", maker: "独立创作", inputs: "第二大脑", contact: "联系" },
                 hero: {
                     role: "AI Explorer & Trail Runner",
                     slogan_main: "技术要有温度",
@@ -233,6 +233,33 @@
                 },
                 blog: { title: "Hera's Insights", subtitle: "深度思考 • 技术沉淀 • 价值输出",
                     posts: [] // 博客文章将通过 fetch 动态加载
+                },
+                maker: {
+                    title: "独立创作", subtitle: "INDIE_MAKER_LOG",
+                    courses_title: "学习地图", courses_subtitle: "系统性 AI 学习路径",
+                    courses: [
+                        { level: "LV.01", level_name: "基础认知", level_color: "#22c55e", items: [
+                            { title: "Generative AI for Everyone", platform: "DeepLearning.AI", has_notes: false },
+                            { title: "ChatGPT Prompt Engineering for Developers", platform: "DeepLearning.AI", has_notes: false },
+                            { title: "How Transformer LLMs Works", platform: "DeepLearning.AI", has_notes: false }
+                        ]},
+                        { level: "LV.02", level_name: "工程实践", level_color: "#f97316", items: [
+                            { title: "LangChain for LLM Application Development", platform: "DeepLearning.AI", has_notes: false },
+                            { title: "Building and Evaluating Advanced RAG Applications", platform: "DeepLearning.AI", has_notes: false },
+                            { title: "Finetuning Large Language Models", platform: "DeepLearning.AI", has_notes: false },
+                            { title: "0基础打造AI智能体——Coze实战教学", platform: "Coze官方", has_notes: false }
+                        ]},
+                        { level: "LV.03", level_name: "Agent专项", level_color: "#a855f7", items: [
+                            { title: "AI Agents in LangGraph", platform: "DeepLearning.AI", has_notes: false },
+                            { title: "Agent Skills", platform: "DeepLearning.AI", has_notes: false },
+                            { title: "动手学Agent应用开发", platform: "极客时间", has_notes: false }
+                        ]}
+                    ],
+                    products_title: "我的产品", products_subtitle: "用技术解决真实问题",
+                    products: [
+                        { id: "prod-02", title: "知识雷达", subtitle: "Knowledge Radar", desc: "不是收藏，是消化。把每天刷到的好内容，自动提炼成你自己的知识体系。信息的尽头是知识——AI 帮你把碎片化资讯转化为结构化、系统性的深度认知。", tech: ["Python", "LLM", "RSS"], link: "#", layout: "video", media: ["assets/knowledge.webm"] },
+                        { id: "prod-01", title: "家庭资产管家", subtitle: "Family Asset Manager", desc: "买了什么、在哪里、还能用多久？一个 App，让你对家里的每一件物品了如指掌。告别翻箱倒柜的焦虑，把家庭资产变成清晰可管理的数字档案。", tech: ["React", "Node.js", "PostgreSQL"], link: "#", layout: "image-grid", media: ["assets/20260304-122320.png", "assets/20260304-122323.png", "assets/20260304-122331.jpg", "assets/20260304-122334.jpg"] }
+                    ]
                 },
                 inputs: { inputs: "第二大脑", subtitle: "You are what you consume",
                     vault_title: "知识输入流",
@@ -343,7 +370,7 @@
                 ui: { view_archives: "查看所有归档", close: "关闭", read_md: "阅读全文", scan_qr: "扫码关注", follow_tip: "关注公众号获取最新文章" }
             },
             en: {
-                nav: { journey: "Journey", run: "Offline Mode", work: "Project Lab", blog: "Insights", inputs: "Second Brain", contact: "Contact" },
+                nav: { journey: "Journey", run: "Offline Mode", work: "Project Lab", blog: "Insights", maker: "Maker Log", inputs: "Second Brain", contact: "Contact" },
                 hero: {
                     role: "AI Explorer & Trail Runner",
                     slogan_main: "Code with Warmth",
@@ -390,6 +417,33 @@
                     ]
                 },
                 blog: { title: "Hera's Insights", subtitle: "Deep Dives • Technical Thoughts • Value", posts: []},
+                maker: {
+                    title: "Maker Log", subtitle: "INDIE_MAKER_LOG",
+                    courses_title: "Learning Map", courses_subtitle: "Systematic AI Learning Path",
+                    courses: [
+                        { level: "LV.01", level_name: "Foundations", level_color: "#22c55e", items: [
+                            { title: "Generative AI for Everyone", platform: "DeepLearning.AI", has_notes: false },
+                            { title: "ChatGPT Prompt Engineering for Developers", platform: "DeepLearning.AI", has_notes: false },
+                            { title: "How Transformer LLMs Works", platform: "DeepLearning.AI", has_notes: false }
+                        ]},
+                        { level: "LV.02", level_name: "LLM Engineering", level_color: "#f97316", items: [
+                            { title: "LangChain for LLM Application Development", platform: "DeepLearning.AI", has_notes: false },
+                            { title: "Building & Evaluating Advanced RAG Applications", platform: "DeepLearning.AI", has_notes: false },
+                            { title: "Finetuning Large Language Models", platform: "DeepLearning.AI", has_notes: false },
+                            { title: "Zero-to-One AI Agent with Coze", platform: "Coze Official", has_notes: false }
+                        ]},
+                        { level: "LV.03", level_name: "Agent Specialization", level_color: "#a855f7", items: [
+                            { title: "AI Agents in LangGraph", platform: "DeepLearning.AI", has_notes: false },
+                            { title: "Agent Skills", platform: "DeepLearning.AI", has_notes: false },
+                            { title: "Hands-on Agent App Development", platform: "Geekbang", has_notes: false }
+                        ]}
+                    ],
+                    products_title: "My Products", products_subtitle: "Using tech to solve real problems",
+                    products: [
+                        { id: "prod-02", title: "Knowledge Radar", subtitle: "知识雷达", desc: "Not bookmarks — digestion. Automatically distill the best daily content into your own knowledge system. AI transforms fragmented info into structured, systematic insight.", tech: ["Python", "LLM", "RSS"], link: "#", layout: "video", media: ["assets/knowledge.webm"] },
+                        { id: "prod-01", title: "Family Asset Manager", subtitle: "家庭资产管家", desc: "What did you buy, where is it, how long will it last? One app to know every item in your home — turning family assets into a clear, manageable digital archive.", tech: ["React", "Node.js", "PostgreSQL"], link: "#", layout: "image-grid", media: ["assets/20260304-122320.png", "assets/20260304-122323.png", "assets/20260304-122331.jpg", "assets/20260304-122334.jpg"] }
+                    ]
+                },
                 inputs: { inputs: "Second Brain", subtitle: "You are what you consume",
                     vault_title: "Knowledge Input Flow",
                     vault_desc: "A curated collection of premium resources in AI, business, language learning, and humanities. Building your personal, continuous, high-quality knowledge input system.",
@@ -962,6 +1016,149 @@
             return { content, status, archives };
         };
 
+        const ProductCard = ({ product }) => {
+            const [mediaIdx, setMediaIdx] = useState(0);
+            const [lightboxIdx, setLightboxIdx] = useState(null);
+            const media = product.media || [];
+            const isVideo = (url) => url && (url.endsWith('.webm') || url.endsWith('.mp4') || url.endsWith('.mov'));
+
+            const InfoBlock = ({ compact }) => (
+                <div className={`${compact ? 'px-8 py-5' : 'p-8'} flex flex-wrap items-start justify-between gap-4 bg-[#1a1a1a]`}>
+                    <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-baseline gap-3 mb-2">
+                            <h4 className="text-2xl font-black text-white">{product.title}</h4>
+                            <span className="font-mono text-xs text-white/30 tracking-widest">{product.subtitle}</span>
+                        </div>
+                        <p className="text-white/65 text-sm leading-relaxed mb-4 max-w-3xl">{product.desc}</p>
+                        <div className="flex flex-wrap gap-2">
+                            {(product.tech || []).map((techTag, i) => (
+                                <span key={i} className="text-xs font-mono border border-white/15 text-white/40 px-2 py-1">{techTag}</span>
+                            ))}
+                        </div>
+                    </div>
+                    {product.link && product.link !== '#' && (
+                        <a href={product.link} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 border-2 border-[#f97316] text-[#f97316] font-bold font-mono text-sm px-4 py-2 hover:bg-[#f97316] hover:text-black transition-all self-start shadow-[4px_4px_0px_0px_rgba(249,115,22,0.4)] hover:shadow-none flex-shrink-0">
+                            <Icon name="externalLink" size={14} /> VISIT →
+                        </a>
+                    )}
+                </div>
+            );
+
+            if (product.layout === 'video') {
+                return (
+                    <div className="border-4 border-white/15 hover:border-[#f97316] transition-all duration-300 group flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,0.5)]">
+                        <div className="w-full bg-[#060610]" style={{aspectRatio: '16/9'}}>
+                            {media.length > 0 && isVideo(media[0]) ? (
+                                <video src={media[0]} autoPlay loop muted playsInline className="w-full h-full object-contain" />
+                            ) : (
+                                <div className="w-full h-full flex items-center justify-center">
+                                    <span className="font-mono text-xs text-white/20 tracking-widest">VIDEO_PENDING</span>
+                                </div>
+                            )}
+                        </div>
+                        <InfoBlock compact={true} />
+                    </div>
+                );
+            }
+
+            if (product.layout === 'image-grid') {
+                const lbTotal = media.filter(s => !isVideo(s)).length;
+                return (
+                    <>
+                        <div className="border-4 border-white/15 hover:border-[#f97316] transition-all duration-300 group flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,0.5)]">
+                            <InfoBlock compact={true} />
+                            <div className="grid grid-cols-4 border-t-4 border-white/10">
+                                {media.map((src, i) => (
+                                    <div
+                                        key={i}
+                                        onClick={() => setLightboxIdx(i)}
+                                        className={`relative bg-[#0a0a16] overflow-hidden cursor-zoom-in group/img
+                                            ${i < media.length - 1 ? 'border-r border-white/10' : ''}`}
+                                        style={{aspectRatio: '4/3'}}
+                                    >
+                                        <img
+                                            src={src}
+                                            alt={`${product.title} ${i + 1}`}
+                                            className="w-full h-full object-contain transition-transform duration-300 group-hover/img:scale-[1.03]"
+                                        />
+                                        <div className="absolute inset-0 bg-black/0 group-hover/img:bg-black/25 transition-all duration-300 flex items-center justify-center">
+                                            <span className="opacity-0 group-hover/img:opacity-100 transition-opacity duration-300 bg-black/70 border border-white/30 text-white font-mono text-xs px-3 py-1.5 tracking-widest">
+                                                ZOOM ⊕
+                                            </span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                        {lightboxIdx !== null && (
+                            <div
+                                className="fixed inset-0 z-[9999] flex items-center justify-center"
+                                style={{background: 'rgba(0,0,0,0.93)'}}
+                                onClick={() => setLightboxIdx(null)}
+                            >
+                                <button
+                                    onClick={e => { e.stopPropagation(); setLightboxIdx(null); }}
+                                    className="absolute top-5 right-5 w-10 h-10 border-2 border-white/30 hover:border-[#f97316] text-white/70 hover:text-[#f97316] flex items-center justify-center text-xl font-black transition-all z-10"
+                                >✕</button>
+                                {lbTotal > 1 && (
+                                    <>
+                                        <button
+                                            onClick={e => { e.stopPropagation(); setLightboxIdx(i => (i - 1 + lbTotal) % lbTotal); }}
+                                            className="absolute left-5 top-1/2 -translate-y-1/2 w-11 h-11 border-2 border-white/30 hover:border-[#f97316] hover:bg-[#f97316] text-white flex items-center justify-center transition-all z-10"
+                                        ><Icon name="arrowLeft" size={18} className="text-white" /></button>
+                                        <button
+                                            onClick={e => { e.stopPropagation(); setLightboxIdx(i => (i + 1) % lbTotal); }}
+                                            className="absolute right-5 top-1/2 -translate-y-1/2 w-11 h-11 border-2 border-white/30 hover:border-[#f97316] hover:bg-[#f97316] text-white flex items-center justify-center transition-all z-10"
+                                        ><Icon name="arrowRight" size={18} className="text-white" /></button>
+                                    </>
+                                )}
+                                <div className="absolute bottom-5 left-0 right-0 flex justify-center gap-2 z-10">
+                                    {media.map((_, i) => (
+                                        <button key={i} onClick={e => { e.stopPropagation(); setLightboxIdx(i); }}
+                                            className={`h-1.5 rounded-full transition-all duration-300 ${i === lightboxIdx ? 'bg-[#f97316] w-6' : 'bg-white/30 w-1.5'}`} />
+                                    ))}
+                                </div>
+                                <img
+                                    src={media[lightboxIdx]}
+                                    alt={`${product.title} ${lightboxIdx + 1}`}
+                                    className="max-w-[88vw] max-h-[88vh] object-contain select-none"
+                                    onClick={e => e.stopPropagation()}
+                                    style={{boxShadow: '0 0 80px rgba(249,115,22,0.15)'}}
+                                />
+                                <div className="absolute top-5 left-5 font-mono text-xs text-white/40 tracking-widest">
+                                    {lightboxIdx + 1} / {lbTotal}
+                                </div>
+                            </div>
+                        )}
+                    </>
+                );
+            }
+
+            const hasMultiple = media.length > 1;
+            return (
+                <div className="border-4 border-white/15 hover:border-[#f97316] transition-all duration-300 group flex flex-col shadow-[8px_8px_0px_0px_rgba(0,0,0,0.5)]">
+                    <div className="relative overflow-hidden bg-[#0d0d1a] w-full" style={{aspectRatio: '16/9'}}>
+                        {media.length > 0 ? (
+                            isVideo(media[mediaIdx]) ? (
+                                <video key={media[mediaIdx]} src={media[mediaIdx]} autoPlay loop muted playsInline className="w-full h-full object-contain" />
+                            ) : (
+                                <img src={media[mediaIdx]} alt={product.title} className="w-full h-full object-contain" />
+                            )
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center">
+                                <span className="font-mono text-xs text-white/20 tracking-widest">MEDIA_PENDING</span>
+                            </div>
+                        )}
+                        {hasMultiple && <>
+                            <button onClick={() => setMediaIdx(i => (i - 1 + media.length) % media.length)} className="absolute left-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-black/70 hover:bg-[#f97316] border border-white/20 flex items-center justify-center transition-all"><Icon name="arrowLeft" size={16} className="text-white" /></button>
+                            <button onClick={() => setMediaIdx(i => (i + 1) % media.length)} className="absolute right-3 top-1/2 -translate-y-1/2 z-10 w-9 h-9 bg-black/70 hover:bg-[#f97316] border border-white/20 flex items-center justify-center transition-all"><Icon name="arrowRight" size={16} className="text-white" /></button>
+                        </>}
+                    </div>
+                    <InfoBlock />
+                </div>
+            );
+        };
+
         function App() {
             const { content, status, archives } = useDataFetcher();
             const [lang, setLang] = useState('zh');
@@ -970,6 +1167,7 @@
             const [mainInputTab, setMainInputTab] = useState('creators'); // 'creators', 'books', 'websites'
             const [activeInputTab, setActiveInputTab] = useState('ai_tech');
             const [showWeChat, setShowWeChat] = useState(false);
+            const [showMakerPage, setShowMakerPage] = useState(false);
             const t = content[lang];
 
             const scrollTo = (id) => {
@@ -1318,11 +1516,16 @@
                     {/* Blog */}
                     <section id="blog" className="py-32 bg-white border-b-4 border-black">
                         <div className="container mx-auto px-4">
-                            <div className="mb-12 animate-fade-in-up">
-                                <h2 className="text-5xl md:text-7xl font-black uppercase text-black mb-2">
-                                    {lang === 'zh' ? '深度思考' : 'HERA\'S INSIGHTS'}
-                                </h2>
-                                <p className="font-mono font-bold mt-2 bg-[#60a5fa] inline-block px-2 border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">{t.blog.subtitle}</p>
+                            <div className="mb-12 animate-fade-in-up flex flex-wrap items-end justify-between gap-6">
+                                <div>
+                                    <h2 className="text-5xl md:text-7xl font-black uppercase text-black mb-2">
+                                        {lang === 'zh' ? '深度思考' : 'HERA\'S INSIGHTS'}
+                                    </h2>
+                                    <p className="font-mono font-bold mt-2 bg-[#60a5fa] inline-block px-2 border border-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)]">{t.blog.subtitle}</p>
+                                </div>
+                                <button onClick={() => setShowMakerPage(true)} className="flex items-center gap-2 font-bold border-2 border-black px-5 py-3 bg-[#f97316] text-black shadow-[4px_4px_0px_0px_rgba(0,0,0,1)] hover:bg-[#ea580c] transition-all active:translate-x-[2px] active:translate-y-[2px] active:shadow-none whitespace-nowrap">
+                                    <Icon name="zap" size={18} /> {lang === 'zh' ? '独立创作（作品集）' : 'Maker Lab'}
+                                </button>
                             </div>
                             <div className="space-y-6">
                                 {(t.blog.posts || []).map((post) => (
@@ -1344,6 +1547,64 @@
                         </div>
                     </section>
                     
+                    {/* Maker Fullscreen Modal */}
+                    {showMakerPage && (
+                        <div className="fixed inset-0 z-[100] bg-[#111111] overflow-y-auto">
+                            {/* Sticky Header */}
+                            <div className="sticky top-0 z-20 bg-[#111111] border-b-4 border-[#f97316] flex items-center justify-between px-6 py-4">
+                                <button onClick={() => setShowMakerPage(false)} className="flex items-center gap-2 font-mono font-bold text-white hover:text-[#f97316] transition-colors">
+                                    <Icon name="arrowLeft" size={18} /> {lang === 'zh' ? '返回' : 'BACK'}
+                                </button>
+                                <div className="font-mono font-black text-lg text-white uppercase tracking-widest">
+                                    {lang === 'zh' ? '独立创作' : 'MAKER LOG'}<span className="text-[#f97316]">_</span>
+                                </div>
+                                <div className="w-20" />
+                            </div>
+                            {/* Content */}
+                            <div className="container mx-auto px-4 py-16 max-w-6xl">
+                                {/* 01: 我的产品 */}
+                                <div className="mb-24">
+                                    <div className="flex items-center gap-4 mb-8 pb-4 border-b-2 border-[#f97316]/40">
+                                        <span className="text-[#f97316] font-mono font-black text-xl">01 /</span>
+                                        <h3 className="text-2xl font-black text-white uppercase">{t.maker.products_title}</h3>
+                                        <span className="font-mono text-white/30 text-sm hidden md:block">{t.maker.products_subtitle}</span>
+                                    </div>
+                                    <div className="flex flex-col gap-12">
+                                        {(t.maker.products || []).map((product) => <ProductCard key={product.id} product={product} />)}
+                                    </div>
+                                </div>
+                                {/* 02: 学习地图 */}
+                                <div>
+                                    <div className="flex items-center gap-4 mb-8 pb-4 border-b-2 border-[#f97316]/40">
+                                        <span className="text-[#f97316] font-mono font-black text-xl">02 /</span>
+                                        <h3 className="text-2xl font-black text-white uppercase">{t.maker.courses_title}</h3>
+                                        <span className="font-mono text-white/30 text-sm hidden md:block">{t.maker.courses_subtitle}</span>
+                                    </div>
+                                    <div className="space-y-8">
+                                        {(t.maker.courses || []).map((group, gi) => (
+                                            <div key={gi} className="border-l-4 pl-6" style={{borderColor: group.level_color}}>
+                                                <div className="flex items-center gap-3 mb-5">
+                                                    <span className="font-mono font-black text-sm px-3 py-1.5 border-2 border-black text-black" style={{background: group.level_color}}>{group.level}</span>
+                                                    <h4 className="text-lg font-black text-white tracking-wide">{group.level_name}</h4>
+                                                    <span className="text-white/20 font-mono text-xs">{group.items.length} courses</span>
+                                                </div>
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3">
+                                                    {(group.items || []).map((course, ci) => (
+                                                        <div key={ci} className="bg-white/[0.04] border border-white/10 hover:border-white/25 p-4 flex flex-col gap-2 transition-all hover:bg-white/[0.07]">
+                                                            <span className="font-mono text-[10px] px-2 py-0.5 self-start border text-black font-bold" style={{background: group.level_color, borderColor: group.level_color}}>{course.platform}</span>
+                                                            <p className="text-sm font-bold text-white/90 leading-snug">{course.title}</p>
+                                                            {course.has_notes && <span className="text-xs font-mono text-[#22c55e]">✓ {lang === 'zh' ? '笔记已输出' : 'Notes published'}</span>}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Inputs */}
                     <section id="inputs" className="py-32 bg-white border-t-4 border-black">
                         <div className="container mx-auto px-4">
