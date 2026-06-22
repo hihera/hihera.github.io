@@ -5,17 +5,17 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hera's Digital Space</title>
     
-    <!-- 1. 引入 Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com?plugins=typography"></script>
-    
-    <!-- 2. 引入 React 相关库 -->
-    <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
-    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- 3. 引入 Marked.js 用于解析 Markdown -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <!-- 4. 引入 js-yaml 用于解析 Front Matter -->
-    <script src="https://cdn.jsdelivr.net/npm/js-yaml/dist/js-yaml.min.js"></script>
+    <!-- 1. 引入 Tailwind CSS (本地副本，CDN 在国内不稳定) -->
+    <script src="vendor/tailwind-typography.js"></script>
+
+    <!-- 2. 引入 React 相关库 (本地副本) -->
+    <script crossorigin src="vendor/react.production.min.js"></script>
+    <script crossorigin src="vendor/react-dom.production.min.js"></script>
+    <script src="vendor/babel.min.js"></script>
+    <!-- 3. 引入 Marked.js 用于解析 Markdown (本地副本) -->
+    <script src="vendor/marked.min.js"></script>
+    <!-- 4. 引入 js-yaml 用于解析 Front Matter (本地副本) -->
+    <script src="vendor/js-yaml.min.js"></script>
 
     <style>
         /* 隐藏滚动条 */
@@ -130,7 +130,7 @@
 <body class="bg-[#f0f0f0] font-sans text-black selection:bg-[#a3e635]">
     <div id="root"></div>
 
-    <script type="text/babel">
+    <script type="text/babel" data-presets="react">
         const { useState, useEffect, useRef, createElement } = React;
 
         // ==========================================
