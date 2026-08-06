@@ -4,7 +4,7 @@
       "id": "proj-01",
       "title": "科技冬奥：冰壶感知",
       "role": "国家级课题",
-      "image": "assets/projects/olympics-curling.jpg",
+      "image": "assets/projects/olympics-curling.webp",
       "image_text": "OLYMPICS",
       "desc": "为2022冬奥打造全球首个AI视觉追踪系统。3.3cm的定位误差背后，是对极致的偏执。",
       "tech": [
@@ -17,7 +17,7 @@
       "id": "proj-02",
       "title": "香港赛马会：数字重塑",
       "role": "标杆案例",
-      "image": "assets/projects/hkjc-smart-retail.png",
+      "image": "assets/projects/hkjc-smart-retail.webp",
       "image_text": "HKJC",
       "desc": "在全港101家门店，用600+摄像头编织了一张感知的网。帮助百年机构读懂每一位顾客的足迹。",
       "tech": [
@@ -30,7 +30,7 @@
       "id": "proj-03",
       "title": "日本 USEN：智慧零售",
       "role": "出海交付",
-      "image": "assets/projects/usen-retail.jpg",
+      "image": "assets/projects/usen-retail.webp",
       "image_text": "USEN",
       "desc": "将 AI 能力输出到日本零售场景：线下音乐推荐，千人千面。技术没有国界，对效率的追求是通用的语言。",
       "tech": [
@@ -43,7 +43,7 @@
       "id": "proj-04",
       "title": "乘黄智医：医养结合",
       "role": "创业项目",
-      "image": "assets/projects/healthcare-agent.png",
+      "image": "assets/projects/healthcare-agent.webp",
       "image_text": "HEALTH",
       "desc": "用 Multi-Agent 架构串联医养服务。让护工拥有专家的知识，让老人拥有有尊严的晚年。",
       "tech": [
@@ -56,7 +56,7 @@
       "id": "proj-05",
       "title": "中国商飞：智慧工厂",
       "role": "高端制造",
-      "image": "assets/projects/comac-factory.jpg",
+      "image": "assets/projects/comac-factory.webp",
       "image_text": "COMAC",
       "desc": "在大飞机制造车间，构建端边云协同的数字孪生平台。±50cm 的高精定位，守护大国重器的每一道防线。",
       "tech": [
@@ -69,7 +69,7 @@
       "id": "proj-06",
       "title": "高思教育：智慧课堂",
       "role": "AI + 教育",
-      "image": "assets/projects/gaosi-education.jpg",
+      "image": "assets/projects/gaosi-education.webp",
       "image_text": "GAOSI",
       "desc": "用计算机视觉技术量化教学过程，打造软硬一体的智慧课堂。让数据成为老师的眼睛，看见每一个学生的成长。",
       "tech": [
@@ -82,7 +82,7 @@
       "id": "proj-07",
       "title": "香港新鸿基：智慧商业",
       "role": "商业地产",
-      "image": "assets/projects/shkp-smart-mall.png",
+      "image": "assets/projects/shkp-smart-mall.webp",
       "image_text": "SHKP",
       "desc": "部署 AI Box 边缘盒子，实现商场全场景的实时感知与分析。用数据驱动商业决策，让实体商业更懂消费者。",
       "tech": [

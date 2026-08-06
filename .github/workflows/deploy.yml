@@ -32,6 +32,11 @@ jobs:
       - name: Generate Index
         run: node generate_index.js
 
+      - name: Optimize Images
+        run: |
+          npm install --no-save sharp
+          node scripts/optimize-images.js
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
