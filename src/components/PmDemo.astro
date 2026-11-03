@@ -1,0 +1,849 @@
+---
+// PMCopilot 演示：四个模拟场景（报告 / 需求 / 方案 / 报价）自动轮播。
+// 画布按 1080×640 设计，整体按容器宽度等比缩放，保证各尺寸下版式一致。
+import type { Lang } from '../i18n/content';
+
+interface Props { lang: Lang; tabs: [string, string][] }
+const { lang, tabs } = Astro.props;
+
+const zh = {
+  connectors: ['飞书', '价格表', '产品库'],
+  placeholder: '描述你要做的事…',
+  agent: 'PMCopilot',
+  report: {
+    prompt: '做一下 Anthropic Claude Code 和 OpenAI ChatGPT 这两个产品的产品力对比',
+    steps: [['识别报告类型', '竞品分析报告'], ['并行调研', '2 个子 Agent'], ['交叉核验', '14 个来源'], ['生成对比图表', '6 个维度']],
+    done: '报告已生成，结论均可回溯到来源',
+    centerTitle: '报告中心',
+    centerSub: '13 种报告 · 一句话自动匹配',
+    groups: [
+      ['调研分析', ['产品分析', '竞品分析', '竞争对手分析', '战略分析', '客户案例', '竞品周报']],
+      ['规划立项', ['BRD', 'MRD', '商业计划书']],
+      ['上线运营', ['数据分析', '经营分析', '模型效果测试', '模型效果验收']],
+    ],
+    hit: '竞品分析',
+    empty: '一句话发起，自动匹配报告类型',
+    tag: '竞品分析报告',
+    title: 'Claude Code vs ChatGPT：产品力对比',
+    meta: '14 个来源 · 2 个子 Agent 并行调研 · 引用可回溯',
+    a: 'Claude Code',
+    b: 'ChatGPT',
+    dims: [['编码与工程', 9.5, 7.5], ['自主执行', 9, 7], ['工具与集成', 8.5, 8], ['多模态', 5.5, 9], ['大众易用', 5, 9.5], ['企业管控', 8, 8]],
+    findings: [
+      ['Claude Code 赢在深度', '扎根开发者的终端和代码库，长任务自主执行是护城河'],
+      ['ChatGPT 赢在广度', '多模态和大众入口领先，覆盖写作、搜索到日常问答'],
+      ['对我们的启示', 'ToB 比拼的是嵌入工作流的深度，而不是功能数量'],
+    ],
+    note: '演示数据，评分为示意',
+  },
+  prd: {
+    prompt: '出一下 PMCopilot 的需求文档',
+    steps: [['读取飞书资料', '客户沟通纪要 3 份'], ['追问关键信息', '2 个问题，已补全'], ['生成大纲', '20 章'], ['逐章撰写', '程序检查通过']],
+    done: '需求文档已生成，可按章节修改',
+    tocTitle: '文档大纲',
+    tocSub: '完整产品需求 · 20 章',
+    toc: ['文档信息', '执行摘要', '背景与问题', '产品现状与约束', '目标与非目标', '用户与场景', '竞品对标', '产品结构', '需求清单', '功能需求说明', '交互设计', 'AI 能力设计', '系统架构', '评测方案', '指标定义', '非功能需求', '数据与埋点', '上线计划', '术语表', '待定问题'],
+    title: 'PMCopilot 产品需求文档',
+    chips: ['V1.0', 'Agent 型 · 插件', '评审中'],
+    sumH: '02 执行摘要',
+    sum: '面向 ToB AI 产品团队的 AI 工作流。把调研、需求、方案、报价收进一次对话，数据一路贯通。第一阶段服务产品团队，第二阶段延伸到售前。',
+    goalH: '05 目标',
+    goals: [['方案产出', '3 天 → 1 小时'], ['报价差错', '降到 0'], ['经验复用', '1 人 → 全团队']],
+    reqH: '09 需求清单',
+    reqs: [['P0', '报告中心', '13 种报告，一句话发起'], ['P0', '需求文档', '先大纲后全文，按章修改'], ['P0', '客户方案', '匹配产品能力，导出 PPT'], ['P0', '报价测算', '计算引擎出价，毛利仅内部可见'], ['P1', '飞书同步', '会议纪要与群聊信息自动入库'], ['P2', '售前协同', '一线自助出方案和报价']],
+  },
+  sol: {
+    prompt: '给一家连锁美妆品牌出智慧门店解决方案，3 页',
+    steps: [['匹配产品能力', '9 项'], ['引用同类案例', '2 个'], ['排版生成', '3 页'], ['能力边界检查', '通过']],
+    done: '方案已生成，可导出 PPT',
+    thumbs: ['封面', '触点地图', '架构与价值'],
+    export: '导出 PPTX',
+    s1: { kicker: 'SMART RETAIL SOLUTION', title: ['让每一位进店顾客', '被看见、被理解、被经营'], sub: '某连锁美妆品牌 · 全域智慧门店方案', foot: 'PMCopilot 生成 · 2026.11', pills: [['日均客流', '12,480'], ['进店转化', '18.6%'], ['会员复购', '34%']] },
+    s2: {
+      title: '全链路触点：从进店到复购',
+      sub: '一个会员 ID，串起线上线下每一次接触',
+      cols: [
+        ['认知', ['客流统计', '橱窗互动屏'], '品牌数字人', '客群画像'],
+        ['考虑', ['AR 试妆镜', '智能肌肤检测'], '直播边试边买', '兴趣偏好'],
+        ['转化', ['智能导购助手', '扫码购'], '云商城', '转化标签'],
+        ['复购', ['会员 1V1 关怀', '智能客服'], '私域社群', '会员资产'],
+      ],
+      off: '线下', on: '线上',
+      band: '会员数据中台：客群画像 → 兴趣偏好 → 转化标签 → 会员资产',
+    },
+    s3: {
+      title: '产品架构与预期价值',
+      layers: [['应用层', ['客流洞察', '会员画像', '导购助手', '营销自动化']], ['数据层', ['视频结构化', '会员数据', '交易数据', '经营看板']], ['算法层', ['客流与动线', '人群属性', '热区分析', '商品识别']], ['设备层', ['AI 摄像机', 'AR 试妆镜', '智能货架', '边缘服务器']]],
+      valueH: '预期价值',
+      valueSub: '目标值，以试点门店数据校准',
+      kpis: [['+12%', '进店转化率'], ['+8%', '会员复购率'], ['-30%', '门店巡检人力']],
+    },
+  },
+  quote: {
+    prompt: '50 家门店，每店 4 路摄像头，出报价并测算毛利',
+    steps: [['读取价格表', '2026 版'], ['计算配置', '7 个条目'], ['测算成本与毛利', '仅内部可见'], ['检查折扣权限', '在授权范围内'], ['导出对外版本', '已隐藏内部信息']],
+    done: '报价单已生成，对外版本可直接发送',
+    docTitle: '报价单',
+    project: '某连锁美妆品牌 · 智慧门店一期（50 家门店）',
+    no: 'Q-2026-1108',
+    heads: ['产品 / 服务', '数量', '单价', '金额', '成本'],
+    internal: '内部',
+    cats: { hw: '硬件', sw: '软件', sv: '服务' },
+    rows: [['hw', 'AI 智能摄像机', '200 台', 3500, 700000, 420000], ['sw', '门店分析平台 · 接入授权', '200 路', 4500, 900000, 120000], ['sw', '平台软件（私有化部署）', '1 套', 680000, 680000, 180000], ['sv', '现场勘测与点位规划', '50 店', 8000, 400000, 225000], ['sv', '算法调优（每店 2 天）', '50 店', 6000, 300000, 175000], ['sv', '项目管理', '40 人天', 3000, 120000, 72000], ['sv', '首年质保', '1 年', 0, 0, 0]],
+    included: '含',
+    subtotal: '小计', discount: '商务折扣 8.5 折', total: '报价合计',
+    card: '内部测算',
+    cost: '总成本', profit: '毛利', margin: '毛利率',
+    checks: ['折扣 8.5 折，在授权范围内（≥ 8 折）', '毛利率高于底线 40%'],
+    toast: '对外版本已隐藏成本与毛利',
+    locked: '对外隐藏',
+    terms: '报价有效期 30 天 · 首年质保，第二年起按合同额 15% / 年 · 以上价格含税',
+  },
+};
+
+const en: typeof zh = {
+  connectors: ['Feishu', 'Price book', 'Catalog'],
+  placeholder: 'Describe what you need…',
+  agent: 'PMCopilot',
+  report: {
+    prompt: 'Compare the product strength of Anthropic Claude Code and OpenAI ChatGPT',
+    steps: [['Detect report type', 'Competitive analysis'], ['Research in parallel', '2 sub-agents'], ['Cross-check', '14 sources'], ['Build charts', '6 dimensions']],
+    done: 'Report ready — every conclusion traces to a source',
+    centerTitle: 'Report center',
+    centerSub: '13 types · matched from one sentence',
+    groups: [
+      ['Research', ['Product', 'Competitive', 'Rival', 'Strategy', 'Case study', 'Weekly']],
+      ['Planning', ['BRD', 'MRD', 'Business plan']],
+      ['Operations', ['Data', 'Business review', 'Model eval', 'Model acceptance']],
+    ],
+    hit: 'Competitive',
+    empty: 'One sentence picks the right report type',
+    tag: 'Competitive analysis',
+    title: 'Claude Code vs ChatGPT: product strength',
+    meta: '14 sources · 2 sub-agents in parallel · traceable citations',
+    a: 'Claude Code',
+    b: 'ChatGPT',
+    dims: [['Coding', 9.5, 7.5], ['Autonomy', 9, 7], ['Integrations', 8.5, 8], ['Multimodal', 5.5, 9], ['Mass appeal', 5, 9.5], ['Enterprise', 8, 8]],
+    findings: [
+      ['Claude Code wins on depth', 'Rooted in the terminal and codebase; long autonomous tasks are its moat'],
+      ['ChatGPT wins on breadth', 'Leads in multimodal and mass reach, from writing to search'],
+      ['What it means for us', 'In B2B, depth inside the workflow beats feature count'],
+    ],
+    note: 'Demo data; scores are illustrative',
+  },
+  prd: {
+    prompt: 'Write the requirements doc for PMCopilot',
+    steps: [['Read Feishu notes', '3 customer calls'], ['Ask for missing info', '2 questions, resolved'], ['Draft outline', '20 chapters'], ['Write each chapter', 'checks passed']],
+    done: 'PRD ready — edit chapter by chapter',
+    tocTitle: 'Outline',
+    tocSub: 'Full PRD · 20 chapters',
+    toc: ['Document info', 'Executive summary', 'Background', 'Current state', 'Goals & non-goals', 'Users & scenarios', 'Competitors', 'Product structure', 'Requirements list', 'Functional specs', 'Interaction design', 'AI capabilities', 'Architecture', 'Evaluation', 'Metrics', 'Non-functional', 'Data & tracking', 'Launch plan', 'Glossary', 'Open questions'],
+    title: 'PMCopilot product requirements',
+    chips: ['v1.0', 'Agent · plugin', 'In review'],
+    sumH: '02 Executive summary',
+    sum: 'An AI workflow for B2B AI product teams: research, requirements, proposals and quotes in one conversation, with one set of data throughout. Phase one serves product teams; phase two extends to pre-sales.',
+    goalH: '05 Goals',
+    goals: [['Proposal time', '3 days → 1 hour'], ['Quote errors', 'down to 0'], ['Know-how reuse', '1 person → whole team']],
+    reqH: '09 Requirements',
+    reqs: [['P0', 'Report center', '13 report types from one sentence'], ['P0', 'PRD', 'Outline first, edit by chapter'], ['P0', 'Proposals', 'Capability matching, PPT export'], ['P0', 'Quotes', 'Engine-priced, margin internal only'], ['P1', 'Feishu sync', 'Meeting notes and chats ingested automatically'], ['P2', 'Pre-sales', 'Self-serve proposals and quotes']],
+  },
+  sol: {
+    prompt: 'A 3-slide smart-store proposal for a beauty retail chain',
+    steps: [['Match capabilities', '9 items'], ['Cite similar cases', '2'], ['Lay out slides', '3'], ['Capability check', 'passed']],
+    done: 'Proposal ready to export as PPT',
+    thumbs: ['Cover', 'Touchpoints', 'Architecture'],
+    export: 'Export PPTX',
+    s1: { kicker: 'SMART RETAIL SOLUTION', title: ['Every shopper who walks in —', 'seen, understood, served'], sub: 'Omnichannel smart-store proposal for a beauty chain', foot: 'Generated by PMCopilot · 2026.11', pills: [['Daily traffic', '12,480'], ['Conversion', '18.6%'], ['Repeat rate', '34%']] },
+    s2: {
+      title: 'Every touchpoint, from first visit to repeat',
+      sub: 'One member ID across every online and offline interaction',
+      cols: [
+        ['Aware', ['Footfall counting', 'Window display'], 'Brand avatar', 'Audience profile'],
+        ['Consider', ['AR try-on mirror', 'Skin analysis'], 'Live try-and-buy', 'Interests'],
+        ['Convert', ['Sales assistant', 'Scan-to-buy'], 'Online store', 'Conversion tags'],
+        ['Return', ['1:1 member care', 'AI service'], 'Private community', 'Member assets'],
+      ],
+      off: 'Store', on: 'Online',
+      band: 'Member data hub: profile → interests → conversion → member assets',
+    },
+    s3: {
+      title: 'Architecture and expected value',
+      layers: [['Apps', ['Footfall insight', 'Member profile', 'Sales assistant', 'Marketing automation']], ['Data', ['Video structuring', 'Member data', 'Transactions', 'Dashboards']], ['Models', ['Traffic & paths', 'Demographics', 'Heat zones', 'Product ID']], ['Devices', ['AI camera', 'AR mirror', 'Smart shelf', 'Edge server']]],
+      valueH: 'Expected value',
+      valueSub: 'Targets, calibrated on pilot stores',
+      kpis: [['+12%', 'Store conversion'], ['+8%', 'Repeat purchase'], ['-30%', 'Store patrol effort']],
+    },
+  },
+  quote: {
+    prompt: '50 stores, 4 cameras each — build the quote and check the margin',
+    steps: [['Load price book', '2026 edition'], ['Configure', '7 line items'], ['Cost & margin', 'internal only'], ['Discount authority', 'within limits'], ['Export customer copy', 'internal data hidden']],
+    done: 'Quote ready — the customer copy can go out as is',
+    docTitle: 'Quotation',
+    project: 'Beauty chain · Smart stores, phase 1 (50 stores)',
+    no: 'Q-2026-1108',
+    heads: ['Product / service', 'Qty', 'Unit price', 'Amount', 'Cost'],
+    internal: 'Internal',
+    cats: { hw: 'HW', sw: 'SW', sv: 'SVC' },
+    rows: [['hw', 'AI smart camera', '200 pcs', 3500, 700000, 420000], ['sw', 'Analytics license', '200 ch', 4500, 900000, 120000], ['sw', 'On-prem platform', '1 set', 680000, 680000, 180000], ['sv', 'Site survey & planning', '50 stores', 8000, 400000, 225000], ['sv', 'Model tuning', '50 stores', 6000, 300000, 175000], ['sv', 'Project management', '40 days', 3000, 120000, 72000], ['sv', 'First-year warranty', '1 yr', 0, 0, 0]],
+    included: 'Incl.',
+    subtotal: 'Subtotal', discount: 'Discount 15%', total: 'Total',
+    card: 'Internal sizing',
+    cost: 'Total cost', profit: 'Gross profit', margin: 'Margin',
+    checks: ['15% discount, within authority (≤ 20%)', 'Margin above the 40% floor'],
+    toast: 'Customer copy: cost and margin hidden',
+    locked: 'Hidden',
+    terms: 'Valid for 30 days · first-year warranty included; 15% of contract value per year after · prices include tax',
+  },
+};
+
+const D = lang === 'en' ? en : zh;
+const R = D.report;
+const P = D.prd;
+const S = D.sol;
+const Q = D.quote;
+const fmt = (n: number) => n.toLocaleString('en-US');
+
+// 雷达图坐标
+const cx = 150, cy = 122, rad = 88;
+const pt = (i: number, v: number) => {
+  const a = ((-90 + i * 60) * Math.PI) / 180;
+  return [cx + Math.cos(a) * rad * v, cy + Math.sin(a) * rad * v];
+};
+const ring = (v: number) => R.dims.map((_, i) => pt(i, v).map((x) => x.toFixed(1)).join(',')).join(' ');
+const poly = (k: 1 | 2) => R.dims.map((d, i) => pt(i, (d[k] as number) / 10).map((x) => x.toFixed(1)).join(',')).join(' ');
+const labels = R.dims.map((d, i) => {
+  const [x, y] = pt(i, 1.2);
+  const anchor = Math.abs(x - cx) < 4 ? 'middle' : x > cx ? 'start' : 'end';
+  return { x, y: y + 4, anchor, text: d[0] as string };
+});
+
+const subtotal = Q.rows.reduce((s, r) => s + (r[4] as number), 0);
+const total = Math.round(subtotal * 0.85);
+const cost = Q.rows.reduce((s, r) => s + (r[5] as number), 0);
+const profit = total - cost;
+const margin = ((profit / total) * 100).toFixed(1);
+
+const caps = tabs.map(([, c]) => c);
+const prompts = [R.prompt, P.prompt, S.prompt, Q.prompt];
+---
+<div class="pmd" data-pmd data-caps={JSON.stringify(caps)}>
+  <div class="fit">
+    <div class="app" aria-hidden="true">
+      <header class="top">
+        <span class="wdots"><i></i><i></i><i></i></span>
+        <span class="brand"><b class="mark"></b>PMCopilot</span>
+        <nav class="seg">
+          {tabs.map(([label], i) => <button class={i === 0 ? 'tb on' : 'tb'} data-i={i} tabindex="-1">{label}<span class="bar"></span></button>)}
+        </nav>
+        <span class="conn">{D.connectors.map((c) => <span><i></i>{c}</span>)}</span>
+      </header>
+
+      <div class="body">
+        {[0, 1, 2, 3].map((k) => {
+          const sc = [R, P, S, Q][k];
+          const gaps = ['500,700,700,700,700,900,900,900,800', '500,700,800,900,1700,800,800,900,800', '500,700,800,1700,1800,1800,800,700', '500,700,1500,1000,1200,1000,1300,700'][k];
+          const at = [[[2, 3], [3, 4], [4, 5], [5, 6]], [[2, 3], [3, 4], [4, 5], [5, 9]], [[2, 3], [3, 4], [4, 7], [7, 8]], [[2, 3], [3, 4], [4, 5], [5, 6], [6, 7]]][k];
+          const doneAt = [9, 9, 8, 8][k];
+          return (
+            <div class={k === 0 ? 'scene on' : 'scene'} data-gaps={gaps} data-hold="4200">
+              <aside class="chat">
+                <div class="msgs">
+                  <div class="u" data-at="1"><span>{prompts[k]}</span></div>
+                  <div class="a" data-at="2">
+                    <div class="who"><b class="mark"></b>{D.agent}</div>
+                    <ul class="steps">
+                      {sc.steps.map(([l, m], i) => (
+                        <li data-at={at[i][0]} data-ok={at[i][1]}>
+                          <span class="st"></span><span class="l">{l}</span><em>{m}</em>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                  <div class="done" data-at={doneAt}><span class="ck"></span>{sc.done}</div>
+                </div>
+                <div class="input">
+                  <span class="typed" data-text={prompts[k]}></span><span class="hint">{D.placeholder}</span><span class="caret"></span>
+                  <span class="send"></span>
+                </div>
+              </aside>
+
+              <div class="cv">
+                {k === 0 && (
+                  <div class="rep">
+                    <div class="center">
+                      <div class="ch"><b>{R.centerTitle}</b><span>{R.centerSub}</span></div>
+                      <div class="groups">
+                        {R.groups.map(([g, items]) => (
+                          <div class="grp"><div class="gh"><i></i>{g}<em>{(items as string[]).length}</em></div><div class="gchips">{(items as string[]).map((x) => <span class={x === R.hit ? 'rchip hit' : 'rchip'} data-at={x === R.hit ? 1 : undefined}>{x}</span>)}</div></div>
+                        ))}
+                      </div>
+                    </div>
+                    <div class="slot">
+                    <div class="empty" data-at="0" data-out="6"><span></span>{R.empty}</div>
+                    <article class="doc" data-at="6">
+                      <div class="dh">
+                        <div><span class="dtag">{R.tag}</span>
+                        <h4>{R.title}</h4>
+                        <p>{R.meta}</p></div>
+                        <div class="legend"><span><i class="ia"></i>{R.a}</span><span><i class="ib"></i>{R.b}</span></div>
+                      </div>
+                      <div class="viz">
+                        <div class="radar" data-at="7">
+                          <svg viewBox="0 0 300 244">
+                            {[0.25, 0.5, 0.75, 1].map((v) => <polygon class="grid" points={ring(v)} />)}
+                            {R.dims.map((_, i) => { const [x, y] = pt(i, 1); return <line class="axis" x1={cx} y1={cy} x2={x} y2={y} />; })}
+                            <polygon class="pa" points={poly(1)} />
+                            <polygon class="pb" points={poly(2)} />
+                            {labels.map((l) => <text x={l.x} y={l.y} text-anchor={l.anchor}>{l.text}</text>)}
+                          </svg>
+                        </div>
+                        <div class="bars" data-at="8">
+                          {R.dims.map(([d, a, b], i) => (
+                            <div class="row" style={`--d:${i * 70}ms`}>
+                              <span class="dn">{d}</span>
+                              <div class="pair">
+                                <div class="tr"><i class="ba" style={`--w:${(a as number) * 10}%`}></i><b>{a}</b></div>
+                                <div class="tr"><i class="bb" style={`--w:${(b as number) * 10}%`}></i><b>{b}</b></div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                      <div class="finds" data-at="9">
+                        {R.findings.map(([h, p], i) => <div class="fd" style={`--d:${i * 120}ms`}><b>{h}</b><p>{p}</p></div>)}
+                      </div>
+                      <p class="note">{R.note}</p>
+                    </article>
+                    </div>
+                  </div>
+                )}
+
+                {k === 1 && (
+                  <div class="prd">
+                    <aside class="toc">
+                      <div class="tochd"><b>{P.tocTitle}</b><span>{P.tocSub}</span></div>
+                      <ol data-at="4">
+                        {P.toc.map((x, i) => <li style={`--d:${i * 35}ms;--c:${400 + i * 70}ms`}><span class="n">{String(i + 1).padStart(2, '0')}</span>{x}<i></i></li>)}
+                      </ol>
+                    </aside>
+                    <article class="page">
+                      <div class="ph2" data-at="6">
+                        <h4>{P.title}</h4>
+                        <div class="pchips">{P.chips.map((c, i) => <span class={i === 2 ? 'pc warn' : 'pc'}>{c}</span>)}</div>
+                      </div>
+                      <div class="blk" data-at="6"><h5>{P.sumH}</h5><p>{P.sum}</p></div>
+                      <div class="blk" data-at="7"><h5>{P.goalH}</h5>
+                        <div class="goals">{P.goals.map(([l, v], i) => <div class="goal" style={`--d:${i * 90}ms`}><span>{l}</span><b>{v}</b></div>)}</div>
+                      </div>
+                      <div class="blk" data-at="8"><h5>{P.reqH}</h5>
+                        <div class="reqs">{P.reqs.map(([p, n, d], i) => <div class="req" style={`--d:${i * 70}ms`}><span class={`pri ${p.toLowerCase()}`}>{p}</span><b>{n}</b><span>{d}</span></div>)}</div>
+                      </div>
+                    </article>
+                  </div>
+                )}
+
+                {k === 2 && (
+                  <div class="sol">
+                    <div class="stage">
+                      <div class="slide s1" data-at="4" data-out="5">
+                        <div class="glow"></div>
+                        <svg class="rings" viewBox="0 0 300 300"><circle cx="150" cy="150" r="140" /><circle cx="150" cy="150" r="104" /><circle cx="150" cy="150" r="68" /><circle cx="150" cy="150" r="32" /></svg>
+                        <div class="s1t">
+                          <span class="kick">{S.s1.kicker}</span>
+                          <h4>{S.s1.title[0]}<br />{S.s1.title[1]}</h4>
+                          <p>{S.s1.sub}</p>
+                        </div>
+                        <div class="pills">{S.s1.pills.map(([l, v], i) => <div class="pill" style={`--d:${300 + i * 140}ms`}><span>{l}</span><b>{v}</b></div>)}</div>
+                        <span class="foot">{S.s1.foot}</span>
+                      </div>
+                      <div class="slide s2" data-at="5" data-out="6">
+                        <div class="sh"><h4>{S.s2.title}</h4><p>{S.s2.sub}</p></div>
+                        <div class="journey">
+                          <div class="line"></div>
+                          {S.s2.cols.map(([stage, offs, on, data], i) => (
+                            <div class={`col c${i}`} style={`--d:${i * 120}ms`}>
+                              <span class="stg"><i></i>{stage}</span>
+                              <span class="lane">{S.s2.off}</span>
+                              {(offs as string[]).map((x) => <span class="tp">{x}</span>)}
+                              <span class="lane">{S.s2.on}</span>
+                              <span class="tp on">{on}</span>
+                              <span class="out">{data}</span>
+                            </div>
+                          ))}
+                        </div>
+                        <div class="band">{S.s2.band}</div>
+                      </div>
+                      <div class="slide s3" data-at="6">
+                        <div class="sh"><h4>{S.s3.title}</h4></div>
+                        <div class="s3g">
+                          <div class="layers">
+                            {S.s3.layers.map(([l, items], i) => (
+                              <div class={`ly l${i}`} style={`--d:${i * 110}ms`}><span class="ln">{l}</span>{(items as string[]).map((x) => <span class="lb">{x}</span>)}</div>
+                            ))}
+                          </div>
+                          <div class="value">
+                            <span class="vh">{S.s3.valueH}</span>
+                            {S.s3.kpis.map(([v, l], i) => <div class="kpi" style={`--d:${450 + i * 130}ms`}><b>{v}</b><span>{l}</span></div>)}
+                            <span class="vs">{S.s3.valueSub}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="sempty" data-at="0" data-out="4"></div>
+                    </div>
+                    <div class="side">
+                      {S.thumbs.map((x, i) => (
+                        <div class={`thumb t${i}`} data-at={4 + i}><span class="tn">{String(i + 1).padStart(2, '0')}</span><span class="tm"><i></i><i></i><i></i></span><span class="tl">{x}</span></div>
+                      ))}
+                      <span class="exp" data-at="8">{S.export}</span>
+                    </div>
+                  </div>
+                )}
+
+                {k === 3 && (
+                  <div class="quo">
+                    <article class="sheet" data-at="3">
+                      <div class="qh">
+                        <div><h4>{Q.docTitle}</h4><p>{Q.project}</p></div>
+                        <span class="qno">{Q.no}</span>
+                      </div>
+                      <div class="tbl">
+                        <div class="tr thd">
+                          <span>{Q.heads[0]}</span><span class="r">{Q.heads[1]}</span><span class="r">{Q.heads[2]}</span><span class="r">{Q.heads[3]}</span>
+                          <span class="r int"><i class="lock"></i>{Q.heads[4]}</span>
+                        </div>
+                        {Q.rows.map(([c, n, q, u, a, co], i) => (
+                          <div class="tr" style={`--d:${i * 90}ms`}>
+                            <span class="nm"><em class={`cat ${c}`}>{Q.cats[c as 'hw' | 'sw' | 'sv']}</em>{n}</span>
+                            <span class="r">{q}</span>
+                            <span class="r">{u ? fmt(u as number) : '—'}</span>
+                            <span class="r b">{a ? fmt(a as number) : Q.included}</span>
+                            <span class="r int">{co ? fmt(co as number) : '—'}</span>
+                          </div>
+                        ))}
+                        <div class="mask" data-at="7"><span><i class="lock"></i>{Q.locked}</span></div>
+                      </div>
+                      <div class="sum" data-at="4">
+                        <div class="sl"><span>{Q.subtotal}</span><b>¥{fmt(subtotal)}</b></div>
+                        <div class="sl"><span>{Q.discount}</span><b class="neg">−¥{fmt(subtotal - total)}</b></div>
+                        <div class="sl tot"><span>{Q.total}</span><b>¥<span data-count={total}>0</span></b></div>
+                      </div>
+                      <p class="terms" data-at="4">{Q.terms}</p>
+                    </article>
+                    <aside class="icard" data-at="5">
+                      <div class="cdh"><i class="lock"></i>{Q.card}</div>
+                      <div class="gauge">
+                        <svg viewBox="0 0 120 120"><circle class="gt" cx="60" cy="60" r="50" /><circle class="gv" cx="60" cy="60" r="50" style={`--m:${margin}`} /></svg>
+                        <div class="glab"><b>{margin}%</b><span>{Q.margin}</span></div>
+                      </div>
+                      <div class="kv"><span>{Q.cost}</span><b>¥{fmt(cost)}</b></div>
+                      <div class="kv"><span>{Q.profit}</span><b class="pos">¥{fmt(profit)}</b></div>
+                      <ul class="checks" data-at="6">{Q.checks.map((c) => <li>{c}</li>)}</ul>
+                    </aside>
+                    <div class="toast" data-at="7"><span class="ck"></span>{Q.toast}</div>
+                  </div>
+                )}
+              </div>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  </div>
+  <p class="cap">{caps[0]}</p>
+</div>
+
+<style>
+  .pmd{--ac:#2F6BD8;--ink:#1B1D22;--ink2:#5B5F69;--ink3:#9095A0;--line:#E7E9EE;--paper:#fff;--soft:#F5F6F8;--ca:#D97757;--cb:#10A37F;width:100%}
+  .fit{position:relative;width:100%;height:640px;overflow:hidden;border-radius:16px}
+  .app{position:absolute;left:0;top:0;width:1080px;height:640px;transform-origin:0 0;background:#F3F4F7;border-radius:16px;overflow:hidden;color:var(--ink);font-size:13px;line-height:1.5;box-shadow:0 0 0 1px rgba(255,255,255,.06)}
+  .app *{box-sizing:border-box}
+
+  /* 顶栏 */
+  .top{height:52px;display:flex;align-items:center;gap:18px;padding:0 18px;background:#fff;border-bottom:1px solid var(--line)}
+  .wdots{display:flex;gap:7px}
+  .wdots i{width:11px;height:11px;border-radius:50%;background:#E3E5EA}
+  .wdots i:nth-child(1){background:#FF6159}.wdots i:nth-child(2){background:#FFBD2E}.wdots i:nth-child(3){background:#28C941}
+  .brand{display:flex;align-items:center;gap:8px;font-weight:700;font-size:14px;letter-spacing:-.01em}
+  .mark{width:20px;height:20px;border-radius:6px;background:linear-gradient(135deg,#3D7BFF,#7B5CFF);position:relative;flex:none}
+  .mark:after{content:'';position:absolute;inset:6px;border-radius:2px;background:#fff;opacity:.9}
+  .seg{display:flex;gap:2px;padding:3px;background:var(--soft);border-radius:10px;margin-left:auto;margin-right:auto}
+  .tb{position:relative;overflow:hidden;font:inherit;font-size:13px;font-weight:500;color:var(--ink2);background:transparent;border:0;border-radius:8px;padding:5px 18px;cursor:pointer}
+  .tb.on{background:#fff;color:var(--ink);box-shadow:0 1px 3px rgba(16,24,40,.1)}
+  .tb .bar{position:absolute;left:10px;right:10px;bottom:2px;height:2px;border-radius:2px;transform:scaleX(0);transform-origin:left;background:var(--ac)}
+  .tb.on .bar{animation:fill var(--dur,12s) linear forwards}
+  .pmd.paused .tb.on .bar{animation-play-state:paused}
+  @keyframes fill{to{transform:scaleX(1)}}
+  .conn{display:flex;gap:6px}
+  .conn span{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--ink2);background:var(--soft);border-radius:999px;padding:3px 10px}
+  .conn i{width:6px;height:6px;border-radius:50%;background:#22C55E;box-shadow:0 0 0 3px rgba(34,197,94,.15)}
+
+  .body{position:relative;height:588px}
+  .scene{position:absolute;inset:0;display:grid;grid-template-columns:310px 1fr;opacity:0;visibility:hidden;transition:opacity .35s}
+  .scene.on{opacity:1;visibility:visible}
+
+  /* 出现动画：带 data-at 的元素在对应步骤加上 .in */
+  [data-at]{opacity:0;transform:translateY(8px);transition:opacity .45s cubic-bezier(.16,1,.3,1),transform .45s cubic-bezier(.16,1,.3,1)}
+  [data-at].in{opacity:1;transform:none}
+
+  /* 对话栏 */
+  .chat{display:flex;flex-direction:column;background:#FAFBFC;border-right:1px solid var(--line);padding:18px 16px 16px}
+  .msgs{flex:1;display:flex;flex-direction:column;gap:14px;min-height:0}
+  .u{align-self:flex-end;max-width:92%}
+  .u span{display:block;background:var(--ac);color:#fff;border-radius:14px 14px 4px 14px;padding:9px 12px;font-size:13px;line-height:1.55}
+  .a{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 12px 8px}
+  .who{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;margin-bottom:8px}
+  .who .mark{width:16px;height:16px;border-radius:5px}
+  .who .mark:after{inset:5px}
+  .steps{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+  .steps li{display:grid;grid-template-columns:18px 1fr;column-gap:8px;padding:5px 0;border-top:1px dashed #EEF0F3}
+  .steps li:first-child{border-top:0}
+  .st{grid-row:span 2;width:16px;height:16px;border-radius:50%;border:2px solid #D5DAE3;border-top-color:var(--ac);animation:spin .8s linear infinite;margin-top:2px}
+  .steps li.ok .st{animation:none;border:0;background:#22C55E}
+  .steps li.ok .st:after{content:'';display:block;width:5px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:translate(5.5px,3px) rotate(45deg)}
+  @keyframes spin{to{transform:rotate(360deg)}}
+  .steps .l{font-size:13px;font-weight:500}
+  .steps em{font-style:normal;font-size:12px;color:var(--ink3)}
+  .done{display:flex;align-items:center;gap:8px;font-size:13px;color:#15803D;background:#F0FDF4;border:1px solid #DCFCE7;border-radius:10px;padding:8px 10px}
+  .ck{width:16px;height:16px;border-radius:50%;background:#22C55E;flex:none;position:relative}
+  .ck:after{content:'';position:absolute;left:5.5px;top:3px;width:5px;height:8px;border:solid #fff;border-width:0 2px 2px 0;transform:rotate(45deg)}
+  .input{position:relative;display:flex;align-items:center;min-height:46px;background:#fff;border:1px solid #DDE1E8;border-radius:14px;padding:10px 46px 10px 12px;box-shadow:0 2px 8px rgba(16,24,40,.04)}
+  .typed{font-size:13px;line-height:1.5}
+  .hint{font-size:13px;color:var(--ink3)}
+  .typed:not(:empty)+.hint{display:none}
+  .caret{width:1.5px;height:16px;background:var(--ac);margin-left:1px;animation:blink 1s steps(1) infinite}
+  @keyframes blink{50%{opacity:0}}
+  .send{position:absolute;right:8px;top:50%;width:30px;height:30px;margin-top:-15px;border-radius:9px;background:#D9DDE5;transition:background .2s}
+  .send:after{content:'';position:absolute;left:10px;top:8px;width:8px;height:8px;border:solid #fff;border-width:2px 2px 0 0;transform:rotate(-45deg);transform-origin:center;margin-top:4px}
+  .scene.typing .send{background:var(--ac)}
+
+  .cv{position:relative;padding:18px 20px;overflow:hidden}
+
+  /* 报告 */
+  .rep{display:flex;flex-direction:column;gap:12px;height:100%}
+  .center{background:#fff;border:1px solid var(--line);border-radius:14px;padding:11px 12px 12px}
+  .ch{display:flex;align-items:baseline;gap:8px;margin-bottom:8px}
+  .ch b{font-size:13px;font-weight:600}.ch span{font-size:12px;color:var(--ink3)}
+  .groups{display:grid;grid-template-columns:1.6fr .8fr 1.25fr;gap:10px}
+  .grp{background:#F7F8FA;border-radius:10px;padding:8px 10px 9px}
+  .gh{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--ink);margin-bottom:6px}
+  .gh i{width:6px;height:6px;border-radius:2px;background:var(--ac)}
+  .grp:nth-child(2) .gh i{background:#8B5CF6}.grp:nth-child(3) .gh i{background:#10A37F}
+  .gh em{font-style:normal;font-size:11px;font-weight:500;color:var(--ink3);margin-left:auto;font-variant-numeric:tabular-nums}
+  .gchips{display:flex;flex-wrap:wrap;gap:4px}
+  .rchip{position:relative;font-size:12px;line-height:20px;color:var(--ink2);background:#fff;border:1px solid #E6E9EF;border-radius:6px;padding:0 8px;opacity:1;transform:none}
+  .rchip.hit{transition:color .35s,background .35s,border-color .35s,box-shadow .35s,padding .35s}
+  .rchip.hit.in{color:#fff;background:var(--ac);border-color:var(--ac);padding-left:22px;box-shadow:0 4px 12px rgba(47,107,216,.3)}
+  .rchip.hit:before{content:'';position:absolute;left:9px;top:5px;width:4px;height:8px;border:solid #fff;border-width:0 1.5px 1.5px 0;transform:rotate(45deg);opacity:0;transition:opacity .35s}
+  .rchip.hit.in:before{opacity:1}
+  .slot{position:relative;flex:1;min-height:0}
+  .rep{gap:10px!important}
+  .empty{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;color:var(--ink3);font-size:13px;border:1.5px dashed #DCE0E7;border-radius:14px}
+  .empty span{width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#E8EEFC,#EFEAFE)}
+  .doc{position:absolute;inset:0;background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 20px 10px;display:flex;flex-direction:column;gap:8px;box-shadow:0 10px 30px rgba(16,24,40,.06)}
+  .dtag{display:inline-block;font-size:11px;font-weight:600;color:var(--ac);background:#EEF4FF;border-radius:6px;padding:2px 8px}
+  .dh h4{font-size:19px;font-weight:700;letter-spacing:-.01em;margin:6px 0 2px}
+  .dh p{font-size:12px;color:var(--ink3);margin:0}
+  .viz{flex:1;min-height:0;display:grid;grid-template-columns:250px 1fr;gap:24px;align-items:center}
+  .radar svg{width:222px;height:180px;display:block;overflow:visible;margin:0 auto}
+  .grid{fill:none;stroke:#E6E9EF;stroke-width:1}
+  .axis{stroke:#E6E9EF;stroke-width:1}
+  .pa,.pb{transform-box:view-box;transform-origin:150px 122px;transform:scale(0);transition:transform .9s cubic-bezier(.16,1,.3,1)}
+  .pa{fill:rgba(217,119,87,.22);stroke:var(--ca);stroke-width:2}
+  .pb{fill:rgba(16,163,127,.16);stroke:var(--cb);stroke-width:2;transition-delay:.15s}
+  .radar.in .pa,.radar.in .pb{transform:scale(1)}
+  .radar text{font-size:11px;fill:var(--ink2)}
+  .dh{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+  .legend{display:flex;gap:14px;font-size:12px;color:var(--ink2);padding-top:4px;flex:none}
+  .legend span{display:flex;align-items:center;gap:6px}
+  .legend i{width:10px;height:10px;border-radius:3px}
+  .ia{background:var(--ca)}.ib{background:var(--cb)}
+  .bars{display:flex;flex-direction:column;gap:5px}
+  .row{display:grid;grid-template-columns:76px 1fr;align-items:center;gap:10px}
+  .dn{font-size:12px;color:var(--ink2)}
+  .pair{display:flex;flex-direction:column;gap:3px}
+  .pair .tr{display:flex;align-items:center;gap:8px;height:9px}
+  .pair i{display:block;height:7px;border-radius:4px;width:0;transition:width .9s cubic-bezier(.16,1,.3,1) var(--d)}
+  .bars.in .pair i{width:calc(var(--w) * .82)}
+  .ba{background:var(--ca)}.bb{background:var(--cb)}
+  .pair b{font-size:11px;font-weight:600;color:var(--ink2)}
+  .finds{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .fd{background:var(--soft);border-radius:10px;padding:8px 12px;opacity:0;transform:translateY(6px);transition:all .5s cubic-bezier(.16,1,.3,1) var(--d)}
+  .finds.in .fd{opacity:1;transform:none}
+  .fd:last-child{background:#EEF4FF}
+  .fd b{display:block;font-size:13px;margin-bottom:2px}
+  .fd p{font-size:12px;color:var(--ink2);margin:0;line-height:1.5}
+  .note{font-size:11px;color:var(--ink3);margin:0;text-align:right}
+
+  /* 需求 */
+  .prd{display:grid;grid-template-columns:212px 1fr;gap:14px;height:100%}
+  .toc{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px 12px;overflow:hidden}
+  .tochd{display:flex;flex-direction:column;margin-bottom:8px}
+  .tochd b{font-size:13px}.tochd span{font-size:11px;color:var(--ink3)}
+  .toc ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px;opacity:1;transform:none}
+  .toc li{display:grid;grid-template-columns:22px 1fr 14px;align-items:center;font-size:12px;color:var(--ink2);padding:2.5px 4px;border-radius:5px;opacity:0;transform:translateX(-6px);transition:opacity .3s var(--d),transform .3s var(--d)}
+  .toc ol.in li{opacity:1;transform:none}
+  .toc .n{font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums}
+  .toc li i{width:12px;height:12px;border-radius:50%;border:1.5px solid #DCE0E7;position:relative}
+  .scene.writing .toc li i{animation:tick .01s linear forwards var(--c)}
+  .scene.writing .toc li i:after{content:'';position:absolute;left:3.2px;top:1.2px;width:3px;height:5.5px;border:solid #fff;border-width:0 1.5px 1.5px 0;transform:rotate(45deg);opacity:0;animation:tick2 .01s linear forwards var(--c)}
+  @keyframes tick{to{background:#22C55E;border-color:#22C55E}}
+  @keyframes tick2{to{opacity:1}}
+  .page{position:relative;background:#fff;border:1px solid var(--line);border-radius:14px;padding:18px 24px;display:flex;flex-direction:column;gap:12px;box-shadow:0 10px 30px rgba(16,24,40,.05);overflow:hidden}
+  .ph2 h4{font-size:19px;font-weight:700;letter-spacing:-.01em;margin:0 0 8px}
+  .pchips{display:flex;gap:6px}
+  .pc{font-size:11px;color:var(--ink2);background:var(--soft);border-radius:6px;padding:2px 8px}
+  .pc.warn{color:#B45309;background:#FEF3C7}
+  .blk h5{font-size:12px;font-weight:600;color:var(--ac);margin:0 0 6px;letter-spacing:.02em}
+  .blk p{font-size:13px;color:var(--ink2);line-height:1.7;margin:0}
+  .goals{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+  .goal{border:1px solid var(--line);border-radius:10px;padding:10px 12px;opacity:0;transform:translateY(6px);transition:all .5s var(--d)}
+  .blk.in .goal,.blk.in .req{opacity:1;transform:none}
+  .goal span{display:block;font-size:11px;color:var(--ink3)}
+  .goal b{font-size:16px;font-weight:700;letter-spacing:-.01em}
+  .reqs{display:flex;flex-direction:column;border:1px solid var(--line);border-radius:10px;overflow:hidden}
+  .req{display:grid;grid-template-columns:40px 92px 1fr;align-items:center;gap:8px;font-size:12px;padding:5px 12px;border-top:1px solid #F0F1F4;opacity:0;transform:translateX(-6px);transition:all .4s var(--d)}
+  .req:first-child{border-top:0}
+  .req b{font-weight:600}.req span:last-child{color:var(--ink2)}
+  .pri{font-size:11px;font-weight:700;border-radius:5px;padding:1px 0;text-align:center}
+  .p0{color:#B42318;background:#FEE4E2}.p1{color:#B54708;background:#FEF0C7}.p2{color:#475467;background:#F2F4F7}
+
+  /* 方案 */
+  .sol{display:flex;flex-direction:column;align-items:center;gap:14px;height:100%;padding-top:4px}
+  .stage{position:relative;flex:none;width:704px;height:396px;border-radius:12px;overflow:hidden;box-shadow:0 18px 40px rgba(16,24,40,.14);background:#fff}
+  .sempty{position:absolute;inset:0;background:repeating-linear-gradient(135deg,#F6F7F9 0 12px,#F1F3F6 12px 24px);opacity:1;transform:none}
+  .sempty:not(.in){opacity:0}
+  .slide{position:absolute;left:0;top:0;width:640px;height:360px;transform-origin:0 0;transform:scale(1.085);transition:opacity .6s ease,transform .6s cubic-bezier(.16,1,.3,1)}
+  .slide.in{transform:scale(1.1)}
+  .s1{background:linear-gradient(135deg,#0A1630 0%,#132B5C 55%,#2853A6 100%);color:#fff}
+  .glow{position:absolute;right:-60px;top:-80px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(124,160,255,.45),transparent 65%)}
+  .rings{position:absolute;right:-30px;top:20px;width:330px;height:330px}
+  .rings circle{fill:none;stroke:rgba(255,255,255,.14);stroke-width:1}
+  .s1t{position:absolute;left:40px;top:58px;max-width:380px}
+  .kick{font-size:10px;letter-spacing:.24em;color:#9FB8F2}
+  .s1 h4{font-size:30px;line-height:1.3;font-weight:700;letter-spacing:-.01em;margin:12px 0 12px}
+  .s1 p{font-size:13px;color:#C2D0F0;margin:0}
+  .pills{position:absolute;right:40px;top:70px;display:flex;flex-direction:column;gap:10px}
+  .pill{width:150px;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);backdrop-filter:blur(6px);border-radius:12px;padding:9px 13px;opacity:0;transform:translateX(12px);transition:all .6s cubic-bezier(.16,1,.3,1) var(--d)}
+  .s1.in .pill{opacity:1;transform:none}
+  .pill span{display:block;font-size:11px;color:#AFC3EE}
+  .pill b{font-size:19px;font-weight:700;letter-spacing:-.01em}
+  .foot{position:absolute;left:40px;bottom:24px;font-size:10px;color:#8EA6DA}
+  .sh{padding:22px 28px 0}
+  .sh h4{font-size:19px;font-weight:700;margin:0;letter-spacing:-.01em}
+  .sh p{font-size:12px;color:var(--ink3);margin:3px 0 0}
+  .journey{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:12px;padding:16px 28px 0}
+  .line{position:absolute;left:60px;right:60px;top:30px;height:2px;background:linear-gradient(90deg,#6C7BFF,#F5A524,#F0507A,#19B37D);opacity:.5}
+  .col{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:4px;opacity:0;transform:translateY(8px);transition:all .55s cubic-bezier(.16,1,.3,1) var(--d)}
+  .s2.in .col{opacity:1;transform:none}
+  .stg{align-self:center;display:flex;align-items:center;gap:6px;font-size:12px;font-weight:700;background:#fff;padding:3px 12px;border-radius:999px;border:1.5px solid currentColor;margin-bottom:6px}
+  .stg i{width:7px;height:7px;border-radius:50%;background:currentColor}
+  .c0 .stg{color:#5B6CFF}.c1 .stg{color:#E8970C}.c2 .stg{color:#E5466F}.c3 .stg{color:#16A372}
+  .lane{font-size:10px;color:var(--ink3);margin-top:2px}
+  .tp{font-size:11px;text-align:center;background:var(--soft);border-radius:6px;padding:4px 4px}
+  .tp.on{background:#F3F0FF;color:#5B3FD6}
+  .out{margin-top:6px;font-size:11px;font-weight:600;text-align:center;border-radius:6px;padding:4px;color:#fff}
+  .c0 .out{background:#5B6CFF}.c1 .out{background:#E8970C}.c2 .out{background:#E5466F}.c3 .out{background:#16A372}
+  .band{position:absolute;left:28px;right:28px;bottom:18px;text-align:center;font-size:12px;font-weight:600;color:#fff;border-radius:8px;padding:7px;background:linear-gradient(90deg,#1E3A8A,#4F46E5)}
+  .s3g{display:grid;grid-template-columns:1.55fr 1fr;gap:16px;padding:18px 28px 0}
+  .layers{display:flex;flex-direction:column;gap:8px}
+  .ly{display:grid;grid-template-columns:54px repeat(4,1fr);gap:6px;height:58px;opacity:0;transform:translateX(-8px);transition:all .5s cubic-bezier(.16,1,.3,1) var(--d)}
+  .s3.in .ly{opacity:1;transform:none}
+  .ln{font-size:11px;font-weight:700;color:#fff;border-radius:6px;display:flex;align-items:center;justify-content:center}
+  .l0 .ln{background:#1E3A8A}.l1 .ln{background:#2F5BD3}.l2 .ln{background:#4F7FEA}.l3 .ln{background:#7FA3F2}
+  .lb{font-size:11px;display:flex;align-items:center;justify-content:center;text-align:center;background:#F2F5FB;border:1px solid #E3E9F6;border-radius:6px}
+  .value{background:linear-gradient(160deg,#0F1F45,#1F3F86);border-radius:10px;padding:16px;color:#fff;display:flex;flex-direction:column;justify-content:center;gap:12px}
+  .vh{font-size:12px;font-weight:600;color:#AFC3EE}
+  .kpi{display:flex;align-items:baseline;gap:8px;opacity:0;transform:translateY(6px);transition:all .5s var(--d)}
+  .s3.in .kpi{opacity:1;transform:none}
+  .kpi b{font-size:24px;font-weight:800;letter-spacing:-.02em;color:#8FE3C0;min-width:68px}
+  .kpi span{font-size:11px;color:#D6E0F7}
+  .vs{font-size:10px;color:#8EA6DA;margin-top:2px}
+  .side{display:flex;gap:10px;align-items:stretch;width:704px}
+  .thumb{flex:1;display:grid;grid-template-columns:auto 64px 1fr;align-items:center;gap:8px;background:#fff;border:1.5px solid var(--line);border-radius:10px;padding:7px;transition:border-color .3s,box-shadow .3s,opacity .45s,transform .45s}
+  .tn{font-size:10px;color:var(--ink3);font-weight:600}
+  .tm{height:36px;border-radius:5px;background:#F2F4F8;display:flex;flex-direction:column;justify-content:center;gap:3px;padding:0 7px}
+  .tm i{display:block;height:4px;border-radius:2px;background:#D9DEE8}
+  .tm i:nth-child(2){width:70%}.tm i:nth-child(3){width:45%}
+  .t0 .tm{background:linear-gradient(135deg,#0A1630,#2853A6)}.t0 .tm i{background:rgba(255,255,255,.35)}
+  .tl{font-size:12px;font-weight:500}
+  .t1 .tm{flex-direction:row;align-items:center;justify-content:space-between}
+  .t1 .tm i{width:10px!important;height:10px;border-radius:50%}
+  .t1 .tm i:nth-child(1){background:#5B6CFF}.t1 .tm i:nth-child(2){background:#E8970C}.t1 .tm i:nth-child(3){background:#E5466F}
+  .t2 .tm i{height:6px;background:#7FA3F2}.t2 .tm i:nth-child(1){background:#1E3A8A;width:100%}.t2 .tm i:nth-child(2){background:#2F5BD3;width:100%}.t2 .tm i:nth-child(3){background:#7FA3F2;width:100%}
+  .scene[data-step="4"] .t0,.scene[data-step="5"] .t1,.scene[data-step="6"] .t2,.scene[data-step="7"] .t2,.scene[data-step="8"] .t2{border-color:var(--ac);box-shadow:0 0 0 3px rgba(47,107,216,.12)}
+  .exp{flex:none;display:flex;align-items:center;padding:0 18px;font-size:13px;font-weight:600;color:#fff;background:var(--ac);border-radius:10px;box-shadow:0 6px 16px rgba(47,107,216,.35)}
+
+  /* 报价 */
+  .quo{position:relative;display:grid;grid-template-columns:1fr 200px;gap:14px;height:100%}
+  .sheet{background:#fff;border:1px solid var(--line);border-radius:14px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 10px 30px rgba(16,24,40,.05)}
+  .qh{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:10px;border-bottom:2px solid var(--ink)}
+  .qh h4{font-size:19px;font-weight:700;margin:0;letter-spacing:.02em}
+  .qh p{font-size:12px;color:var(--ink2);margin:2px 0 0}
+  .qno{font-size:11px;color:var(--ink3);font-variant-numeric:tabular-nums}
+  .tbl{position:relative;display:flex;flex-direction:column}
+  .tbl .tr{display:grid;grid-template-columns:1fr 54px 64px 76px 74px;align-items:center;gap:6px;font-size:12px;padding:6.5px 4px;border-top:1px solid #F0F1F4;font-variant-numeric:tabular-nums}
+  .tbl .tr:not(.th){opacity:0;transform:translateY(4px);transition:all .4s var(--d)}
+  .sheet.in .tbl .tr{opacity:1;transform:none}
+  .tbl .thd{border-top:0;font-size:11px;color:var(--ink3);font-weight:600}
+  .r{text-align:right}.b{font-weight:600}
+  .nm{display:flex;align-items:center;gap:7px;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .cat{font-style:normal;flex:none;font-size:10px;font-weight:600;border-radius:4px;padding:0 5px;line-height:17px}
+  .cat.hw{color:#1D4ED8;background:#E0EAFF}.cat.sw{color:#6D28D9;background:#EDE7FE}.cat.sv{color:#0F766E;background:#D9F5EF}
+  .int{color:#B45309;background:#FFFBEB;margin:-6.5px 0;padding:6.5px 6px;align-self:stretch;display:flex;align-items:center;justify-content:flex-end;gap:4px}
+  .thd .int{background:#FEF3C7}
+  .lock{display:inline-block;width:9px;height:8px;border-radius:2px;background:currentColor;position:relative;margin-top:3px;flex:none}
+  .lock:before{content:'';position:absolute;left:1.5px;top:-5px;width:6px;height:6px;border:1.5px solid currentColor;border-bottom:0;border-radius:4px 4px 0 0;box-sizing:border-box}
+  .mask{position:absolute;right:0;top:0;bottom:0;width:74px;border-radius:6px;background:rgba(255,255,255,.55);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;transform:none}
+  .mask span{display:flex;align-items:center;gap:4px;white-space:nowrap;font-size:11px;font-weight:600;color:#fff;background:var(--ink);border-radius:999px;padding:3px 8px}
+  .sum{margin-left:auto;width:270px;display:flex;flex-direction:column;gap:4px;font-variant-numeric:tabular-nums}
+  .sl{display:flex;justify-content:space-between;font-size:12px;color:var(--ink2)}
+  .sl b{font-weight:600;color:var(--ink)}
+  .neg{color:#B42318!important}
+  .sl.tot{margin-top:4px;padding-top:8px;border-top:1px solid var(--line);font-size:13px;color:var(--ink);font-weight:600}
+  .sl.tot b{font-size:20px;font-weight:800;letter-spacing:-.01em;color:var(--ac)}
+  .terms{margin:auto 0 0;font-size:11px;color:var(--ink3);border-top:1px dashed var(--line);padding-top:8px}
+  .icard{align-self:start;background:linear-gradient(165deg,#111827,#1F2A44);color:#fff;border-radius:14px;padding:16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 16px 36px rgba(16,24,40,.25)}
+  .cdh{display:flex;align-items:center;gap:7px;font-size:12px;font-weight:600;color:#FCD34D}
+  .gauge{position:relative;width:120px;height:120px;align-self:center}
+  .gauge svg{width:120px;height:120px;transform:rotate(-90deg)}
+  .gt{fill:none;stroke:rgba(255,255,255,.1);stroke-width:10}
+  .gv{fill:none;stroke:#34D399;stroke-width:10;stroke-linecap:round;stroke-dasharray:314;stroke-dashoffset:314;transition:stroke-dashoffset 1.2s cubic-bezier(.16,1,.3,1) .2s}
+  .icard.in .gv{stroke-dashoffset:calc(314 - 314 * var(--m) / 100)}
+  .glab{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center}
+  .glab b{font-size:22px;font-weight:800;letter-spacing:-.02em}
+  .glab span{font-size:11px;color:#9CA3AF}
+  .kv{display:flex;justify-content:space-between;font-size:12px;color:#9CA3AF;font-variant-numeric:tabular-nums}
+  .kv b{color:#fff;font-weight:600}
+  .kv .pos{color:#6EE7B7}
+  .checks{list-style:none;margin:2px 0 0;padding:10px 0 0;border-top:1px solid rgba(255,255,255,.1);display:flex;flex-direction:column;gap:6px}
+  .checks li{position:relative;padding-left:18px;font-size:11px;color:#D1D5DB;line-height:1.45}
+  .checks li:before{content:'';position:absolute;left:0;top:2px;width:12px;height:12px;border-radius:50%;background:#22C55E}
+  .checks li:after{content:'';position:absolute;left:4.3px;top:4.3px;width:3px;height:5.5px;border:solid #fff;border-width:0 1.5px 1.5px 0;transform:rotate(45deg)}
+  .toast{position:absolute;right:0;bottom:0;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:500;color:#fff;background:var(--ink);border-radius:12px;padding:10px 14px;box-shadow:0 14px 30px rgba(16,24,40,.3);width:200px}
+
+  .cap{margin-top:16px;text-align:center;font-size:var(--fs-meta);color:#A8A8AE;min-height:1.6em;transition:opacity .3s}
+
+  @media (prefers-reduced-motion:reduce){
+    [data-at],.slide,.pa,.pb,.pair i,.gv,.fd,.goal,.req,.col,.ly,.kpi,.pill,.toc li,.tbl .tr{transition:none!important}
+    .st,.caret{animation:none}
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-pmd]');
+  if (root) {
+    const fit = root.querySelector<HTMLElement>('.fit')!;
+    const app = root.querySelector<HTMLElement>('.app')!;
+    const cap = root.querySelector<HTMLElement>('.cap')!;
+    const caps: string[] = JSON.parse(root.dataset.caps || '[]');
+    const tabs = Array.from(root.querySelectorAll<HTMLElement>('.tb'));
+    const scenes = Array.from(root.querySelectorAll<HTMLElement>('.scene'));
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    // 等比缩放画布
+    const resize = () => {
+      const s = Math.min(1, fit.clientWidth / 1080);
+      app.style.transform = `scale(${s})`;
+      fit.style.height = `${640 * s}px`;
+    };
+    new ResizeObserver(resize).observe(fit);
+    resize();
+
+    type Plan = { text: string; typeStart: number; typeEnd: number; events: number[]; total: number };
+    const CHAR = 28; // 每个字的打字间隔（毫秒）
+    const build = (sc: HTMLElement): Plan => {
+      const text = sc.querySelector<HTMLElement>('.typed')!.dataset.text || '';
+      const typeStart = 150;
+      const typeEnd = typeStart + Array.from(text).length * CHAR;
+      const gaps = (sc.dataset.gaps || '').split(',').map(Number);
+      const events: number[] = [];
+      let at = typeEnd + 250;
+      gaps.forEach((g) => { events.push(at); at += g; });
+      return { text, typeStart, typeEnd, events, total: at + Number(sc.dataset.hold || 4000) };
+    };
+
+    const countUp = (el: HTMLElement) => {
+      const target = Number(el.dataset.count);
+      const t0 = performance.now();
+      const run = (now: number) => {
+        const p = Math.min(1, (now - t0) / 900);
+        const v = Math.round(target * (1 - Math.pow(1 - p, 3)));
+        el.textContent = v.toLocaleString('en-US');
+        if (p < 1) requestAnimationFrame(run);
+      };
+      requestAnimationFrame(run);
+    };
+
+    let cur = 0;
+    let t = 0;
+    let plan = build(scenes[0]);
+    let lastStep = -1;
+    let paused = false;
+    let visible = false;
+
+    const apply = (sc: HTMLElement, step: number) => {
+      sc.dataset.step = String(step);
+      sc.querySelectorAll<HTMLElement>('[data-at]').forEach((el) => {
+        const at = Number(el.dataset.at);
+        const out = el.dataset.out ? Number(el.dataset.out) : Infinity;
+        el.classList.toggle('in', step >= at && step < out);
+      });
+      sc.querySelectorAll<HTMLElement>('[data-ok]').forEach((el) => el.classList.toggle('ok', step >= Number(el.dataset.ok)));
+      sc.classList.toggle('writing', sc === scenes[1] && step >= 5);
+      sc.querySelectorAll<HTMLElement>('[data-count]').forEach((el) => {
+        const holder = el.closest<HTMLElement>('[data-at]');
+        const shown = holder ? holder.classList.contains('in') : true;
+        if (shown && !el.dataset.done) { el.dataset.done = '1'; reduce ? (el.textContent = Number(el.dataset.count).toLocaleString('en-US')) : countUp(el); }
+        if (!shown) { el.dataset.done = ''; el.textContent = '0'; }
+      });
+    };
+
+    const render = () => {
+      const sc = scenes[cur];
+      let step = 0;
+      plan.events.forEach((e, k) => { if (t >= e) step = k + 1; });
+      const typed = sc.querySelector<HTMLElement>('.typed')!;
+      const chars = Array.from(plan.text);
+      const n = step >= 1 ? 0 : Math.max(0, Math.min(chars.length, Math.floor((t - plan.typeStart) / CHAR)));
+      typed.textContent = chars.slice(0, n).join('');
+      sc.classList.toggle('typing', step < 1 && n > 0);
+      if (step !== lastStep) { apply(sc, step); lastStep = step; }
+    };
+
+    const show = (i: number) => {
+      cur = i;
+      plan = build(scenes[i]);
+      t = reduce ? plan.total - 1 : 0;
+      lastStep = -1;
+      scenes.forEach((s, k) => s.classList.toggle('on', k === i));
+      tabs.forEach((b) => b.classList.remove('on'));
+      void root.offsetWidth; // 进度条从头开始
+      tabs.forEach((b, k) => { b.classList.toggle('on', k === i); b.style.setProperty('--dur', `${plan.total}ms`); });
+      cap.textContent = caps[i] || '';
+      render();
+    };
+
+    tabs.forEach((b, k) => b.addEventListener('click', () => show(k)));
+    // 悬停暂停，方便细看
+    fit.addEventListener('mouseenter', () => { paused = true; root.classList.add('paused'); });
+    fit.addEventListener('mouseleave', () => { paused = false; if (visible) root.classList.remove('paused'); });
+    new IntersectionObserver((es) => {
+      es.forEach((e) => {
+        const was = visible;
+        visible = e.isIntersecting;
+        root.classList.toggle('paused', !visible || paused);
+        if (visible && !was && t === 0) show(cur);
+      });
+    }, { threshold: 0.35 }).observe(root);
+
+    show(0);
+    if (!reduce) {
+      window.setInterval(() => {
+        if (paused || !visible) return;
+        t += 50;
+        if (t >= plan.total) { show((cur + 1) % scenes.length); return; }
+        render();
+      }, 50);
+    }
+  }
+</script>

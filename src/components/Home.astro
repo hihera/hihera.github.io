@@ -1,0 +1,314 @@
+---
+import { content, lifePhotos, links, type Lang } from '../i18n/content';
+import Showcase from './Showcase.astro';
+import PmDemo from './PmDemo.astro';
+import WechatQr from './WechatQr.astro';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const t = content[lang];
+const w = t.works;
+const f = w.flag;
+const [valueK, valueV] = f.kv[f.kv.length - 1];
+// 知识雷达、复利人生放进“研究与思考”
+const systems = w.lab.filter((p) => !p.hidden);
+---
+<nav class="nav">
+  <div class="wrap">
+    <a class="logo" href={lang === 'en' ? '/en/' : '/'} aria-label="Hera"><img src="/assets/logo/logo.webp" alt="HERA" /></a>
+    <div class="links">
+      {t.nav.map(([id, name]) => <a href={`#${id}`}>{name}</a>)}
+    </div>
+    <a class="lang" href={t.switchHref} hreflang={lang === 'zh' ? 'en' : 'zh-CN'}>{t.switchLabel}</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="hero-grid">
+      <div>
+        <div class="hello"><i></i><span>{t.hero.hello}</span></div>
+        <h1 set:html={t.hero.h1} />
+        <p class="intro">{t.hero.intro}</p>
+        <p class="creds">
+          {t.hero.creds.map((c, i) => <>{i > 0 && <span class="sep">·</span>}<span class="cred">{c}</span></>)}
+        </p>
+        <div class="actions">
+          <a class="btn btn-dark" href="#works">{t.hero.cta[0]}</a>
+          <a class="btn btn-line" href="#contact">{t.hero.cta[1]}</a>
+        </div>
+      </div>
+      <div class="frame"><div class="ph"><img src="/assets/avatar.webp" alt={t.hero.photoAlt} /></div></div>
+    </div>
+
+    <div class="strip">
+      <div class="group">
+        <span class="lbl">{t.strip.label}</span>
+        {t.strip.work.map(([n, l]) => <span class="it"><b class="num">{n}</b>{l}</span>)}
+      </div>
+      <div class="group">
+        {t.strip.build.map(([n, l]) => <span class="it"><b class="num">{n}</b>{l}</span>)}
+        <a class="gh" href={links.github} target="_blank" rel="noopener">{t.strip.github}</a>
+      </div>
+    </div>
+  </div>
+</header>
+
+<section id="works">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="kicker">{w.kicker}</span><h2>{w.h}</h2><p>{w.p}</p></div></div>
+
+    <div class="flag">
+      <span class="badge">{f.badge}</span>
+      <div class="flag-head">
+        <div class="txt">
+          <h3>{f.name}<small>{f.tag}</small></h3>
+        </div>
+        <div class="flag-txt">
+          <p class="desc">{f.desc}</p>
+          <p class="flag-value"><b>{valueK}</b>{valueV}</p>
+        </div>
+      </div>
+      <div class="flag-demo">
+        <PmDemo lang={lang} tabs={f.tabs as [string, string][]} />
+      </div>
+    </div>
+
+    {w.wxj.showDemo && <Showcase lang={lang} />}
+
+    <div class="pair">
+      <article class="card wxj">
+        {/* 先说是什么产品，再看截图 */}
+        <div class="pair-body">
+          <div class="pair-meta">{w.wxj.meta}</div>
+          <h3>{w.wxj.name}<small>{w.wxj.tag}</small></h3>
+          <p>{w.wxj.desc}</p>
+        </div>
+        <div class="wxj-shots">
+          {w.wxj.shots.map((src) => <div class="wxj-phone"><div class="wxj-screen"><img src={src} alt="" loading="lazy" /></div></div>)}
+        </div>
+      </article>
+
+      <article class="card sk">
+        <div class="pair-meta">{w.reposTitle} · {w.reposSub}</div>
+        <h3>{w.reposHead}</h3>
+        <ul>
+          {w.repos.map(([name, desc, , label]) => (
+            <li><a href={`${links.github}/${name}`} target="_blank" rel="noopener" aria-label={`${name} ${w.repoGo}`}><span class="sk-name"><b>{label}</b><code>{name}</code><i aria-hidden="true">↗</i></span><span class="sk-desc">{desc}</span></a></li>
+          ))}
+        </ul>
+      </article>
+    </div>
+  </div>
+</section>
+
+<section id="business">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="kicker">{t.business.kicker}</span><h2>{t.business.h}</h2><p>{t.business.p}</p></div></div>
+    <div class="cases">
+      {t.business.cases.map((c) => (
+        <article class="card case">
+          <div class="case-media">{c.img ? <img src={c.img} alt="" loading="lazy" /> : <div class="placeholder">{t.imgTodo}</div>}{'imgNote' in c && c.imgNote && <span class="case-note">{c.imgNote}</span>}</div>
+          <div class="case-body">
+            <div class="meta">{c.meta}</div>
+            <h3>{c.title}</h3>
+            <p>{c.desc}</p>
+            <dl class="case-stats">{c.stats.map(([n, l]) => <div><dt>{n}</dt><dd>{l}</dd></div>)}</dl>
+          </div>
+        </article>
+      ))}
+    </div>
+    <div class="marquee">
+      <div class="mq-label">{t.business.clientsLabel}</div>
+      <div class="mq-track">
+        <div class="mq-inner">
+          {[...t.business.clients, ...t.business.clients].map((c, i) => <span aria-hidden={i >= t.business.clients.length ? 'true' : undefined}>{c}</span>)}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="principles">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="kicker">{t.principles.kicker}</span><h2>{t.principles.h}</h2><p>{t.principles.p}</p></div></div>
+    <div class="principles">
+      {t.principles.items.map(([h, why, list], i) => (
+        <div class="card pr">
+          <div class="no">{`0${i + 1}`}</div><h3>{h}</h3>
+          <p class="pr-why">{why}</p>
+          <ul>{list.map((x) => <li set:html={x} />)}</ul>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section id="thinking">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="kicker">{t.thinking.kicker}</span><h2>{t.thinking.h}</h2><p>{t.thinking.p}</p></div></div>
+    <div class="think">
+      {t.thinking.cards.map(([meta, title, take, href]) => href ? (
+        <a class="card th link" href={href}>
+          <div class="meta">{meta}</div>
+          <h3>{title}</h3>
+          <p>{take}</p>
+          <span class="th-go">{t.thinking.read}</span>
+        </a>
+      ) : (
+        <div class="card th">
+          <div class="meta">{meta}</div>
+          <h3>{title}</h3>
+          <p>{take}</p>
+        </div>
+      ))}
+    </div>
+    {/* 调研报告：一行三张 */}
+    <div class="think three">
+      {t.thinking.reports.map(([meta, title, take, href]) => (
+        <a class="card th link" href={href}>
+          <div class="meta">{meta}</div>
+          <h3>{title}</h3>
+          <p>{take}</p>
+          <span class="th-go">{t.thinking.readReport}</span>
+        </a>
+      ))}
+    </div>
+
+    <div class="sub">{t.thinking.sysTitle}</div>
+    <div class="sys">
+      {systems.map((p) => (
+        <article class="card sys-card">
+          {/* 多张图叠放：平时只露第一张，悬停时展开 */}
+          <div class={'video' in p && p.video ? 'fan single video' : p.imgs.length > 1 ? 'fan' : 'fan single'}>
+            {'video' in p && p.video
+              ? <video class="lab-video" src={p.video} poster={p.poster} muted loop playsinline preload="none" aria-label={p.name}></video>
+              : p.imgs.slice(0, 3).map((src, i) => <img src={src} alt={`${p.name} ${i + 1}`} loading="lazy" />)}
+          </div>
+          <div class="pair-body">
+            <h3>{p.name}{p.tag && <small>{p.tag}</small>}</h3>
+            <p>{p.desc}</p>
+            {p.value && <p class="sys-value">{p.value}</p>}
+            <div class="lab-foot">
+              <span class="status">{p.status}</span>
+              {p.link && <a class="lab-link" href={p.link} target="_blank" rel="noopener">{p.linkLabel || w.visit}</a>}
+            </div>
+          </div>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<section id="about">
+  <div class="wrap">
+    <div class="sec-head"><div><span class="kicker">{t.life.kicker}</span><h2>{t.life.h}</h2></div></div>
+    <div class="card life">
+      <div>
+        <div class="quote" set:html={t.life.quote} />
+        <p>{t.life.p}</p>
+        <div class="nums">{t.life.nums.map(([n, l]) => <div><b class="num">{n}</b><span>{l}</span></div>)}</div>
+      </div>
+      <div class="photos">
+        {lifePhotos.map((src) => <div><img src={src} alt="" loading="lazy" /></div>)}
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="contact" id="contact">
+  <div class="wrap">
+    <h2>{t.contact.h}</h2><p>{t.contact.p}</p>
+    <div class="actions">
+      <a class="btn btn-dark" href={links.email}>{t.contact.btn[0]}</a>
+      <a class="btn btn-line" href={links.linkedin} target="_blank" rel="noopener">{t.contact.btn[1]}</a>
+      <WechatQr label={t.contact.btn[2]} lang={lang} />
+    </div>
+    <div class="copy">{t.copy}</div>
+  </div>
+</footer>
+
+<script>
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  document.documentElement.classList.add('js');
+
+  // 1. 滚动入场：元素进入视口时淡入、上移、去模糊；同一组里依次出现
+  const targets = document.querySelectorAll<HTMLElement>(
+    '.hello, .hero h1, .intro, .creds, .hero .actions, .frame, .strip, .sec-head, .flag, .sub, .card, .workflows, .marquee'
+  );
+  targets.forEach((el) => {
+    const siblings = Array.from(el.parentElement?.children ?? []).filter((s) => s.matches('.card'));
+    const idx = el.matches('.card') ? siblings.indexOf(el) : 0;
+    const heroIdx = ['hello', 'h1', 'intro', 'creds', 'actions', 'frame'].findIndex((c) => el.classList.contains(c) || el.tagName.toLowerCase() === c);
+    el.style.setProperty('--d', String(el.closest('.hero') && heroIdx >= 0 ? heroIdx : Math.min(idx, 5)));
+    el.classList.add('reveal');
+  });
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (!e.isIntersecting) return;
+      const el = e.target as HTMLElement;
+      el.classList.add('in');
+      io.unobserve(el);
+      // 入场结束后撤掉入场样式，不影响悬停效果
+      const d = Number(el.style.getPropertyValue('--d') || 0);
+      window.setTimeout(() => el.classList.remove('reveal', 'in'), 900 + d * 90);
+    });
+  }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+  // 首屏元素不等滚动，加载后直接依次入场
+  targets.forEach((el) => {
+    if (el.closest('.hero')) {
+      requestAnimationFrame(() => el.classList.add('in'));
+      const d = Number(el.style.getPropertyValue('--d') || 0);
+      window.setTimeout(() => el.classList.remove('reveal', 'in'), 1200 + d * 90);
+    } else {
+      io.observe(el);
+    }
+  });
+
+  // 2. 数字滚动：成就条和跑步数据进入视口时从 0 数到目标值
+  const counters = document.querySelectorAll<HTMLElement>('.strip .num, .life .num');
+  const runCount = (el: HTMLElement) => {
+    const raw = el.textContent ?? '';
+    const m = raw.match(/^(\D*?)(\d+)(.*)$/);
+    if (!m || reduce || raw.includes(':')) return;
+    const [, pre, n, post] = m;
+    const target = Number(n);
+    const start = performance.now();
+    const dur = 1200;
+    const tick = (now: number) => {
+      const p = Math.min((now - start) / dur, 1);
+      const v = Math.round(target * (1 - Math.pow(1 - p, 3)));
+      el.textContent = `${pre}${v}${post}`;
+      if (p < 1) requestAnimationFrame(tick);
+    };
+    requestAnimationFrame(tick);
+  };
+  const cio = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      if (e.isIntersecting) { runCount(e.target as HTMLElement); cio.unobserve(e.target); }
+    });
+  }, { threshold: 0.6 });
+  counters.forEach((el) => cio.observe(el));
+
+  // 3. 照片跟随鼠标轻微倾斜（只在桌面端）
+  const frame = document.querySelector<HTMLElement>('.frame');
+  if (frame && !reduce && window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+    frame.addEventListener('pointermove', (e) => {
+      const r = frame.getBoundingClientRect();
+      const x = (e.clientX - r.left) / r.width - 0.5;
+      const y = (e.clientY - r.top) / r.height - 0.5;
+      frame.style.transform = `perspective(900px) rotateY(${x * 6}deg) rotateX(${-y * 6}deg)`;
+    });
+    frame.addEventListener('pointerleave', () => { frame.style.transform = ''; });
+  }
+
+  // 5. 作品视频：滚到才播放，离开屏幕就暂停；减少动态效果时只显示封面
+  const vio = new IntersectionObserver((entries) => {
+    entries.forEach((e) => {
+      const v = e.target as HTMLVideoElement;
+      if (e.isIntersecting && !reduce) { v.play().catch(() => {}); } else { v.pause(); }
+    });
+  }, { threshold: 0.4 });
+  document.querySelectorAll<HTMLVideoElement>('.lab-video').forEach((v) => vio.observe(v));
+
+</script>

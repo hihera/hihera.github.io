@@ -1,0 +1,38 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 270">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EAF1FB"/><stop offset="1" stop-color="#F7F9FD"/></linearGradient>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#173F7A" flood-opacity=".12"/></filter>
+  </defs>
+  <rect width="360" height="270" fill="url(#bg)"/>
+  <!-- 文章页 -->
+  <g filter="url(#sh)">
+    <rect x="128" y="34" width="160" height="200" rx="14" fill="#fff" stroke="#1B58A1" stroke-width="2.5"/>
+  </g>
+  <!-- 插画框 -->
+  <rect x="146" y="52" width="124" height="86" rx="9" fill="#DCE7F6"/>
+  <circle cx="246" cy="76" r="11" fill="#E07B39"/>
+  <path d="M146 124 L182 90 L208 114 L224 100 L270 132 L270 129 Q270 138 261 138 L155 138 Q146 138 146 129 Z" fill="#7FA3D8"/>
+  <path d="M146 138 L182 104 L214 132 L222 138 Z" fill="#1B58A1" opacity=".55"/>
+  <!-- 正文行 -->
+  <rect x="146" y="156" width="110" height="7" rx="3.5" fill="#B9CDEA"/>
+  <rect x="146" y="172" width="124" height="7" rx="3.5" fill="#DCE6F4"/>
+  <rect x="146" y="188" width="92" height="7" rx="3.5" fill="#DCE6F4"/>
+  <rect x="146" y="204" width="104" height="7" rx="3.5" fill="#DCE6F4"/>
+  <!-- HERA 机器人 -->
+  <g filter="url(#sh)">
+    <line x1="88" y1="122" x2="88" y2="108" stroke="#173F7A" stroke-width="3" stroke-linecap="round"/>
+    <circle cx="88" cy="104" r="5" fill="#E07B39"/>
+    <rect x="52" y="122" width="72" height="60" rx="16" fill="#fff" stroke="#173F7A" stroke-width="2.5"/>
+    <rect x="62" y="134" width="52" height="30" rx="10" fill="#173F7A"/>
+    <circle cx="77" cy="149" r="6" fill="#fff"/><circle cx="99" cy="149" r="6" fill="#fff"/>
+    <rect x="62" y="188" width="52" height="42" rx="12" fill="#fff" stroke="#173F7A" stroke-width="2.5"/>
+    <text x="88" y="216" font-family="Arial, Helvetica, sans-serif" font-size="18" font-weight="800" fill="#1B58A1" text-anchor="middle">H</text>
+  </g>
+  <!-- 画笔 -->
+  <g transform="rotate(38 300 200)">
+    <rect x="292" y="150" width="16" height="64" rx="4" fill="#1B58A1"/>
+    <rect x="292" y="150" width="16" height="12" rx="4" fill="#173F7A"/>
+    <path d="M292 214 L308 214 L300 232 Z" fill="#F3D5BF"/>
+    <path d="M297 225 L303 225 L300 232 Z" fill="#E07B39"/>
+  </g>
+</svg>

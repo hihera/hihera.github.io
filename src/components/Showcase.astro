@@ -1,0 +1,185 @@
+---
+// 屋小家 · 小屋灵 演示区（参考 Framer 首页的 agent 演示：左边画布 + 右边对话面板）
+// 左边 3 个手机框里是整页长截图；对话播到哪个场景，对应的长图就滚到相关位置。
+import type { Lang } from '../i18n/content';
+import { showcase, screens, spiritIcon } from '../i18n/showcase';
+
+interface Props { lang: Lang }
+const { lang } = Astro.props;
+const s = showcase[lang];
+const data = JSON.stringify({ scenarios: s.scenarios, photoLabel: s.photoLabel });
+---
+<div class="showcase" data-showcase>
+  <div class="sc-main card">
+    <div class="sc-info">
+      <div>
+        <span class="sc-badge">{s.badge}</span>
+        <h3>{s.name}<small>{s.agent} · {s.tag}</small></h3>
+        <p class="sc-desc">{s.desc}</p>
+      </div>
+      <ul class="sc-points">
+        {s.points.map(([b, t]) => <li><b>{b}</b><span>{t}</span></li>)}
+      </ul>
+    </div>
+    <div class="sc-canvas">
+      {screens.map((sc, i) => (
+        <figure class={i === 0 ? 'sc-phone on' : 'sc-phone'} data-screen={i}>
+          <figcaption>{s.screenLabels[i]}</figcaption>
+          <div class="sc-device">
+            <div class="sc-viewport">
+              <img class="sc-long" src={sc.src} alt={s.screenLabels[i]} data-page={sc.page} loading="lazy" />
+              {sc.nav && <img class="sc-nav" src={sc.nav} alt="" aria-hidden="true" />}
+            </div>
+          </div>
+        </figure>
+      ))}
+    </div>
+  </div>
+
+  <div class="sc-chat card">
+    <div class="sc-head">
+      <img class="sc-avatar" src={spiritIcon} alt="" />
+      <div class="sc-title"><b>{s.agent}</b><span>{s.status}</span></div>
+      <span class="sc-tag">{s.demoTag}</span>
+    </div>
+    <div class="sc-body" aria-live="polite"></div>
+    <div class="sc-foot">
+      <div class="sc-chips">
+        {s.scenarios.map((sc, i) => <button type="button" class={i === 0 ? 'sc-chip on' : 'sc-chip'} data-i={i}>{sc.chip}</button>)}
+      </div>
+      <div class="sc-input"><span>{s.placeholder}</span><i aria-hidden="true">↑</i></div>
+      <p class="sc-note">{s.note}</p>
+    </div>
+  </div>
+  <script type="application/json" data-showcase-data set:html={data} />
+</div>
+
+<script>
+  import type { Scenario, Block } from '../i18n/showcase';
+
+  const root = document.querySelector<HTMLElement>('[data-showcase]');
+  if (root) {
+    const { scenarios, photoLabel } = JSON.parse(root.querySelector('[data-showcase-data]')?.textContent ?? '{}') as { scenarios: Scenario[]; photoLabel: string };
+    const body = root.querySelector<HTMLElement>('.sc-body')!;
+    const chips = Array.from(root.querySelectorAll<HTMLElement>('.sc-chip'));
+    const phones = Array.from(root.querySelectorAll<HTMLElement>('.sc-phone'));
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const isEn = document.documentElement.lang === 'en';
+
+    let run = 0;        // 每次切换场景 +1，作废上一轮没跑完的动画
+    let cur = 0;
+    let paused = false;
+
+    const esc = (t: string) => t.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]!));
+    const wait = (ms: number, id: number) =>
+      new Promise<void>((resolve, reject) => window.setTimeout(() => (id === run ? resolve() : reject()), reduce ? 0 : ms));
+    const toBottom = () => { body.scrollTop = body.scrollHeight; };
+    const appear = (el: HTMLElement) => { requestAnimationFrame(() => el.classList.add('in')); toBottom(); };
+    const make = (cls: string, html = '') => { const el = document.createElement('div'); el.className = cls; el.innerHTML = html; return el; };
+
+    // 长截图滚到目标位置（mark 是页面里的 CSS 像素位置）
+    const scrollPhone = (idx: number, mark: number) => {
+      phones.forEach((p, k) => {
+        const img = p.querySelector<HTMLImageElement>('.sc-long');
+        const vp = p.querySelector<HTMLElement>('.sc-viewport');
+        if (!img || !vp) return;
+        p.classList.toggle('on', k === idx);
+        if (k !== idx) { img.style.transform = ''; return; }
+        const ratio = img.clientHeight / Number(img.dataset.page || img.clientHeight);
+        const max = Math.max(0, img.clientHeight - vp.clientHeight);
+        const y = Math.min(max, Math.max(0, mark * ratio - vp.clientHeight * 0.2));
+        img.style.transform = `translateY(${-y}px)`;
+      });
+    };
+
+    const typeInto = async (el: HTMLElement, text: string, id: number) => {
+      if (reduce) { el.textContent = text; return; }
+      el.classList.add('typing');
+      const step = isEn ? 2 : 1;
+      for (let k = step; k <= text.length + step - 1; k += step) {
+        el.textContent = text.slice(0, k);
+        toBottom();
+        await wait(isEn ? 18 : 30, id);
+      }
+      el.classList.remove('typing');
+    };
+
+    const renderBlock = (b: Block) => {
+      switch (b.t) {
+        case 'h': return make('b-h', esc(b.text));
+        case 'li': return make('b-li', `<b>${esc(b.b)}</b>${isEn ? ': ' : '：'}${esc(b.text)}`);
+        case 'ol': return make('b-ol', `<em>${b.n}</em><span>${esc(b.text)}</span>`);
+        case 'src': return make('b-src', esc(b.text));
+        case 'card': return make('b-card', `<i>${b.icon}</i><div><b>${esc(b.name)}</b><span>${esc(b.meta)}</span></div>`);
+        case 'btn': return make('b-btn', esc(b.text));
+        default: return make('b-p');
+      }
+    };
+
+    const play = async (i: number) => {
+      const id = ++run;
+      cur = i;
+      const sc = scenarios[i];
+      chips.forEach((c, k) => c.classList.toggle('on', k === i));
+      body.innerHTML = '';
+      try {
+        // 用户提问（文字或照片）
+        const user = make('msg user', sc.photo
+          ? `<img src="${sc.photo}" alt=""><span>${esc(photoLabel)}</span>`
+          : esc(sc.q));
+        if (sc.photo) user.classList.add('photo');
+        body.appendChild(user); appear(user);
+        await wait(500, id);
+        scrollPhone(sc.screen, sc.mark);
+
+        // 正在输入
+        const dots = make('msg bot dots', '<i></i><i></i><i></i>');
+        body.appendChild(dots); appear(dots);
+        await wait(1000, id);
+        dots.remove();
+
+        // 调用步骤
+        for (const [t, d] of sc.steps) {
+          const st = make('step', `<span>${esc(t)}</span><em>${d}</em>`);
+          body.appendChild(st); appear(st);
+          await wait(420, id);
+        }
+
+        // 回答：文字进气泡，物品卡片和按钮放在气泡下面的白色卡片组里
+        let bubble: HTMLElement | null = null;
+        let group: HTMLElement | null = null;
+        for (const b of sc.a) {
+          if (b.t === 'card' || b.t === 'btn') {
+            if (!group) { group = make('cards'); body.appendChild(group); appear(group); bubble = null; }
+            const el = renderBlock(b); group.appendChild(el); appear(el);
+            await wait(320, id);
+            continue;
+          }
+          if (!bubble) { bubble = make('msg bot'); body.appendChild(bubble); appear(bubble); group = null; }
+          const el = renderBlock(b);
+          bubble.appendChild(el);
+          if (b.t === 'p') { el.classList.add('in'); await typeInto(el, b.text, id); }
+          else { appear(el); await wait(260, id); }
+        }
+
+        // 停留时间按回答长度算，长回答多给点阅读时间
+        const chars = sc.a.reduce((n, b) => n + ('text' in b ? b.text.length : 0), 0);
+        await wait(Math.min(8000, 2600 + chars * (isEn ? 12 : 30)), id);
+        while (paused) await wait(300, id);
+        play((cur + 1) % scenarios.length);
+      } catch {
+        /* 被新的场景打断 */
+      }
+    };
+
+    chips.forEach((c, k) => c.addEventListener('click', () => play(k)));
+    root.addEventListener('mouseenter', () => { paused = true; });
+    root.addEventListener('mouseleave', () => { paused = false; });
+
+    // 滚动到这里才开始播放
+    const io = new IntersectionObserver((entries) => {
+      if (entries.some((e) => e.isIntersecting)) { play(0); io.disconnect(); }
+    }, { threshold: 0.3 });
+    io.observe(root);
+  }
+</script>

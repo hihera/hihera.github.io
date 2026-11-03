@@ -1,0 +1,15 @@
+---
+// 公众号二维码：点按钮弹出，点空白处或“关闭”收起（浏览器原生 popover，不需要脚本）
+interface Props { label: string; lang?: 'zh' | 'en'; class?: string }
+const { label, lang = 'zh', class: cls = 'btn btn-line' } = Astro.props;
+const id = 'wx-qr';
+const text = lang === 'en'
+  ? { tip: 'Scan with WeChat to follow my official account', close: 'Close', alt: 'WeChat official account QR code' }
+  : { tip: '微信扫一扫，关注我的公众号', close: '关闭', alt: '公众号二维码' };
+---
+<button type="button" class={cls} popovertarget={id}>{label}</button>
+<div id={id} popover class="qr-pop">
+  <img src="/assets/wechat/qrcode.jpg" alt={text.alt} width="200" height="200" />
+  <p>{text.tip}</p>
+  <button type="button" class="qr-close" popovertarget={id} popovertargetaction="hide">{text.close}</button>
+</div>

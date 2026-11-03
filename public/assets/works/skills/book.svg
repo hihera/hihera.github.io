@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 360 270">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#EAF1FB"/><stop offset="1" stop-color="#F7F9FD"/></linearGradient>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="4" stdDeviation="5" flood-color="#173F7A" flood-opacity=".12"/></filter>
+  </defs>
+  <rect width="360" height="270" fill="url(#bg)"/>
+  <!-- 书里长出的交付物卡片 -->
+  <g stroke="#9DB8DE" stroke-width="2" stroke-dasharray="4 5" fill="none">
+    <path d="M180 150 L118 96"/><path d="M180 150 L180 84"/><path d="M180 150 L242 96"/>
+  </g>
+  <g filter="url(#sh)">
+    <g transform="rotate(-12 112 70)"><rect x="86" y="38" width="52" height="64" rx="9" fill="#fff" stroke="#1B58A1" stroke-width="2.5"/>
+      <rect x="96" y="52" width="32" height="5" rx="2.5" fill="#B9CDEA"/><rect x="96" y="63" width="24" height="5" rx="2.5" fill="#B9CDEA"/><rect x="96" y="74" width="28" height="5" rx="2.5" fill="#B9CDEA"/></g>
+    <rect x="152" y="24" width="56" height="70" rx="10" fill="#E07B39"/>
+    <path d="M167 60 L177 70 L195 49" fill="none" stroke="#fff" stroke-width="5" stroke-linecap="round" stroke-linejoin="round"/>
+    <g transform="rotate(12 248 70)"><rect x="222" y="38" width="52" height="64" rx="9" fill="#fff" stroke="#1B58A1" stroke-width="2.5"/>
+      <circle cx="248" cy="62" r="10" fill="none" stroke="#B9CDEA" stroke-width="5"/><rect x="234" y="80" width="28" height="5" rx="2.5" fill="#B9CDEA"/></g>
+  </g>
+  <!-- 打开的书 -->
+  <g filter="url(#sh)">
+    <path d="M60 212 Q120 192 178 210 L178 136 Q120 118 60 138 Z" fill="#fff" stroke="#1B58A1" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M300 212 Q240 192 182 210 L182 136 Q240 118 300 138 Z" fill="#fff" stroke="#1B58A1" stroke-width="2.5" stroke-linejoin="round"/>
+  </g>
+  <g stroke="#B9CDEA" stroke-width="4" stroke-linecap="round" fill="none">
+    <path d="M78 154 Q118 142 160 152"/><path d="M78 170 Q118 158 160 168"/><path d="M78 186 Q112 175 146 182"/>
+    <path d="M282 154 Q242 142 200 152"/><path d="M282 170 Q242 158 200 168"/><path d="M282 186 Q248 175 214 182"/>
+  </g>
+  <path d="M60 220 Q120 200 180 218 Q240 200 300 220" fill="none" stroke="#173F7A" stroke-width="3" stroke-linecap="round"/>
+</svg>
