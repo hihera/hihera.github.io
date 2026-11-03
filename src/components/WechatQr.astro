@@ -9,7 +9,7 @@ const text = lang === 'en'
 ---
 <button type="button" class={cls} popovertarget={id}>{label}</button>
 <div id={id} popover class="qr-pop">
-  <img src="/assets/wechat/qrcode.jpg" alt={text.alt} width="200" height="200" />
+  <img src="/assets/wechat/qrcode.jpg" alt={text.alt} width="200" height="200" fetchpriority="low" decoding="async" />
   <p>{text.tip}</p>
   <button type="button" class="qr-close" popovertarget={id} popovertargetaction="hide">{text.close}</button>
 </div>
