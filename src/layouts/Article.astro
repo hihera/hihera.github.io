@@ -3,6 +3,8 @@
 import '../styles/global.css';
 import WechatQr from '../components/WechatQr.astro';
 import { series } from '../i18n/series';
+// 文章配图的宽高（导入文章时生成）：图片未加载前先占好位置，点目录跳转不会被后加载的图片推偏
+import sizes from '../i18n/image-sizes.json';
 
 const { frontmatter, headings = [] } = Astro.props;
 // 长文目录：frontmatter 写 toc: true 时显示二级标题
@@ -14,6 +16,10 @@ const idx = sr ? sr.items.findIndex(([, href]) => href === here) : -1;
 // 排版标记：“先说结论”段落做成结论框；以加粗短句开头的段落，把这句做成段首小标题
 const body = (await Astro.slots.render('default'))
   .replace(/<img (?![^>]*loading=)/g, '<img loading="lazy" decoding="async" ')
+  .replace(/<img ([^>]*?)src="([^"]+)"/g, (m, pre, src) => {
+    const wh = (sizes as Record<string, number[]>)[src];
+    return wh ? `<img ${pre}width="${wh[0]}" height="${wh[1]}" src="${src}"` : m;
+  })
   .replace(/<p>(?=(?:<strong>)?先说结论)/g, '<p class="key">')
   .replace(/<p><strong>(?=[^<]{2,40}<\/strong>\s*\S)/g, '<p class="lead"><strong>');
 const site = Astro.site?.toString().replace(/\/$/, '') ?? '';
@@ -41,6 +47,16 @@ const url = `${site}${Astro.url.pathname}`;
       </div>
     </nav>
 
+    <div class={toc.length > 0 ? 'post-layout has-side' : 'post-layout'}>
+    {/* 电脑上：左侧固定目录，默认展开，滚动时高亮当前小节；手机上隐藏，改用正文上方的折叠目录 */}
+    {toc.length > 0 && (
+      <aside class="post-side" aria-label="目录">
+        <nav class="side-toc">
+          <div class="side-head">目录</div>
+          <ol>{toc.map((h: { slug: string; text: string }) => <li><a href={`#${h.slug}`} data-id={h.slug}>{h.text}</a></li>)}</ol>
+        </nav>
+      </aside>
+    )}
     <article class="post">
       <header class="post-head">
         <span class="kicker">{frontmatter.kicker}</span>
@@ -77,5 +93,26 @@ const url = `${site}${Astro.url.pathname}`;
         <a href="/#contact">和我聊聊 →</a>
       </footer>
     </article>
+    </div>
+    {toc.length > 0 && (
+      <script>
+        // 当前小节高亮：看哪个二级标题刚滚过屏幕上方
+        const links = new Map([...document.querySelectorAll<HTMLAnchorElement>('.side-toc a')].map((a) => [a.dataset.id, a]));
+        const heads = [...document.querySelectorAll<HTMLElement>('.prose h2')].filter((h) => links.has(h.id));
+        let current = '';
+        const update = () => {
+          let id = heads[0]?.id ?? '';
+          for (const h of heads) if (h.getBoundingClientRect().top < 140) id = h.id;
+          if (id === current) return;
+          links.get(current)?.classList.remove('on');
+          links.get(id)?.classList.add('on');
+          current = id;
+        };
+        let ticking = false;
+        addEventListener('scroll', () => { if (!ticking) { ticking = true; requestAnimationFrame(() => { update(); ticking = false; }); } }, { passive: true });
+        addEventListener('load', update);
+        update();
+      </script>
+    )}
   </body>
 </html>

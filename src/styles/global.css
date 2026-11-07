@@ -312,6 +312,7 @@ html[lang=en] .flag dl>div{grid-template-columns:86px minmax(0,1fr)}
 .prose{font-size:17px;line-height:1.95;color:#3A3A3F}
 .prose p{margin:0 0 1.45em}
 .prose h2{font-size:24px;line-height:1.4;font-weight:700;letter-spacing:-.01em;margin:2.6em 0 .9em;color:var(--text)}
+.prose h2{scroll-margin-top:100px}
 .prose h2::before{content:'';display:block;width:32px;height:3px;border-radius:2px;background:var(--accent);margin-bottom:16px}
 .prose strong{font-weight:600;color:#174A8B;background:linear-gradient(transparent 60%,rgba(27,88,161,.10) 60%)}
 /* 段首小标题（段落以加粗短句开头）：单独成行，像一个小标题 */
@@ -352,6 +353,20 @@ html[lang=en] .flag dl>div{grid-template-columns:86px minmax(0,1fr)}
 .post-series li a:hover{color:var(--accent)}
 .ps-next{display:inline-block;margin-top:12px;font-size:var(--fs-small);font-weight:600;color:var(--accent)}
 .post-series+.post-follow{margin-top:24px}
+/* 左侧目录：只在宽屏显示（默认展开、固定在左边）；窄屏用正文上方的折叠目录 */
+.post-side{display:none}
+.side-head{font-size:var(--fs-meta);font-weight:600;letter-spacing:.06em;color:var(--text-3);margin:0 0 10px 14px}
+.side-toc ol{list-style:none;margin:0;padding:0}
+.side-toc a{display:block;padding:6px 0 6px 12px;border-left:2px solid var(--line);font-size:14px;line-height:1.5;color:var(--text-2);transition:color .2s,border-color .2s}
+.side-toc a:hover{color:var(--accent)}
+.side-toc a.on{color:var(--accent);font-weight:600;border-left-color:var(--accent)}
+@media (min-width:1120px){
+  .post-layout.has-side{display:grid;grid-template-columns:232px minmax(0,760px);gap:56px;justify-content:center;max-width:1180px;margin:0 auto;padding:0 32px}
+  .has-side .post{margin:0;padding-left:0;padding-right:0}
+  .has-side .post-side{display:block;padding-top:84px}
+  .has-side .side-toc{position:sticky;top:96px;max-height:calc(100vh - 120px);overflow-y:auto}
+  .has-side .post-toc{display:none}
+}
 /* 文章末尾：关注公众号 */
 .post-follow{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:56px;padding:20px 24px;background:var(--card);border-radius:16px;box-shadow:var(--shadow)}
 .post-follow p{font-size:var(--fs-small);color:var(--text-2)}
