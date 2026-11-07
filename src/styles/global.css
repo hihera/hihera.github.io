@@ -308,17 +308,24 @@ html[lang=en] .flag dl>div{grid-template-columns:86px minmax(0,1fr)}
 .post-head h1{font-size:clamp(30px,4vw,44px);line-height:1.25;letter-spacing:-.02em;margin:4px 0 18px}
 .post-lead{font-size:var(--fs-lead);line-height:1.8;color:var(--text-2)}
 .post-meta{margin-top:18px;font-size:var(--fs-meta);color:var(--text-3)}
-.prose{font-size:17px;line-height:1.95;color:#2A2A2E}
-.prose p{margin:0 0 1.25em}
-.prose h2{font-size:24px;line-height:1.4;font-weight:700;letter-spacing:-.01em;margin:2.2em 0 .8em;color:var(--text)}
-.prose strong{font-weight:600;color:var(--text);background:linear-gradient(transparent 62%,rgba(27,88,161,.14) 62%)}
+/* 正文略浅、重点用深蓝：长文里一眼能扫到重点，减少“满屏黑字”的疲劳 */
+.prose{font-size:17px;line-height:1.95;color:#3A3A3F}
+.prose p{margin:0 0 1.45em}
+.prose h2{font-size:24px;line-height:1.4;font-weight:700;letter-spacing:-.01em;margin:2.6em 0 .9em;color:var(--text)}
+.prose h2::before{content:'';display:block;width:32px;height:3px;border-radius:2px;background:var(--accent);margin-bottom:16px}
+.prose strong{font-weight:600;color:#174A8B;background:linear-gradient(transparent 60%,rgba(27,88,161,.10) 60%)}
+/* 段首小标题（段落以加粗短句开头）：单独成行，像一个小标题 */
+.prose p.lead>strong:first-child{display:block;margin-bottom:.35em;color:var(--text);background:none;font-size:17.5px;padding-left:12px;border-left:3px solid var(--accent);line-height:1.6}
+/* “先说结论”：结论框 */
+.prose p.key{background:#EEF3FA;border-radius:12px;padding:18px 22px;color:var(--text);margin:1.6em 0 1.8em}
+.prose p.key strong{background:none}
 .prose ul,.prose ol{margin:0 0 1.3em;padding-left:1.4em}
 .prose li{margin:.45em 0}
 .prose li::marker{color:var(--accent)}
 .prose blockquote{margin:1.4em 0;padding:16px 20px;background:var(--card);border-left:3px solid var(--accent);border-radius:0 12px 12px 0;color:var(--text);box-shadow:var(--shadow)}
 .prose blockquote p{margin:0}
 /* 长文用：小标题、配图与图注、代码块（提示词）、参考资料 */
-.prose h3{font-size:19px;line-height:1.5;font-weight:700;margin:1.8em 0 .6em;color:var(--text)}
+.prose h3{font-size:19px;line-height:1.5;font-weight:700;margin:2em 0 .7em;color:var(--accent)}
 .prose h4{font-size:17px;line-height:1.5;font-weight:600;margin:1.5em 0 .5em;color:var(--text)}
 .prose img{display:block;width:100%;height:auto;border-radius:12px;background:var(--card);box-shadow:var(--shadow);margin:1.6em 0 .4em}
 .prose p:has(> img){margin:0}

@@ -11,7 +11,11 @@ const sr = frontmatter.series ? series[frontmatter.series] : null;
 const here = Astro.url.pathname.replace(/\/?$/, '/');
 const idx = sr ? sr.items.findIndex(([, href]) => href === here) : -1;
 // 正文图片懒加载：长文一打开不必下载全部配图
-const body = (await Astro.slots.render('default')).replace(/<img (?![^>]*loading=)/g, '<img loading="lazy" decoding="async" ');
+// 排版标记：“先说结论”段落做成结论框；以加粗短句开头的段落，把这句做成段首小标题
+const body = (await Astro.slots.render('default'))
+  .replace(/<img (?![^>]*loading=)/g, '<img loading="lazy" decoding="async" ')
+  .replace(/<p>(?=(?:<strong>)?先说结论)/g, '<p class="key">')
+  .replace(/<p><strong>(?=[^<]{2,40}<\/strong>\s*\S)/g, '<p class="lead"><strong>');
 const site = Astro.site?.toString().replace(/\/$/, '') ?? '';
 const url = `${site}${Astro.url.pathname}`;
 ---
