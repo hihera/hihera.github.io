@@ -147,7 +147,8 @@ const systems = w.lab.filter((p) => !p.hidden);
 <section id="thinking">
   <div class="wrap">
     <div class="sec-head"><div><span class="kicker">{t.thinking.kicker}</span><h2>{t.thinking.h}</h2><p>{t.thinking.p}</p></div></div>
-    <div class="think">
+    {/* 文章：两篇单篇 + 一张系列卡片（三篇合成一张，篇目逐条可点） */}
+    <div class="think three first">
       {t.thinking.cards.map(([meta, title, take, href]) => href ? (
         <a class="card th link" href={href}>
           <div class="meta">{meta}</div>
@@ -162,9 +163,17 @@ const systems = w.lab.filter((p) => !p.hidden);
           <p>{take}</p>
         </div>
       ))}
+      <div class="card th series">
+        <div class="meta">{t.thinking.series.meta}</div>
+        <h3>{t.thinking.series.title}</h3>
+        <p>{t.thinking.series.take}</p>
+        <ol class="th-list">
+          {t.thinking.series.items.map(([title, href]) => <li><a href={href}>{title}<span aria-hidden="true">→</span></a></li>)}
+        </ol>
+      </div>
     </div>
-    {/* 调研报告：一行三张 */}
-    <div class="think three">
+    {/* 调研报告：一行四张 */}
+    <div class="think four">
       {t.thinking.reports.map(([meta, title, take, href]) => (
         <a class="card th link" href={href}>
           <div class="meta">{meta}</div>
@@ -302,13 +311,20 @@ const systems = w.lab.filter((p) => !p.hidden);
     frame.addEventListener('pointerleave', () => { frame.style.transform = ''; });
   }
 
-  // 5. 作品视频：滚到才播放，离开屏幕就暂停；减少动态效果时只显示封面
+  // 5. 作品视频：滚到才自动播放，离开屏幕就暂停。
+  // 不能自动播放时（开了“减弱动态效果”、iPhone 低电量模式或关闭了自动播放），显示播放控件让用户自己点
+  const showControls = (v: HTMLVideoElement) => { v.controls = true; };
   const vio = new IntersectionObserver((entries) => {
     entries.forEach((e) => {
       const v = e.target as HTMLVideoElement;
-      if (e.isIntersecting && !reduce) { v.play().catch(() => {}); } else { v.pause(); }
+      if (!e.isIntersecting) { v.pause(); return; }
+      if (!reduce && !v.controls) v.play().catch(() => showControls(v));
     });
   }, { threshold: 0.4 });
-  document.querySelectorAll<HTMLVideoElement>('.lab-video').forEach((v) => vio.observe(v));
+  document.querySelectorAll<HTMLVideoElement>('.lab-video').forEach((v) => {
+    v.muted = true; // iPhone 只允许静音视频自动播放，属性和状态都设上
+    if (reduce) showControls(v);
+    vio.observe(v);
+  });
 
 </script>

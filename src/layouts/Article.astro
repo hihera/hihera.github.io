@@ -2,8 +2,16 @@
 // 文章页布局：沿用首页的字体、颜色和导航，正文用适合长读的排版。
 import '../styles/global.css';
 import WechatQr from '../components/WechatQr.astro';
+import { series } from '../i18n/series';
 
-const { frontmatter } = Astro.props;
+const { frontmatter, headings = [] } = Astro.props;
+// 长文目录：frontmatter 写 toc: true 时显示二级标题
+const toc = frontmatter.toc ? headings.filter((h: { depth: number }) => h.depth === 2) : [];
+const sr = frontmatter.series ? series[frontmatter.series] : null;
+const here = Astro.url.pathname.replace(/\/?$/, '/');
+const idx = sr ? sr.items.findIndex(([, href]) => href === here) : -1;
+// 正文图片懒加载：长文一打开不必下载全部配图
+const body = (await Astro.slots.render('default')).replace(/<img (?![^>]*loading=)/g, '<img loading="lazy" decoding="async" ');
 const site = Astro.site?.toString().replace(/\/$/, '') ?? '';
 const url = `${site}${Astro.url.pathname}`;
 ---
@@ -36,9 +44,26 @@ const url = `${site}${Astro.url.pathname}`;
         <p class="post-lead">{frontmatter.description}</p>
         <div class="post-meta">Hera · {frontmatter.date}</div>
       </header>
-      <div class="prose">
-        <slot />
-      </div>
+      {toc.length > 0 && (
+        <details class="post-toc">
+          <summary>目录 · {toc.length} 节</summary>
+          <ol>{toc.map((h: { slug: string; text: string }) => <li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol>
+        </details>
+      )}
+      <div class="prose" set:html={body} />
+      {sr && (
+        <nav class="post-series" aria-label={sr.name}>
+          <div class="ps-head">{sr.name}</div>
+          <ol>
+            {sr.items.map(([title, href], i) => (
+              <li class={i === idx ? 'on' : ''}>
+                {i === idx ? <span>{title}<em>正在阅读</em></span> : <a href={href}>{title}</a>}
+              </li>
+            ))}
+          </ol>
+          {idx >= 0 && idx < sr.items.length - 1 && <a class="ps-next" href={sr.items[idx + 1][1]}>下一篇：{sr.items[idx + 1][0]} →</a>}
+        </nav>
+      )}
       <aside class="post-follow">
         <p>想读更多文章，欢迎关注我的公众号</p>
         <WechatQr label="关注公众号" />

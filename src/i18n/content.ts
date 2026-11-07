@@ -192,11 +192,23 @@ export const content = {
         ['创业复盘 · 2026.10', '产品成立之后：一家 AI 医养公司教会我的商业课', '我们证明了产品有用，却没能证明生意能规模化。问题不在产品本身，而在产品之外的四笔账。', '/thinking/after-product-market/'],
         ['行业思考 · 2026.10', '从计算机视觉到 Agent：AI 产品最贵的错误，是把技术当成目的', '跨视觉 AI 和大模型两轮浪潮，同一种错误反复出现。客户最终买的，是更低的总成本和更确定的结果。', '/thinking/technology-is-not-the-goal/'],
       ],
+      // 系列文章：三篇合成一张卡片，避免首页卡片过多；篇目见 src/i18n/series.ts
+      series: {
+        meta: '系列文章 · 2026.11',
+        title: '竞品分析三部曲',
+        take: '从通用方法论，到 AI 产品怎么拆，再到怎么用 AI 做竞品分析。',
+        items: [
+          ['方法论：本质、目的与实操流程', '/thinking/competitive-analysis-method/'],
+          ['AI 产品：技术底座、产品体验与商业生态', '/thinking/ai-product-competitive-analysis/'],
+          ['用 AI 做：人机分工、工作流与提示词', '/thinking/competitive-analysis-with-ai/'],
+        ],
+      },
       // 调研报告：页面由 Downloads/AI调研报告/_tools/sync-site.cjs 同步到 public/research/
       reports: [
         ['研究报告 · 2026.11', '编程与办公智能体：12 款产品横向拆解', '两条赛道正在合流，编程 Agent 正在成为办公 Agent 的引擎；能力趋同之后，竞争转向上下文、生态和信任。', '/research/agents/index.html'],
         ['研究报告 · 2026.11', '国内外 11 家大模型厂商调研', '收入由企业和编程驱动；国内厂商集体开放权重；模型厂商全部下场做 Agent，模型和应用的边界正在消失。', '/research/llm/index.html'],
         ['研究报告 · 2026.11', '国内外 14 家人形机器人与具身智能公司调研', '中国公司在出货、成本和盈利上领先，美国公司在估值、大模型和资本上领先；真正在产线常态化干活的机器人仍是少数。', '/research/robotics/index.html'],
+        ['研究报告 · 2026.11', '国内外 16 家视觉生成公司调研：图像、视频与 3D', '图像由 OpenAI、Google 领先，视频由中国厂商领先，3D 由专业公司主导；模型领先只能维持几个月，钱来自工作流。', '/research/visual/index.html'],
       ],
     },
 
@@ -390,10 +402,21 @@ export const content = {
         ['Founder retrospective · 2026.10', 'After the product works: business lessons from an AI eldercare startup', 'We proved the product worked, but not that the business could scale. The problem was not the product — it was four sets of numbers outside it.', '/thinking/after-product-market/'],
         ['Industry view · 2026.10', 'From computer vision to agents: the costliest mistake in AI products is treating technology as the goal', 'Across two waves — vision AI and LLMs — the same mistake keeps coming back. What customers buy is lower total cost and more certain outcomes.', '/thinking/technology-is-not-the-goal/'],
       ],
+      series: {
+        meta: 'Series · 2026.11',
+        title: 'Competitive analysis, in three parts',
+        take: 'A general method, how to take apart AI products, and how to use AI to do the analysis (in Chinese).',
+        items: [
+          ['The method: what it is, why, and how', '/thinking/competitive-analysis-method/'],
+          ['AI products: models, experience and business', '/thinking/ai-product-competitive-analysis/'],
+          ['With AI: division of work, workflow and prompts', '/thinking/competitive-analysis-with-ai/'],
+        ],
+      },
       reports: [
         ['Report · 2026.11', 'Coding and office agents: 12 products compared', 'The two markets are merging — coding agents are becoming the engine of office agents; as capabilities converge, competition shifts to context, ecosystem and trust.', '/research/agents/index.html'],
         ['Report · 2026.11', '11 LLM vendors in China and abroad', 'Revenue is driven by enterprise and coding; Chinese vendors have all gone open-weight; every model vendor now ships agents, and the line between model and application is disappearing.', '/research/llm/index.html'],
         ['Report · 2026.11', '14 humanoid and embodied-AI companies in China and abroad', 'Chinese companies lead on shipments, cost and profitability; US companies lead on valuation, models and capital. Few robots yet do routine work on production lines.', '/research/robotics/index.html'],
+        ['Report · 2026.11', '16 image, video and 3D generation companies in China and abroad', 'OpenAI and Google lead in images, Chinese companies in video, specialists in 3D. A model lead lasts only months; the money comes from workflows.', '/research/visual/index.html'],
       ],
     },
 

@@ -211,7 +211,8 @@ section{padding:152px 0 0}
 .fan img:nth-child(2){z-index:2;transform:translate(5%,-8%) scale(.95);opacity:.92}
 .fan img:nth-child(3){z-index:1;transform:translate(10%,-16%) scale(.9);opacity:.78}
 .fan.single img{left:6%;top:9%;width:88%}
-.fan.video{display:flex;align-items:center;justify-content:center}
+/* 视频容器不用 3D 透视：Safari 在“透视 + 裁切 + 圆角”的容器里播放视频可能显示空白 */
+.fan.video{display:flex;align-items:center;justify-content:center;perspective:none}
 .fan.video video{width:92%;height:auto;display:block;border-radius:10px;background:#fff;box-shadow:0 2px 6px rgba(0,0,0,.06),0 12px 28px rgba(0,0,0,.12)}
 .sys-card:hover .fan:not(.single) img:nth-child(1),.lab-row:hover .fan:not(.single) img:nth-child(1){transform:translate(0,3%) scale(.84);opacity:1;z-index:4}
 .sys-card:hover .fan:not(.single) img:nth-child(2),.lab-row:hover .fan:not(.single) img:nth-child(2){transform:translate(-30%,8%) rotateY(16deg) scale(.72);opacity:1}
@@ -268,6 +269,17 @@ html[lang=en] .flag dl>div{grid-template-columns:86px minmax(0,1fr)}
 /* 研究：只放已完成的，每张卡片写结论 */
 .think{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:20px}
 .think.three{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:20px}
+.think.first{margin-top:0}
+.think.four{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:20px}
+.think.four .th{padding:24px}
+.think.four .th h3{font-size:17px}
+/* 系列卡片：篇目逐条可点 */
+.th-list{list-style:none;counter-reset:n;margin-top:auto;display:flex;flex-direction:column;border-top:1px solid var(--line)}
+.th-list li{counter-increment:n;border-bottom:1px solid var(--line)}
+.th-list a{display:flex;align-items:baseline;gap:10px;padding:9px 0;font-size:14px;line-height:1.5;color:var(--text);transition:color .2s}
+.th-list a::before{content:counter(n);font-family:var(--font-num);font-size:12px;font-weight:600;color:var(--accent);min-width:12px}
+.th-list a span{margin-left:auto;color:var(--accent)}
+.th-list a:hover{color:var(--accent)}
 .th{padding:28px;display:flex;flex-direction:column;gap:10px}
 .th h3{font-size:18px;line-height:1.45;font-weight:600}
 .th p{font-size:14px;line-height:1.75;color:var(--text-2)}
@@ -303,6 +315,34 @@ html[lang=en] .flag dl>div{grid-template-columns:86px minmax(0,1fr)}
 .prose li::marker{color:var(--accent)}
 .prose blockquote{margin:1.4em 0;padding:16px 20px;background:var(--card);border-left:3px solid var(--accent);border-radius:0 12px 12px 0;color:var(--text);box-shadow:var(--shadow)}
 .prose blockquote p{margin:0}
+/* 长文用：小标题、配图与图注、代码块（提示词）、参考资料 */
+.prose h3{font-size:19px;line-height:1.5;font-weight:700;margin:1.8em 0 .6em;color:var(--text)}
+.prose h4{font-size:17px;line-height:1.5;font-weight:600;margin:1.5em 0 .5em;color:var(--text)}
+.prose img{display:block;width:100%;height:auto;border-radius:12px;background:var(--card);box-shadow:var(--shadow);margin:1.6em 0 .4em}
+.prose p:has(> img){margin:0}
+.prose p:has(> img) + p > em:only-child{display:block;text-align:center;font-style:normal;font-size:var(--fs-meta);color:var(--text-3);margin:0 0 1.6em}
+.prose a{color:var(--accent);word-break:break-all}
+.prose code{font-family:ui-monospace,"SF Mono",Menlo,Consolas,monospace;font-size:.88em;background:rgba(27,88,161,.07);padding:1px 5px;border-radius:5px}
+.prose pre{margin:1.2em 0 1.6em;padding:18px 20px;background:#F7F8FA;border:1px solid #E4E6EA;border-radius:12px;overflow-x:auto;font-size:14px;line-height:1.75;white-space:pre-wrap;word-break:break-word}
+.prose pre code{background:none;padding:0;font-size:inherit;color:#33363B}
+.prose hr{border:0;border-top:1px solid #D9D9DC;margin:2.4em 0}
+.prose ol{padding-left:1.6em}
+/* 长文目录（可折叠） */
+.post-toc{margin:-8px 0 36px;padding:14px 20px;background:var(--card);border-radius:14px;box-shadow:var(--shadow);font-size:var(--fs-small)}
+.post-toc summary{cursor:pointer;font-weight:600;color:var(--text)}
+.post-toc ol{margin:12px 0 4px;padding-left:1.4em;color:var(--text-2);line-height:1.9}
+.post-toc a{color:var(--text-2)}
+.post-toc a:hover{color:var(--accent)}
+/* 系列文章导航 */
+.post-series{margin-top:48px;padding:22px 24px;background:var(--card);border-radius:16px;box-shadow:var(--shadow)}
+.ps-head{font-size:var(--fs-meta);font-weight:600;letter-spacing:.06em;color:var(--accent);margin-bottom:10px}
+.post-series ol{padding-left:1.4em;font-size:var(--fs-small);line-height:1.9}
+.post-series li.on{color:var(--text);font-weight:600}
+.post-series li em{font-style:normal;font-size:var(--fs-tiny);font-weight:500;color:var(--text-3);margin-left:8px}
+.post-series li a{color:var(--text-2)}
+.post-series li a:hover{color:var(--accent)}
+.ps-next{display:inline-block;margin-top:12px;font-size:var(--fs-small);font-weight:600;color:var(--accent)}
+.post-series+.post-follow{margin-top:24px}
 /* 文章末尾：关注公众号 */
 .post-follow{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:56px;padding:20px 24px;background:var(--card);border-radius:16px;box-shadow:var(--shadow)}
 .post-follow p{font-size:var(--fs-small);color:var(--text-2)}
@@ -382,6 +422,7 @@ button.btn{font-family:inherit;cursor:pointer}
   .wrap{padding:0 32px}
   .hero-grid{gap:40px}
   .repos{grid-template-columns:1fr 1fr}
+  .think.four{grid-template-columns:repeat(2,minmax(0,1fr))}
   .th{padding:24px}
   .case-body{padding:20px}
   .case-stats dt{font-size:17px}
@@ -389,7 +430,7 @@ button.btn{font-family:inherit;cursor:pointer}
 }
 @media (max-width:860px){
   .flag-head{grid-template-columns:minmax(0,1fr);gap:28px;margin-bottom:28px}
-  .think,.think.three,.life,.showcase,.lab-row,.cases{grid-template-columns:minmax(0,1fr)}
+  .think,.think.three,.think.four,.life,.showcase,.lab-row,.cases{grid-template-columns:minmax(0,1fr)}
   .links{display:none}
   .hero-grid{grid-template-columns:1.4fr .8fr;gap:28px}
   .sc-chat{height:560px}
@@ -419,7 +460,7 @@ button.btn{font-family:inherit;cursor:pointer}
   .lab-row{grid-template-columns:minmax(0,1fr);gap:18px;padding:14px}
   .lab-body{padding:0 4px 6px}
   .pr,.th,.life{padding:24px}
-  .think{grid-template-columns:minmax(0,1fr)}
+  .think,.think.four{grid-template-columns:minmax(0,1fr)}
   .post{padding:40px 16px 32px}
   .prose{font-size:16px}
   .photos{height:240px}
