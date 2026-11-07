@@ -168,7 +168,7 @@ const systems = w.lab.filter((p) => !p.hidden);
         <h3>{t.thinking.series.title}</h3>
         <p>{t.thinking.series.take}</p>
         <ol class="th-list">
-          {t.thinking.series.items.map(([title, href]) => <li><a href={href}>{title}<span aria-hidden="true">→</span></a></li>)}
+          {t.thinking.series.items.map(([title, href]) => <li><a href={href}><span class="th-t">{title}</span><i class="th-arr" aria-hidden="true">→</i></a></li>)}
         </ol>
       </div>
     </div>

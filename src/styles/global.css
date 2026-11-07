@@ -278,7 +278,9 @@ html[lang=en] .flag dl>div{grid-template-columns:86px minmax(0,1fr)}
 .th-list li{counter-increment:n;border-bottom:1px solid var(--line)}
 .th-list a{display:flex;align-items:baseline;gap:10px;padding:9px 0;font-size:14px;line-height:1.5;color:var(--text);transition:color .2s}
 .th-list a::before{content:counter(n);font-family:var(--font-num);font-size:12px;font-weight:600;color:var(--accent);min-width:12px}
-.th-list a span{margin-left:auto;color:var(--accent)}
+/* 只给箭头定位：标题里的文字被浏览器插件包上标签时，也不会被挤开 */
+.th-list .th-t{flex:1;min-width:0}
+.th-list .th-arr{font-style:normal;color:var(--accent);flex:none}
 .th-list a:hover{color:var(--accent)}
 .th{padding:28px;display:flex;flex-direction:column;gap:10px}
 .th h3{font-size:18px;line-height:1.45;font-weight:600}
